@@ -283,7 +283,7 @@ class TransactionalEditDialogMixin(object):
                 else:
                     raise EditCancelledException()
         except EditCancelledException:
-            logger.debug("Dialog changes have been rolled back.")
+            log.debug("Dialog changes have been rolled back.")
             return result
             # ... and swallow that exception silently.
         # Other exceptions will be handled as normal.
@@ -406,7 +406,7 @@ class ModalEditListView(QListView):
         """Returns a QModelIndex or None."""
         selected_indexes = self.selectedIndexes()
         if not selected_indexes or len(selected_indexes) > 1:
-            logger.warning("get_selected_modelindex: 0 or >1 selected")
+            log.warning("get_selected_modelindex: 0 or >1 selected")
             return None
         return selected_indexes[0]
 
@@ -470,7 +470,7 @@ class ModalEditListView(QListView):
     def add_in_nested_transaction(self, new_object, at_index=None):
         # at_index: None for end, 0 for start
         if self.readonly:
-            logger.warning("Can't add; readonly")
+            log.warning("Can't add; readonly")
             return
         try:
             with self.session.begin_nested():
@@ -482,7 +482,7 @@ class ModalEditListView(QListView):
                 self.insert_at_index(new_object, at_index)
                 return result
         except EditCancelledException:
-            logger.debug("Add operation has been rolled back.")
+            log.debug("Add operation has been rolled back.")
             return result
 
 

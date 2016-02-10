@@ -65,8 +65,8 @@ from .constants import (
 from .lang import CompiledRegexMemory
 from .qtsupport import exit_on_exception, StatusMixin
 
-logger = logging.getLogger(__name__)
-configure_logger_for_colour(logger)
+log = logging.getLogger(__name__)
+configure_logger_for_colour(log)
 
 INFINITE_WAIT = -1
 

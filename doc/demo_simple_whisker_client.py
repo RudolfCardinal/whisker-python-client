@@ -35,6 +35,12 @@ logging.getLogger("whisker").setLevel(logging.DEBUG)  # ... and for Whisker
 TASKNAME_SHORT = "countpings"  # no spaces; we'll use it in a filename
 TASKNAME_LONG = "Ping Counting Task"
 
+# Our tables. They will be autocreated. (NOTE: do not store separate copies of
+# table objects, as they can get out of sync as new columns area created.)
+SESSION_TABLE = 'session'
+TRIAL_TABLE = 'trial'
+SUMMARY_TABLE = 'summary'
+
 
 # =============================================================================
 # The task itself
@@ -47,7 +53,6 @@ class MyWhiskerTask(WhiskerTask):
         self.config = config
         self.db = db
         self.session = session
-        self.trial_table = db['trial']
         self.trial_num = 0
 
     def fully_connected(self):
@@ -79,7 +84,7 @@ class MyWhiskerTask(WhiskerTask):
                 received=True,  # now we're just making things up...
                 when=now,
             )
-            insert_and_set_id(self.trial_table, trial)  # save to database
+            insert_and_set_id(self.db[TRIAL_TABLE], trial)  # save to database
             self.trial_num += 1
             log.info("{} pings received so far".format(self.trial_num))
 
@@ -94,14 +99,7 @@ config = load_config_or_die(
     defaults=dict(server='localhost', port=DEFAULT_PORT),
     log_config=True  # send to console (NB beware security of database URLs)
 )
-db = connect_to_db_using_attrdict(
-    config.database_url,
-    engine_kwargs={'echo': True})  # for debugging: show all the SQL
-
-# These are our tables. They will be autocreated.
-session_table = db['session']
-trial_table = db['trial']
-summary_table = db['summary']
+db = connect_to_db_using_attrdict(config.database_url)
 
 # Any additional user input required?
 num_pings = ask_user("Number of pings", default=10, type=int, min=1)
@@ -115,7 +113,7 @@ session = AttrDict(start=datetime.now(),
                    subject=config.subject,
                    session=config.session,
                    num_pings=num_pings)
-insert_and_set_id(session_table, session)  # save to database
+insert_and_set_id(db[SESSION_TABLE], session)  # save to database
 log.info("Off we go...")
 task = MyWhiskerTask(config, db, session)
 task.connect(config.server, config.port)
@@ -129,14 +127,14 @@ log.info("Finished.")
 # Retrieve all our trials. (There may also be many others in the database.)
 # NOTE that find() returns an iterator (you get to iterate through it ONCE).
 # Since we want to use this more than once (below), use a list.
-trials = list(trial_table.find(session_id=session.id))
+trials = list(db[TRIAL_TABLE].find(session_id=session.id))
 
 # Calculate some summary measures
 summary = AttrDict(
     session_id=session.id,  # foreign key
     n_pings_received=sum(t.received for t in trials)
 )
-insert_and_set_id(summary_table, summary)  # save to database
+insert_and_set_id(db[SUMMARY_TABLE], summary)  # save to database
 
 # Save data. (Since the session and summary objects are single objects, we
 # encapsulate them in a list.)

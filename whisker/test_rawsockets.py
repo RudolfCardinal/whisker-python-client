@@ -48,7 +48,7 @@ def test_whisker(server, port, verbose_network=True):
                 break  # Exit the for loop.
 
 
-if __name__ == '__main__':
+def main():
     logging.getLogger("whisker").setLevel(logging.DEBUG)
 
     parser = argparse.ArgumentParser("Test Whisker raw socket client")
@@ -59,3 +59,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     test_whisker(server=args.server, port=args.port)
+
+
+if __name__ == '__main__':
+    main()

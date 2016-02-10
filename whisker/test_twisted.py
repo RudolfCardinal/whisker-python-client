@@ -37,7 +37,7 @@ class MyWhiskerTask(WhiskerTask):
             reactor.stop()
 
 
-if __name__ == '__main__':
+def main():
     logging.getLogger("whisker").setLevel(logging.DEBUG)
 
     parser = argparse.ArgumentParser("Test Whisker raw socket client")
@@ -51,3 +51,7 @@ if __name__ == '__main__':
     w = MyWhiskerTask()
     w.connect(args.server, args.port)
     reactor.run()
+
+
+if __name__ == '__main__':
+    main()

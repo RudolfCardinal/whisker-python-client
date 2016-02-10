@@ -1,6 +1,6 @@
 .. For RST help, see http://www.sphinx-doc.org/en/stable/rest.html
 
-.. include:: symbols/isonum.txt
+.. include:: doc/symbols/isonum.txt
 
 ===============================================================================
 whisker
@@ -11,22 +11,73 @@ Python package for Whisker clients.
 - Whisker is a TCP/IP-based research control software suite.
   See http://www.whiskercontrol.com/
 
+TL;DR
+===============================================================================
+
+-   :code:`pip install whisker`
+-   Fire up your Whisker server.
+-   Test with :code:`whisker_test_twisted --server localhost`
+    and :code:`whisker_test_rawsockets --server localhost`
+-   Copy/paste the demo config file and demo task under "A complete simple
+    task" at the end.
+
 Author/licensing
 ===============================================================================
 
-By Rudolf Cardinal.
-Copyright |copy| 2016 Rudolf Cardinal.
-See LICENSE.txt.
+By Rudolf Cardinal (rudolf@pobox.com).
+Copyright |copy| Rudolf Cardinal.
+Licensed under a permissive open-source license; see LICENSE.
 
-Range of approaches
+Usage
 ===============================================================================
+
+There are three styles of Whisker client available. Full worked exampes are
+shown below, along with a rationale for their use. The outlines, however,
+look like these:
+
+Twisted client (preferred for simple interfaces)
+------------------------------------------------
+
+.. code:: python
+
+    from twisted.internet import reactor
+    from whisker.twistedclient import WhiskerTask
+
+    class MyWhiskerTask(WhiskerTask):
+        # ...
+
+    w = MyWhiskerTask()
+    w.connect(...)
+    reactor.run()
+
+Qt client (preferred for GUI use)
+---------------------------------
+
+More complex; see the Starfeeder project example.
+
+Raw socket client (deprecated)
+------------------------------
+
+.. code:: python
+
+    from whisker.rawsocketclient import Whisker
+
+    w = Whisker()
+    w.connect_both_ports(...)
+    # ...
+    for line in w.getlines_mainsocket():
+        # ...
+
+
+Rationale
+===============================================================================
+
+Approaches to sockets and message passing
+-------------------------------------------------------------------------------
 
 Whisker allows a multitude of clients in a great many languages -- anything
 that can "speak" down a TCP/IP port, such as C++, Visual Basic, Perl, and
 Python.
-
-Sockets and message passing
-===============================================================================
 
 Whisker uses two sockets, a "main" socket, through which the Whisker server
 can send events unprompted, and an "immediate" socket, used for sending
@@ -37,41 +88,42 @@ coming from the server. It might also have to deal with some sort of user
 interface (UI) code (and other faster things, like data storage).
 
 C++
----
+~~~
 
 In C++/MFC, sockets get their own thread anyway, and the framework tries to
-hide this from you. So the GUI and sockets coexists fairly happily.
+hide this from you. So the GUI and sockets coexists fairly happily. Many
+Whisker tasks use C++, but it's not the easiest thing in the world.
 
 Perl
-----
+~~~~
 
-In Perl, I've tried only a very basic approach with a manual message loop,
+In Perl, I've used only a very basic approach with a manual message loop,
 like this:
 
-.. include:: whisker_client_snippet.pl
+.. include:: doc/whisker_client_snippet.pl
     :code: perl
 
 Python
-------
+~~~~~~
 
-In Python, I've tried the following approaches:
+In Python, I've used the following approaches:
 
 Manual event loop
-~~~~~~~~~~~~~~~~~
+:::::::::::::::::
 You can use base socket code, and poll the main
 socket for input regularly. Simple. But you can forget about
 simultaneous UI. Like this:
 
-.. include:: ../whisker/test_rawsockets.py
+.. include:: whisker/test_rawsockets.py
     :code: python
 
 Non-threaded, event-driven
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+::::::::::::::::::::::::::
 
 The Twisted library is great for this (https://twistedmatrix.com/). However:
 
--   It still doesn't support Python 3 fully (as of 2016-02-09), after
-    several years, though this is not a major problem (it's easy to
+-   Bits of it, like Tkinter integration, still don't support Python 3 fully
+    (as of 2015-12-23), though this is not a major problem (it's easy to
     hack in relevant bits of Python 3 support).
 
 -   Though it will integrate its event loop (reactor) with several GUI
@@ -84,16 +136,15 @@ The Twisted library is great for this (https://twistedmatrix.com/). However:
     (More detail on this problem in my dev_notes.txt for the starfeeder
     project.)
 
--   So one could use Twisted with a bit of hacking and no user
-    interaction.
+-   So one could use Twisted with no user interaction during the task.
 
 It looks, from the task writer's perspective, like this:
 
-.. include:: ../whisker/test_twisted.py
+.. include:: whisker/test_twisted.py
     :code: python
 
 Multithreading
-~~~~~~~~~~~~~~
+::::::::::::::
 
 For multithreading we can use Qt (with the PySide bindings). In this approach,
 the Whisker task runs in separate threads from the UI. This works well,
@@ -102,16 +153,16 @@ can be fairly fancy. You have to be careful with database access if
 using SQLite (which is not always happy in a multithreaded context).
 
 Verdict for simple uses
-~~~~~~~~~~~~~~~~~~~~~~~
+:::::::::::::::::::::::
 
 Use Twisted and avoid any UI code while the task is running.
 
 
 Database access
-===============================================================================
+-------------------------------------------------------------------------------
 
 Database backend
-----------------
+~~~~~~~~~~~~~~~~
 
 There are distinct advantages to making SQLite the default, namely:
 
@@ -125,7 +176,7 @@ as well as "bigger" databases like MySQL.
 Users will want simple textfile storage as well.
 
 Front end
----------
+~~~~~~~~~
 
 The options for SQLite access include direct access:
 
@@ -145,7 +196,7 @@ However, the other very pleasantly simple front-end is dataset:
 
 
 User interface
-===============================================================================
+-------------------------------------------------------------------------------
 
 A GUI can consume a lot of programmer effort. Let's keep this minimal or
 absent as the general rule; for more advanced coding, the coder can do
@@ -153,7 +204,7 @@ his/her own thing (a suggestion: Qt).
 
 
 Task configuration
-===============================================================================
+-------------------------------------------------------------------------------
 
 Much of the GUI is usually about configuration. So let's get rid of all
 that, because we're aiming at very simple programming here. Let's just
@@ -161,20 +212,20 @@ put config in a simple structure like JSON or YAML, and have the user edit it
 separately.
 
 JSON
-----
+~~~~
 
 An example program:
 
-.. include:: json_config_example.py
+.. include:: doc/json_config_example.py
     :code: python
 
 The JSON looks like:
 
-.. include:: json_config_demo.json
+.. include:: doc/json_config_demo.json
     :code: json
 
 YAML with attrdict
-------------------
+~~~~~~~~~~~~~~~~~~
 
 This can be a bit fancier in terms of the object structure it can represent,
 a bit cleaner in terms of the simplicity of the config file, and safer in terms
@@ -183,16 +234,16 @@ of security from dodgy config files.
 Using an AttrDict allows a cleaner syntax for reading/writing the Python
 object.
 
-.. include:: yaml_config_example.py
+.. include:: doc/yaml_config_example.py
     :code: python
 
 The YAML looks like this:
 
-.. include:: yaml_config_demo.yaml
+.. include:: doc/yaml_config_demo.yaml
     :code: yaml
 
 A quick YAML tutorial
-~~~~~~~~~~~~~~~~~~~~~
+:::::::::::::::::::::
 
 A key:value pair looks like:
 
@@ -225,7 +276,7 @@ Verdict for simple uses
 Use YAML with AttrDict.
 
 Package distribution
-===============================================================================
+-------------------------------------------------------------------------------
 
 This should be via PyPI, so users can just do:
 
@@ -242,8 +293,8 @@ A complete simple task
 
 Having done :code:`pip install whisker`, you should be able to do this:
 
-.. include:: demo_config.yaml
+.. include:: doc/demo_config.yaml
     :code: yaml
 
-.. include:: demo_simple_whisker_client.py
+.. include:: doc/demo_simple_whisker_client.py
     :code: python

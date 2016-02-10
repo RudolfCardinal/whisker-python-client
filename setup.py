@@ -4,6 +4,12 @@
 """
 Whisker setup file
 
+To use:
+
+    python setup.py sdist
+
+    twine upload dist/*
+
 """
 # http://python-packaging-user-guide.readthedocs.org/en/latest/distributing/
 # http://jtushman.github.io/blog/2013/06/17/sharing-code-across-applications-with-python/  # noqa
@@ -11,8 +17,8 @@ Whisker setup file
 from setuptools import setup  # , find_packages
 from codecs import open
 from os import path
-import pip
-from pip.req import parse_requirements
+# import pip
+# from pip.req import parse_requirements
 
 from whisker.version import VERSION
 
@@ -21,7 +27,7 @@ here = path.abspath(path.dirname(__file__))
 # -----------------------------------------------------------------------------
 # Get the long description from the README file
 # -----------------------------------------------------------------------------
-with open(path.join(here, 'doc/README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 # -----------------------------------------------------------------------------
@@ -29,9 +35,9 @@ with open(path.join(here, 'doc/README.rst'), encoding='utf-8') as f:
 # -----------------------------------------------------------------------------
 # http://stackoverflow.com/questions/14399534
 # https://github.com/juanpabloaj/pip-init/issues/11
-reqfile = path.join(here, 'requirements.txt')
-install_reqs = parse_requirements(reqfile, session=pip.download.PipSession())
-reqs = [str(ir.req) if ir.req else str(ir.link) for ir in install_reqs]
+# reqfile = path.join(here, 'requirements.txt')
+# install_reqs = parse_requirements(reqfile, session=pip.download.PipSession())
+# reqs = [str(ir.req) if ir.req else str(ir.link) for ir in install_reqs]
 
 # -----------------------------------------------------------------------------
 # setup args
@@ -86,7 +92,20 @@ setup(
 
     packages=['whisker'],
 
-    install_requires=reqs,
+    install_requires=[
+        'attrdict',  # dictionaries with attribute-style access
+        'colorama',  # colour at the command line
+        'colorlog',  # colourful logs
+        'dataset',  # databases for lazy people
+        # 'PySide==1.2.4',  # Python interface to Qt
+        'Twisted',  # TCP/IP communications
+
+        # ---------------------------------------------------------------------
+        # For development only:
+        # ---------------------------------------------------------------------
+        # docutils  # includes rst2html.py
+        # twine  # for uploading to PyPI
+    ],
 
     entry_points={
         'console_scripts': [

@@ -15,4 +15,5 @@ Twisted  # TCP/IP communications
 # Development only
 # -----------------------------------------------------------------------------
 
-# docutils
+# docutils  # includes rst2html.py
+# twine  # for uploading to PyPI

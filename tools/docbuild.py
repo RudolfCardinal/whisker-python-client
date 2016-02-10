@@ -36,7 +36,7 @@ CSS_LIST = [
 STYLESHEET_DIRS = [  # see rst2html.py --help
     join(DOCUTILS_DIR, 'writers/html4css1'),
 ]
-RST = join(DOC_DIR, 'README.rst')
+RST = join(PROJECT_BASE_DIR, 'README.rst')
 PDF = join(BUILD_DIR, 'manual.pdf')
 
 RST2HTML = shutil.which('rst2html.py')  # definitely not just 'rst2html'!
