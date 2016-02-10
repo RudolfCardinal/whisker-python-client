@@ -1,0 +1,10 @@
+# config.yaml
+
+# The URL is of the SQLAlchemy type.
+# http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
+# Here we'll use a SQLite file. For bigger purposes, consider MySQL etc.
+
+database_url: sqlite:///demo_task_results.db
+
+subject: Mr Potato Head
+session: 5

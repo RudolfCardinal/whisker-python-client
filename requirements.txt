@@ -1,0 +1,18 @@
+# requirements file for use with pip, for the whisker package
+
+# -----------------------------------------------------------------------------
+# Standard PyPI packages
+# -----------------------------------------------------------------------------
+
+attrdict  # dictionaries with attribute-style access
+colorama  # colour at the command line
+colorlog  # colourful logs
+dataset  # databases for lazy people
+PySide==1.2.4  # Python interface to Qt
+Twisted  # TCP/IP communications
+
+# -----------------------------------------------------------------------------
+# Development only
+# -----------------------------------------------------------------------------
+
+# docutils
