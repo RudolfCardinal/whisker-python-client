@@ -62,7 +62,7 @@ You can use base socket code, and poll the main
 socket for input regularly. Simple. But you can forget about
 simultaneous UI. Like this:
 
-.. include:: whisker_plain_socket_example.py
+.. include:: ../whisker/test_rawsockets.py
     :code: python
 
 Non-threaded, event-driven
@@ -89,7 +89,7 @@ The Twisted library is great for this (https://twistedmatrix.com/). However:
 
 It looks, from the task writer's perspective, like this:
 
-.. include:: whisker_twisted_example.py
+.. include:: ../whisker/test_twisted.py
     :code: python
 
 Multithreading
@@ -191,6 +191,34 @@ The YAML looks like this:
 .. include:: yaml_config_demo.yaml
     :code: yaml
 
+A quick YAML tutorial
+~~~~~~~~~~~~~~~~~~~~~
+
+A key:value pair looks like:
+
+.. code:: yaml
+
+    key: value
+
+A list looks like:
+
+.. code:: yaml
+
+    list:
+        - value1
+        - value2
+        # ...
+
+A dictionary looks like:
+
+.. code:: yaml
+
+    dict:
+        key1: value1
+        key2: value2
+        # ...
+
+
 Verdict for simple uses
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -209,7 +237,7 @@ This should be via PyPI, so users can just do:
 
     from whisker import ...
 
-Simple task
+A complete simple task
 ===============================================================================
 
 Having done :code:`pip install whisker`, you should be able to do this:

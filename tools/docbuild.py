@@ -53,6 +53,7 @@ if WKHTMLTOPDF is None:
 # 3. Other filenames are interpreted relative to the file's location, not
 #    the current directory.
 
+
 def call(cmdargs, *args, **kwargs):
     logger.debug("command: {}".format(cmdargs))
     subprocess.call(cmdargs, *args, **kwargs)

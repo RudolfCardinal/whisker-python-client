@@ -6,5 +6,8 @@
 
 database_url: sqlite:///demo_task_results.db
 
-subject: Mr Potato Head
+server: wombatvmxp
+
+# Let's include a comma to check the CSV output
+subject: Mr Potato, Head
 session: 5

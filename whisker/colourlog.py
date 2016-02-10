@@ -1,11 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # whisker/configure_colour_console_log.py
+# Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
+# See LICENSE for details.
 
 import colorlog
 import logging
 
 colour_formatter = colorlog.ColoredFormatter(
-    "%(asctime)s.%(msecs)03d %(cyan)s%(name)s:%(levelname)s: "
+    "%(cyan)s%(asctime)s.%(msecs)03d %(name)s:%(levelname)s: "
     "%(log_color)s%(message)s",
     datefmt='%Y-%m-%d %H:%M:%S',
     reset=True,
@@ -24,7 +26,6 @@ ch.setLevel(logging.DEBUG)
 ch.setFormatter(colour_formatter)
 
 
-def configure_logger_for_colour(logger, level=logging.DEBUG):
+def configure_logger_for_colour(log):
     """Applies a preconfigured datetime/colour scheme to a logger."""
-    logger.addHandler(ch)
-    logger.setLevel(level)
+    log.addHandler(ch)
