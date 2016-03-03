@@ -10,15 +10,18 @@ To use:
 
     twine upload dist/*
 
+To install in development mode:
+
+    pip install -e .
+
 """
+# https://packaging.python.org/en/latest/distributing/#working-in-development-mode
 # http://python-packaging-user-guide.readthedocs.org/en/latest/distributing/
 # http://jtushman.github.io/blog/2013/06/17/sharing-code-across-applications-with-python/  # noqa
 
 from setuptools import setup  # , find_packages
 from codecs import open
 from os import path
-# import pip
-# from pip.req import parse_requirements
 
 from whisker.version import VERSION
 
@@ -29,15 +32,6 @@ here = path.abspath(path.dirname(__file__))
 # -----------------------------------------------------------------------------
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
-
-# -----------------------------------------------------------------------------
-# Get the requirements from the requirements file
-# -----------------------------------------------------------------------------
-# http://stackoverflow.com/questions/14399534
-# https://github.com/juanpabloaj/pip-init/issues/11
-# reqfile = path.join(here, 'requirements.txt')
-# install_reqs = parse_requirements(reqfile, session=pip.download.PipSession())
-# reqs = [str(ir.req) if ir.req else str(ir.link) for ir in install_reqs]
 
 # -----------------------------------------------------------------------------
 # setup args

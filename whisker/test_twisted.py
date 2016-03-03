@@ -10,10 +10,14 @@ from twisted.internet import reactor
 
 from whisker.constants import (
     DEFAULT_PORT,
-    REPORT_NAME,
-    TEST_NETWORK_LATENCY,
-    TIMER_SET_EVENT,
-    TIMESTAMPS,
+    CMD_REPORT_NAME,
+    CMD_TEST_NETWORK_LATENCY,
+    CMD_TIMER_SET_EVENT,
+    CMD_TIMESTAMPS,
+)
+from whisker.logsupport import (
+    configure_logger_for_colour,
+    # print_report_on_all_logs,
 )
 from whisker.twistedclient import WhiskerTask
 
@@ -25,11 +29,11 @@ class MyWhiskerTask(WhiskerTask):
 
     def fully_connected(self):
         print("SENDING SOME TEST/DEMONSTRATION COMMANDS")
-        self.command(TIMESTAMPS, "on")
-        self.command(REPORT_NAME, "WHISKER_CLIENT_PROTOTYPE")
-        self.send(TEST_NETWORK_LATENCY)
-        self.command(TIMER_SET_EVENT, "1000 9 TimerFired")
-        self.command(TIMER_SET_EVENT, "12000 0 EndOfTask")
+        self.command(CMD_TIMESTAMPS, "on")
+        self.command(CMD_REPORT_NAME, "WHISKER_CLIENT_PROTOTYPE")
+        self.send(CMD_TEST_NETWORK_LATENCY)
+        self.command(CMD_TIMER_SET_EVENT, "1000 9 TimerFired")
+        self.command(CMD_TIMER_SET_EVENT, "12000 0 EndOfTask")
 
     def incoming_event(self, event, timestamp=None):
         print("Event: {e} (timestamp {t})".format(e=event, t=timestamp))
@@ -38,7 +42,10 @@ class MyWhiskerTask(WhiskerTask):
 
 
 def main():
+    logging.basicConfig()
     logging.getLogger("whisker").setLevel(logging.DEBUG)
+    configure_logger_for_colour(logging.getLogger())  # configure root logger
+    # print_report_on_all_logs()
 
     parser = argparse.ArgumentParser("Test Whisker raw socket client")
     parser.add_argument('--server', default='localhost',

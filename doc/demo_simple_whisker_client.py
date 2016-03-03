@@ -9,12 +9,12 @@ import logging
 from attrdict import AttrDict
 from datetime import datetime
 from twisted.internet import reactor
-from whisker.colourlog import configure_logger_for_colour
+from whisker.logging import configure_logger_for_colour
 from whisker.constants import (DEFAULT_PORT,
-                               REPORT_NAME,
-                               TEST_NETWORK_LATENCY,
-                               TIMER_SET_EVENT,
-                               TIMESTAMPS)
+                               CMD_REPORT_NAME,
+                               CMD_TEST_NETWORK_LATENCY,
+                               CMD_TIMER_SET_EVENT,
+                               CMD_TIMESTAMPS)
 from whisker.convenience import (load_config_or_die,
                                  connect_to_db_using_attrdict,
                                  insert_and_set_id,
@@ -59,12 +59,13 @@ class MyWhiskerTask(WhiskerTask):
         """At this point, we are fully connected to the Whisker server."""
         print("Task running.")
         period_ms = 1000
-        self.command(TIMESTAMPS, "on")
-        self.command(REPORT_NAME, TASKNAME_LONG)
-        self.send(TEST_NETWORK_LATENCY)
-        self.command(TIMER_SET_EVENT, period_ms,
+        self.command(CMD_TIMESTAMPS, "on")
+        self.command(CMD_REPORT_NAME, TASKNAME_LONG)
+        self.send(CMD_TEST_NETWORK_LATENCY)
+        self.command(CMD_TIMER_SET_EVENT, period_ms,
                      self.session.num_pings - 1, "TimerFired")
-        self.command(TIMER_SET_EVENT, period_ms * (self.session.num_pings + 1),
+        self.command(CMD_TIMER_SET_EVENT,
+                     period_ms * (self.session.num_pings + 1),
                      0, "EndOfTask")
 
     def incoming_event(self, event, timestamp=None):

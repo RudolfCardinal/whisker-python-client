@@ -22,7 +22,6 @@ import re
 import socket
 import time
 
-from .colourlog import configure_logger_for_colour
 from .socketsupport import (
     get_port,
     socket_receive,
@@ -31,7 +30,6 @@ from .socketsupport import (
 )
 
 log = logging.getLogger(__name__)
-configure_logger_for_colour(log)
 
 
 # =============================================================================

@@ -60,9 +60,17 @@ ERROR_PREFIX = "Error: "
 # Client -> server
 # =============================================================================
 
-TEST_NETWORK_LATENCY = "TestNetworkLatency"
+CMD_TEST_NETWORK_LATENCY = "TestNetworkLatency"
+CMD_TIMER_SET_EVENT = "TimerSetEvent"
+CMD_WHISKER_STATUS = "WhiskerStatus"
+CMD_REPORT_NAME = "ReportName"
+CMD_TIMESTAMPS = "Timestamps"
+CMD_CLAIM_GROUP = "ClaimGroup"
+CMD_LINE_CLAIM = "LineClaim"
+CMD_LINE_SET_STATE = "LineSetState"
 
-TIMER_SET_EVENT = "TimerSetEvent"
-WHISKER_STATUS = "WhiskerStatus"
-REPORT_NAME = "ReportName"
-TIMESTAMPS = "Timestamps"
+FLAG_INPUT = "-input"
+FLAG_OUTPUT = "-output"
+
+VAL_ON = "on"
+VAL_OFF = "off"

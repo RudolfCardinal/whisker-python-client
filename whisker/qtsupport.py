@@ -4,39 +4,43 @@
 # See LICENSE for details.
 
 
-from collections import Counter
 from functools import wraps
 import logging
+log = logging.getLogger(__name__)
 import sys
 import threading
 import traceback
 
 from PySide.QtCore import (
-    Signal,
-    Slot,
     QAbstractListModel,
+    QAbstractTableModel,
     QModelIndex,
     Qt,
     # QVariant,  # non-existent in PySide?
+    Signal,
+    Slot,
 )
 from PySide.QtGui import (
     QAbstractItemView,
     QButtonGroup,
     QDialog,
     QDialogButtonBox,
+    QGroupBox,
     QItemSelection,
     QItemSelectionModel,
     QListView,
     QMessageBox,
     QRadioButton,
+    QTableView,
     QVBoxLayout,
 )
 
-from .colourlog import configure_logger_for_colour
-from .lang import get_caller_name
-
-log = logging.getLogger(__name__)
-configure_logger_for_colour(log)
+from .lang import (
+    attrgetter_nonesort,
+    contains_duplicates,
+    get_caller_name,
+    methodcaller_nonesort,
+)
 
 
 # =============================================================================
@@ -44,18 +48,6 @@ configure_logger_for_colour(log)
 # =============================================================================
 
 NOTHING_SELECTED = -1  # e.g. http://doc.qt.io/qt-4.8/qbuttongroup.html#id
-
-
-# =============================================================================
-# Helper functions
-# =============================================================================
-
-def reversedict(d):
-    return {v: k for k, v in d.items()}
-
-
-def contains_duplicates(values):
-    return [k for k, v in Counter(values).items() if v > 1]
 
 
 # =============================================================================
@@ -73,6 +65,34 @@ class ValidationError(Exception):
 
 class EditCancelledException(Exception):
     pass
+
+
+# =============================================================================
+# Styled elements
+# =============================================================================
+
+GROUPBOX_STYLESHEET = """
+QGroupBox {
+    border: 1px solid gray;
+    border-radius: 2px;
+    margin-top: 0.5em;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 2px 0 2px;
+}
+"""
+# http://stackoverflow.com/questions/14582591/border-of-qgroupbox
+# http://stackoverflow.com/questions/2730331/set-qgroupbox-title-font-size-with-style-sheets  # noqa
+
+
+class StyledQGroupBox(QGroupBox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setStyleSheet(GROUPBOX_STYLESHEET)
 
 
 # =============================================================================
@@ -295,10 +315,234 @@ class TransactionalEditDialogMixin(object):
         # read-only.
 
 
+class TransactionalDialog(QDialog):
+    """
+    Simpler dialog for transactional database processing.
+    Just overrides exec_().
+    Wraps the editing in a SAVEPOINT transaction.
+    The caller must still commit() afterwards, but any rollbacks are automatic.
+    The read-only situation REQUIRES that the session itself is read-only.
+    """
+
+    def __init__(self, session, readonly=False, parent=None):
+        super().__init__(parent=parent)
+        self.session = session
+        self.readonly = readonly
+
+    @Slot()
+    def exec_(self, *args, **kwargs):
+        if self.readonly:
+            return super().exec_(*args, **kwargs)  # enforces modal
+        try:
+            with self.session.begin_nested():
+                result = super().exec_(*args, **kwargs)  # enforces modal
+                if result == QDialog.Accepted:
+                    return result
+                else:
+                    raise EditCancelledException()
+        except EditCancelledException:
+            log.debug("Dialog changes have been rolled back.")
+            return result
+            # ... and swallow that exception silently.
+        # Other exceptions will be handled as normal.
+
+
+# =============================================================================
+# Common mixins for models/views handling transaction-isolated database objects
+# =============================================================================
+
+class DatabaseModelMixin(object):
+    def __init__(self, session, parent=None):
+        self.session = session
+
+    def get_object(self, index):
+        if index is None or not (0 <= index < len(self.listdata)):
+            # log.debug("DatabaseModelMixin.get_object: bad index")
+            return None
+        return self.listdata[index]
+
+    def item_deletable(self, rowindex):
+        """Override this if you need to prevent rows being deleted."""
+        return True
+
+    def delete_item(self, row_index, delete_from_session=True):
+        if row_index < 0 or row_index > len(self.listdata):
+            raise ValueError("Invalid index {}".format(row_index))
+        if delete_from_session:
+            obj = self.listdata[row_index]
+            self.session.delete(obj)
+        self.beginRemoveRows(QModelIndex(), row_index, row_index)
+        del self.listdata[row_index]
+        self.endRemoveRows()
+
+    def insert_at_index(self, obj, index=None, add_to_session=True,
+                        flush=True):
+        if index is None:
+            index = len(self.listdata)
+        if index < 0 or index > len(self.listdata):
+            raise ValueError("Bad index")
+        if add_to_session:
+            self.session.add(obj)
+            if flush:
+                self.session.flush()
+        # http://stackoverflow.com/questions/4702972
+        self.beginInsertRows(QModelIndex(), 0, 0)
+        self.listdata.insert(index, obj)
+        self.endInsertRows()
+
+
+class ViewAssistMixin(object):
+    selection_changed = Signal(QItemSelection, QItemSelection)
+    # ... selected (set), deselected (set)
+    selected_maydelete = Signal(bool, bool)
+    # ... selected
+
+    # -------------------------------------------------------------------------
+    # Initialization and setting data (model)
+    # -------------------------------------------------------------------------
+
+    def __init__(self, session, modal_dialog_class, readonly=False):
+        self.session = session
+        self.modal_dialog_class = modal_dialog_class
+        self.readonly = readonly
+        self.selection_model = None
+
+    def set_model_common(self, model, ListBase):
+        if self.selection_model:
+            self.selection_model.selectionChanged.disconnect()
+        ListBase.setModel(self, model)
+        self.selection_model = QItemSelectionModel(model)
+        self.selection_model.selectionChanged.connect(self._selection_changed)
+        self.setSelectionModel(self.selection_model)
+
+    # -------------------------------------------------------------------------
+    # Selection
+    # -------------------------------------------------------------------------
+
+    def clear_selection(self):
+        # log.debug("GenericAttrTableView.clear_selection")
+        if not self.selection_model:
+            return
+        self.selection_model.clearSelection()
+
+    def get_selected_row_index(self):
+        """Returns an integer or None."""
+        selected_modelindex = self.get_selected_modelindex()
+        if selected_modelindex is None:
+            return None
+        return selected_modelindex.row()
+
+    def is_selected(self):
+        row_index = self.get_selected_row_index()
+        return row_index is not None
+
+    def get_selected_object(self):
+        index = self.get_selected_row_index()
+        if index is None:
+            return None
+        model = self.model()
+        if model is None:
+            return None
+        return model.get_object(index)
+
+    def get_selected_modelindex(self):
+        raise NotImplementedError()
+
+    def go_to(self, index):
+        raise NotImplementedError()
+
+    def _selection_changed(self, selected, deselected):
+        self.selection_changed.emit(selected, deselected)
+        selected_model_indexes = selected.indexes()
+        selected_row_indexes = [mi.row() for mi in selected_model_indexes]
+        is_selected = bool(selected_row_indexes)
+        model = self.model()
+        may_delete = is_selected and all(
+            [model.item_deletable(ri) for ri in selected_row_indexes])
+        self.selected_maydelete.emit(is_selected, may_delete)
+
+    # -------------------------------------------------------------------------
+    # Add
+    # -------------------------------------------------------------------------
+
+    def insert_at_index(self, obj, index=None,
+                        add_to_session=True, flush=True):
+        # index: None for end, 0 for start
+        model = self.model()
+        model.insert_at_index(obj, index,
+                              add_to_session=add_to_session, flush=flush)
+        self.go_to(index)
+
+    def insert_at_start(self, obj, add_to_session=True, flush=True):
+        self.insert_at_index(obj, 0,
+                             add_to_session=add_to_session, flush=flush)
+
+    def insert_at_end(self, obj, add_to_session=True, flush=True):
+        self.insert_at_index(obj, None,
+                             add_to_session=add_to_session, flush=flush)
+
+    def add_in_nested_transaction(self, new_object, at_index=None):
+        # at_index: None for end, 0 for start
+        if self.readonly:
+            log.warning("Can't add; readonly")
+            return
+        try:
+            with self.session.begin_nested():
+                self.session.add(new_object)
+                win = self.modal_dialog_class(self.session, new_object)
+                result = win.edit_in_nested_transaction()
+                if result != QDialog.Accepted:
+                    raise EditCancelledException()
+                self.insert_at_index(new_object, at_index,
+                                     add_to_session=False)
+                return result
+        except EditCancelledException:
+            log.debug("Add operation has been rolled back.")
+            return result
+
+    # -------------------------------------------------------------------------
+    # Remove
+    # -------------------------------------------------------------------------
+
+    def remove_selected(self, delete_from_session=True):
+        row_index = self.get_selected_row_index()
+        self.remove_by_index(row_index,
+                             delete_from_session=delete_from_session)
+
+    def remove_by_index(self, row_index, delete_from_session=True):
+        if row_index is None:
+            return
+        model = self.model()
+        model.delete_item(row_index, delete_from_session=delete_from_session)
+
+    # -------------------------------------------------------------------------
+    # Edit
+    # -------------------------------------------------------------------------
+
+    def edit(self, index, trigger, event):
+        if trigger != QAbstractItemView.DoubleClicked:
+            return False
+        self.edit_by_modelindex(index)
+        return False
+
+    def edit_by_modelindex(self, index, readonly=None):
+        if index is None:
+            return
+        if readonly is None:
+            readonly = self.readonly
+        model = self.model()
+        item = model.listdata[index.row()]
+        win = self.modal_dialog_class(self.session, item, readonly=readonly)
+        win.edit_in_nested_transaction()
+
+    def edit_selected(self, readonly=None):
+        selected_modelindex = self.get_selected_modelindex()
+        self.edit_by_modelindex(selected_modelindex, readonly=readonly)
+
+
 # =============================================================================
 # Framework for list boxes
 # =============================================================================
-
 
 # For stuff where we want to display a list (e.g. of strings) and edit items
 # with a dialog:
@@ -327,13 +571,14 @@ class TransactionalEditDialogMixin(object):
 #   - Ah! Not if we use row() then access the raw data directly from our mdoel.
 
 
-class GenericListModel(QAbstractListModel):
+class GenericListModel(QAbstractListModel, DatabaseModelMixin):
     """
     Takes a list and provides a view on it using str().
-    Note that it MODIFIED THE LIST PASSED TO IT.
+    Note that it MODIFIES THE LIST PASSED TO IT.
     """
-    def __init__(self, data, parent=None):
+    def __init__(self, data, session, parent=None):
         super().__init__(parent)
+        DatabaseModelMixin.__init__(self, session)
         self.listdata = data
 
     def rowCount(self, parent=QModelIndex()):
@@ -346,144 +591,201 @@ class GenericListModel(QAbstractListModel):
             return str(self.listdata[index.row()])
         return None
 
-    def item_deletable(self, rowindex, session):
-        """Override this if you need to prevent rows being deleted."""
-        return True
 
+class ModalEditListView(QListView, ViewAssistMixin):
 
-class ModalEditListView(QListView):
-    selection_changed = Signal(QItemSelection, QItemSelection)
-    # ... selected (set), deselected (set)
-    selected_maydelete = Signal(bool, bool)
-    # ... selected
+    # -------------------------------------------------------------------------
+    # Initialization and setting data (model)
+    # -------------------------------------------------------------------------
 
     def __init__(self, session, modal_dialog_class, *args, **kwargs):
         super().__init__(*args)
         self.readonly = kwargs.pop('readonly', False)
-        self.modal_dialog_class = modal_dialog_class
-        self.session = session
+        ViewAssistMixin.__init__(self, session, modal_dialog_class,
+                                 self.readonly)
         # self.setEditTriggers(QAbstractItemView.DoubleClicked)
         # ... probably only relevant if we do NOT override edit().
         # Being able to select a single row is the default.
         # Otherwise see SelectionBehavior and SelectionMode.
-        self.selection_model = None
 
-    def edit(self, index, trigger, event):
-        if trigger != QAbstractItemView.DoubleClicked:
-            return False
-        self.edit_by_modelindex(index)
-        return False
+    def setModel(self, model):
+        self.set_model_common(model, QListView)
 
-    def edit_by_modelindex(self, index):
-        if index is None:
-            return
-        model = self.model()
-        item = model.listdata[index.row()]
-        win = self.modal_dialog_class(self.session, item,
-                                      readonly=self.readonly)
-        win.edit_in_nested_transaction()
-
-    def insert_at_index(self, object, index=None):
-        # index: None for end, 0 for start
-        model = self.model()
-        if index is None:
-            index = len(model.listdata)
-        if index < 0 or index > len(model.listdata):
-            raise ValueError("Bad index")
-        # http://stackoverflow.com/questions/4702972
-        model.beginInsertRows(QModelIndex(), 0, 0)
-        model.listdata.insert(index, object)
-        model.endInsertRows()
-        self.go_to(index)
-
-    def insert_at_start(self, object):
-        self.insert_at_index(object, 0)
-
-    def insert_at_end(self, object):
-        self.insert_at_index(object, None)
+    # -------------------------------------------------------------------------
+    # Selection
+    # -------------------------------------------------------------------------
 
     def get_selected_modelindex(self):
         """Returns a QModelIndex or None."""
         selected_indexes = self.selectedIndexes()
         if not selected_indexes or len(selected_indexes) > 1:
-            log.warning("get_selected_modelindex: 0 or >1 selected")
+            # log.warning("get_selected_modelindex: 0 or >1 selected")
             return None
         return selected_indexes[0]
-
-    def get_selected_row_index(self):
-        """Returns an integer or None."""
-        selected_modelindex = self.get_selected_modelindex()
-        return selected_modelindex.row()
-
-    def remove_selected(self):
-        row_index = self.get_selected_row_index()
-        self.remove_by_index(row_index)
-
-    def remove_by_index(self, row_index):
-        if row_index is None:
-            return
-        model = self.model()
-        if row_index < 0 or row_index > len(model.listdata):
-            raise ValueError("Invalid index {}".format(row_index))
-        model.beginRemoveRows(QModelIndex(), row_index, row_index)
-        del model.listdata[row_index]
-        model.endRemoveRows()
-
-    def edit_selected(self):
-        selected_modelindex = self.get_selected_modelindex()
-        self.edit_by_modelindex(selected_modelindex)
-
-    def edit_by_index(self, row_index):
-        if row_index is None:
-            return
-        model = self.model()
-        if row_index < 0 or row_index > len(model.listdata):
-            raise ValueError("Invalid index {}".format(row_index))
-        model.beginRemoveRows(QModelIndex(), row_index, row_index)
-        del model.listdata[row_index]
-        model.endRemoveRows()
 
     def go_to(self, index):
         model = self.model()
         modelindex = model.index(index)
         self.setCurrentIndex(modelindex)
 
-    def setModel(self, model):
-        if self.selection_model:
-            self.selection_model.selectionChanged.disconnect()
-        super().setModel(model)
-        self.selection_model = QItemSelectionModel(model)
-        self.selection_model.selectionChanged.connect(self._selection_changed)
-        self.setSelectionModel(self.selection_model)
 
-    def _selection_changed(self, selected, deselected):
-        self.selection_changed.emit(selected, deselected)
-        selected_model_indexes = selected.indexes()
-        selected_row_indexes = [mi.row() for mi in selected_model_indexes]
-        is_selected = bool(selected_row_indexes)
-        model = self.model()
-        may_delete = is_selected and all(
-            [model.item_deletable(ri, self.session)
-             for ri in selected_row_indexes])
-        self.selected_maydelete.emit(is_selected, may_delete)
+# =============================================================================
+# Framework for tables
+# =============================================================================
 
-    def add_in_nested_transaction(self, new_object, at_index=None):
-        # at_index: None for end, 0 for start
-        if self.readonly:
-            log.warning("Can't add; readonly")
+class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
+    """
+    Takes a list of objects, a list of column headers;
+    provides a view on it using str().
+    Note that it MODIFIES THE LIST PASSED TO IT.
+
+    Sorting: consider QSortFilterProxyModel
+        ... but not clear that can do arbitrary column sorts, since its sorting
+            is via its lessThan() function.
+
+    The tricky part is keeping selections persistent after sorting.
+    Not achieved yet. Simpler to wipe the selections.
+    """
+    # http://doc.qt.io/qt-4.8/qabstracttablemodel.html
+
+    def __init__(self, data, header, session, default_sort_column_name=None,
+                 default_sort_order=Qt.AscendingOrder,
+                 deletable=True, parent=None):
+        """
+        header: list of colname, attr/func tuples
+        """
+        super().__init__(parent)
+        DatabaseModelMixin.__init__(self, session)
+        self.listdata = data
+        self.header_display = [x[0] for x in header]
+        self.header_attr = [x[1] for x in header]
+        self.session = session
+        self.deletable = deletable
+        self.default_sort_column_num = None
+        self.default_sort_order = default_sort_order
+        if default_sort_column_name is not None:
+            self.default_sort_column_num = self.header_attr.index(
+                default_sort_column_name)
+            # ... will raise an exception if bad
+            self.sort(self.default_sort_column_num, default_sort_order)
+
+    def get_default_sort(self):
+        return self.default_sort_column_num, self.default_sort_order
+
+    def rowCount(self, parent=QModelIndex()):
+        """Qt override."""
+        return len(self.listdata)
+
+    def columnCount(self, parent=QModelIndex()):
+        """Qt override."""
+        return len(self.header_attr)
+
+    def data(self, index, role):
+        """Qt override."""
+        if index.isValid() and role == Qt.DisplayRole:
+            obj = self.listdata[index.row()]
+            colname = self.header_attr[index.column()]
+            thing = getattr(obj, colname)
+            if callable(thing):
+                return str(thing())
+            else:
+                return str(thing)
+        return None
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self.header_display[col]
+        return None
+
+    def sort(self, col, order):
+        """Sort table by column number col."""
+        # log.debug("GenericAttrTableModel.sort")
+        if not self.listdata:
             return
-        try:
-            with self.session.begin_nested():
-                self.session.add(new_object)
-                win = self.modal_dialog_class(self.session, new_object)
-                result = win.edit_in_nested_transaction()
-                if result != QDialog.Accepted:
-                    raise EditCancelledException()
-                self.insert_at_index(new_object, at_index)
-                return result
-        except EditCancelledException:
-            log.debug("Add operation has been rolled back.")
-            return result
+        self.layoutAboutToBeChanged.emit()
+        colname = self.header_attr[col]
+        isfunc = callable(getattr(self.listdata[0], colname))
+        if isfunc:
+            self.listdata = sorted(
+                self.listdata,
+                key=methodcaller_nonesort(colname))
+        else:
+            self.listdata = sorted(self.listdata,
+                                   key=attrgetter_nonesort(colname))
+        if order == Qt.DescendingOrder:
+            self.listdata.reverse()
+        self.layoutChanged.emit()
+
+
+class GenericAttrTableView(QTableView, ViewAssistMixin):
+    selection_changed = Signal(QItemSelection, QItemSelection)
+
+    # -------------------------------------------------------------------------
+    # Initialization and setting data (model)
+    # -------------------------------------------------------------------------
+
+    def __init__(self, session, modal_dialog_class, parent=None, sortable=True,
+                 stretch_last_section=True, readonly=False):
+        super().__init__(parent=parent)
+        ViewAssistMixin.__init__(self, session, modal_dialog_class, readonly)
+        self.sortable = sortable
+        self.row_sizing_done = False
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSortingEnabled(sortable)
+        hh = self.horizontalHeader()
+        hh.setClickable(sortable)
+        hh.sectionClicked.connect(self.clear_selection)
+        # ... clear selection when we sort
+        hh.setSortIndicatorShown(sortable)
+        hh.setStretchLastSection(stretch_last_section)
+
+    def setModel(self, model):
+        self.set_model_common(model, QTableView)
+        if self.sortable:
+            colnum, order = model.get_default_sort()
+            hh = self.horizontalHeader()
+            hh.setSortIndicator(colnum, order)
+        self.refresh_sizing()
+
+    # -------------------------------------------------------------------------
+    # Visuals
+    # -------------------------------------------------------------------------
+
+    def refresh_sizing(self):
+        self.sizing_done = False
+        self.resize()
+
+    def resize(self):
+        # Resize all rows to have the correct height
+        if self.sizing_done:
+            return
+        self.resizeRowsToContents()
+        self.resizeColumnsToContents()
+        self.sizing_done = True
+
+    # -------------------------------------------------------------------------
+    # Selection
+    # -------------------------------------------------------------------------
+
+    def get_selected_modelindex(self):
+        """Returns a QModelIndex or None."""
+        # Here, self.selectedIndexes() returns a list of (row, col)
+        # tuple indexes, which is not what we want.
+        # So we use the selectedRows() method of the selection model.
+        if self.selection_model is None:
+            return None
+        selected_indexes = self.selection_model.selectedRows()
+        # log.debug("selected_indexes: {}".format(selected_indexes))
+        if not selected_indexes or len(selected_indexes) > 1:
+            # log.warning("get_selected_modelindex: 0 or >1 selected")
+            return None
+        return selected_indexes[0]
+
+    def go_to(self, index):
+        model = self.model()
+        modelindex = model.index(index, 0)  # row, col
+        self.setCurrentIndex(modelindex)
 
 
 # =============================================================================
@@ -554,3 +856,12 @@ def exit_on_exception(func):
             print("=" * 79)
             sys.exit(1)
     return with_exit_on_exception
+
+
+# =============================================================================
+# Run a GUI, given a base window.
+# =============================================================================
+
+def run_gui(qt_app, win):
+    win.show()
+    return qt_app.exec_()

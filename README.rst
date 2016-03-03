@@ -298,3 +298,9 @@ Having done :code:`pip install whisker`, you should be able to do this:
 
 .. include:: doc/demo_simple_whisker_client.py
     :code: python
+
+Version history
+===============================================================================
+
+* 10 Feb 2016: moved to package format.
+* 25 Feb 2016: v0.2.0; "colourlog" renamed "logsupport".

@@ -10,11 +10,12 @@ from whisker.constants import (
     DEFAULT_PORT,
     EVENT_PREFIX,
     PING_ACK,
-    REPORT_NAME,
-    TEST_NETWORK_LATENCY,
-    TIMER_SET_EVENT,
-    WHISKER_STATUS,
+    CMD_REPORT_NAME,
+    CMD_TEST_NETWORK_LATENCY,
+    CMD_TIMER_SET_EVENT,
+    CMD_WHISKER_STATUS,
 )
+from whisker.logsupport import configure_logger_for_colour
 from whisker.rawsocketclient import Whisker
 
 
@@ -24,13 +25,13 @@ def test_whisker(server, port, verbose_network=True):
     if not w.connect_both_ports(server, port):
         raise RuntimeError("Failed to connect")
 
-    w.send(REPORT_NAME + " Whisker python demo program")
-    w.send(WHISKER_STATUS)
-    reply = w.send_immediate(TIMER_SET_EVENT + " 1000 9 TimerFired")
+    w.send(CMD_REPORT_NAME + " Whisker python demo program")
+    w.send(CMD_WHISKER_STATUS)
+    reply = w.send_immediate(CMD_TIMER_SET_EVENT + " 1000 9 TimerFired")
     print("... reply to TimerSetEvent was: {}".format(reply))
-    reply = w.send_immediate(TIMER_SET_EVENT + " 12000 0 EndOfTask")
+    reply = w.send_immediate(CMD_TIMER_SET_EVENT + " 12000 0 EndOfTask")
     print("... reply to TimerSetEvent was: {}".format(reply))
-    w.send(TEST_NETWORK_LATENCY)
+    w.send(CMD_TEST_NETWORK_LATENCY)
 
     for line in w.getlines_mainsock():
         if verbose_network:
@@ -49,7 +50,9 @@ def test_whisker(server, port, verbose_network=True):
 
 
 def main():
+    logging.basicConfig()
     logging.getLogger("whisker").setLevel(logging.DEBUG)
+    configure_logger_for_colour(logging.getLogger())  # configure root logger
 
     parser = argparse.ArgumentParser("Test Whisker raw socket client")
     parser.add_argument('--server', default='localhost',

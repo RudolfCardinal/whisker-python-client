@@ -15,11 +15,9 @@ from colorama import Fore, Style
 import dataset
 import yaml
 
-from .colourlog import configure_logger_for_colour
 from .constants import FILENAME_SAFE_ISOFORMAT
 
-logger = logging.getLogger(__name__)
-configure_logger_for_colour(logger)
+log = logging.getLogger(__name__)
 colorama.init()
 
 
@@ -34,7 +32,7 @@ def load_config_or_die(mandatory=None, defaults=None, log_config=False):
     """
     def _fail_mandatory(attrname):
         errmsg = "Setting '{}' missing from config file".format(attrname)
-        logger.critical(errmsg)
+        log.critical(errmsg)
         sys.exit(1)
 
     mandatory = mandatory or []
@@ -45,9 +43,9 @@ def load_config_or_die(mandatory=None, defaults=None, log_config=False):
         title='Open configuration file',
         filetypes=[('YAML files', '.yaml'), ('All files', '*.*')])
     if not config_filename:
-        logger.critical("No config file given; exiting.")
+        log.critical("No config file given; exiting.")
         sys.exit(1)
-    logger.info("Loading config from: {}".format(config_filename))
+    log.info("Loading config from: {}".format(config_filename))
     with open(config_filename) as infile:
         config = AttrDict(yaml.safe_load(infile))
     for attr in mandatory:
@@ -66,7 +64,7 @@ def load_config_or_die(mandatory=None, defaults=None, log_config=False):
                 _fail_mandatory(attr)
     config = defaults + config  # use AttrDict to update
     if log_config:
-        logger.debug("config: {}".format(repr(config)))
+        log.debug("config: {}".format(repr(config)))
     return config
 
 
@@ -77,9 +75,9 @@ def connect_to_db_using_attrdict(database_url, show_url=False,
     AttrDict objects come back out again.
     """
     if show_url:
-        logger.info("Connecting to database: {}".format(database_url))
+        log.info("Connecting to database: {}".format(database_url))
     else:
-        logger.info("Connecting to database")
+        log.info("Connecting to database")
     return dataset.connect(database_url, row_type=AttrDict,
                            engine_kwargs=engine_kwargs)
 
@@ -144,11 +142,11 @@ def save_data(tablename, results, taskname, timestamp=None,
         datetime=timestamp.strftime(FILENAME_SAFE_ISOFORMAT),
         output_format=output_format
     )
-    logger.info("Saving {tablename} data to {filename}".format(
+    log.info("Saving {tablename} data to {filename}".format(
         tablename=tablename, filename=filename))
     dataset.freeze(results, format=output_format, filename=filename)
     if not os.path.isfile(filename):
-        logger.error(
+        log.error(
             "save_data: file {} not created; empty results?".format(filename))
 
 

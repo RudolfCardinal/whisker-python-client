@@ -20,7 +20,6 @@ from twisted.internet import reactor
 from twisted.internet.protocol import ClientFactory
 from twisted.protocols.basic import LineReceiver
 
-from .colourlog import configure_logger_for_colour
 from .constants import (
     CLIENT_MESSAGE_PREFIX,
     ERROR_PREFIX,
@@ -38,7 +37,6 @@ from .socketsupport import (
 )
 
 log = logging.getLogger(__name__)
-configure_logger_for_colour(log)
 
 
 # =============================================================================
