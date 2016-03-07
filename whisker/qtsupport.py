@@ -448,8 +448,16 @@ class ViewAssistMixin(object):
     def get_selected_modelindex(self):
         raise NotImplementedError()
 
-    def go_to(self, index):
-        raise NotImplementedError()
+    def go_to(self, row):
+        model = self.model()
+        if row is None:
+            # Go to the end.
+            nrows = model.rowCount()
+            if nrows == 0:
+                return
+            row = nrows - 1
+        modelindex = model.index(row, 0)  # second parameter is column
+        self.setCurrentIndex(modelindex)
 
     def _selection_changed(self, selected, deselected):
         self.selection_changed.emit(selected, deselected)
@@ -623,11 +631,6 @@ class ModalEditListView(QListView, ViewAssistMixin):
             return None
         return selected_indexes[0]
 
-    def go_to(self, index):
-        model = self.model()
-        modelindex = model.index(index)
-        self.setCurrentIndex(modelindex)
-
 
 # =============================================================================
 # Framework for tables
@@ -781,11 +784,6 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
             # log.warning("get_selected_modelindex: 0 or >1 selected")
             return None
         return selected_indexes[0]
-
-    def go_to(self, index):
-        model = self.model()
-        modelindex = model.index(index, 0)  # row, col
-        self.setCurrentIndex(modelindex)
 
 
 # =============================================================================

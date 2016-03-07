@@ -90,7 +90,7 @@ setup(
         'attrdict',  # dictionaries with attribute-style access
         'colorama',  # colour at the command line
         'colorlog',  # colourful logs
-        'dataset',  # databases for lazy people
+        'dataset',  # databases for lazy people (used by demo)
         # 'PySide==1.2.4',  # Python interface to Qt
         'Twisted',  # TCP/IP communications
 

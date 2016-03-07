@@ -1,10 +1,18 @@
 #!/usr/bin/env python
 # whisker/sqlalchemysupport.py
 
+from collections import Iterable
 from contextlib import contextmanager
+import datetime
 import logging
 log = logging.getLogger(__name__)
 import os
+
+arrow = None
+try:
+    import arrow
+except:
+    pass
 
 from alembic.config import Config
 from alembic.migration import MigrationContext
@@ -20,7 +28,11 @@ from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
 )
+from sqlalchemy.types import DateTime, TypeDecorator
+import sqlalchemy.dialects.mssql
+import sqlalchemy.dialects.mysql
 
+from .exceptions import ImproperlyConfigured
 from .lang import OrderedNamespace
 
 
@@ -261,6 +273,18 @@ def database_is_sqlite(dbsettings):
     return database_url.startswith("sqlite:")
 
 
+def database_is_postgresql(dbsettings):
+    database_url = dbsettings['url']
+    return database_url.startswith("postgresql")
+    # ignore colon, since things like "postgresql:", "postgresql+psycopg2:"
+    # are all OK
+
+
+def database_is_mysql(dbsettings):
+    database_url = dbsettings['url']
+    return database_url.startswith("mysql")
+
+
 # =============================================================================
 # deepcopy an SQLAlchemy object
 # =============================================================================
@@ -316,3 +340,64 @@ def deepcopy_sqla_object(obj, session):
             newobj = newpart
         session.add(newpart)
     return newobj
+
+
+# =============================================================================
+# ArrowType that uses fractional second support in MySQL
+# =============================================================================
+
+class ArrowMicrosecondType(TypeDecorator):
+    """
+    Based on ArrowType from SQLAlchemy-Utils, but copes with fractional seconds
+    under MySQL 5.6.4+.
+    """
+    impl = DateTime
+    # RNC: For MySQL, need to use sqlalchemy.dialects.mysql.DATETIME(fsp=6);
+    # see load_dialect_impl() below.
+
+    def __init__(self, *args, **kwargs):
+        if not arrow:
+            raise ImproperlyConfigured(
+                "'arrow' package is required to use 'ArrowMicrosecondType'")
+        super().__init__(*args, **kwargs)
+
+    def load_dialect_impl(self, dialect):  # RNC
+        if dialect.name == 'mysql':
+            return dialect.type_descriptor(
+                sqlalchemy.dialects.mysql.DATETIME(fsp=6))
+        elif dialect.name == 'mssql':  # Microsoft SQL Server
+            return dialect.type_descriptor(sqlalchemy.dialects.mssql.DATETIME2)
+        else:
+            return dialect.type_descriptor(self.impl)
+
+    def process_bind_param(self, value, dialect):
+        if value:
+            return self._coerce(value).to('UTC').naive
+            # RNC: unfortunately... can't store and retrieve timezone, see docs
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value:
+            return arrow.get(value)
+        return value
+
+    def process_literal_param(self, value, dialect):
+        return str(value)
+
+    def _coerce(self, value):
+        if value is None:
+            return None
+        elif isinstance(value, str):  # RNC
+            value = arrow.get(value)
+        elif isinstance(value, Iterable):
+            value = arrow.get(*value)
+        elif isinstance(value, datetime.datetime):  # RNC trivial change
+            value = arrow.get(value)
+        return value
+
+    def coercion_listener(self, target, value, oldvalue, initiator):
+        return self._coerce(value)
+
+    @property
+    def python_type(self):
+        return self.impl.type.python_type
