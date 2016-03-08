@@ -15,7 +15,7 @@ from whisker.constants import (
     CMD_TIMER_SET_EVENT,
     CMD_TIMESTAMPS,
 )
-from whisker.logsupport import (
+from whisker.logging import (
     configure_logger_for_colour,
     # print_report_on_all_logs,
 )

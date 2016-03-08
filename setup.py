@@ -19,7 +19,7 @@ To install in development mode:
 # http://python-packaging-user-guide.readthedocs.org/en/latest/distributing/
 # http://jtushman.github.io/blog/2013/06/17/sharing-code-across-applications-with-python/  # noqa
 
-from setuptools import setup  # , find_packages
+from setuptools import setup
 from codecs import open
 from os import path
 

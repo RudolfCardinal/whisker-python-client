@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# whisker/qtsupport.py
+# whisker/qt.py
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 
@@ -35,7 +35,7 @@ from PySide.QtGui import (
     QVBoxLayout,
 )
 
-from .lang import (
+from whisker.lang import (
     attrgetter_nonesort,
     contains_duplicates,
     get_caller_name,
@@ -354,6 +354,7 @@ class TransactionalDialog(QDialog):
 class DatabaseModelMixin(object):
     def __init__(self, session, parent=None):
         self.session = session
+        log.debug("DatabaseModelMixin: session={}".format(repr(session)))
 
     def get_object(self, index):
         if index is None or not (0 <= index < len(self.listdata)):
@@ -366,7 +367,7 @@ class DatabaseModelMixin(object):
         return True
 
     def delete_item(self, row_index, delete_from_session=True):
-        if row_index < 0 or row_index > len(self.listdata):
+        if row_index < 0 or row_index >= len(self.listdata):
             raise ValueError("Invalid index {}".format(row_index))
         if delete_from_session:
             obj = self.listdata[row_index]
@@ -379,7 +380,7 @@ class DatabaseModelMixin(object):
                         flush=True):
         if index is None:
             index = len(self.listdata)
-        if index < 0 or index > len(self.listdata):
+        if index < 0 or index > len(self.listdata):  # NB permits "== len"
             raise ValueError("Bad index")
         if add_to_session:
             self.session.add(obj)
@@ -389,6 +390,24 @@ class DatabaseModelMixin(object):
         self.beginInsertRows(QModelIndex(), 0, 0)
         self.listdata.insert(index, obj)
         self.endInsertRows()
+
+    def move_up(self, index):
+        if index is None or index < 0 or index >= len(self.listdata):
+            raise ValueError("Bad index")
+        if index == 0:
+            return
+        x = self.listdata  # shorter name!
+        x[index - 1], x[index] = x[index], x[index - 1]
+        self.dataChanged.emit(QModelIndex(), QModelIndex())
+
+    def move_down(self, index):
+        if index is None or index < 0 or index >= len(self.listdata):
+            raise ValueError("Bad index")
+        if index == len(self.listdata) - 1:
+            return
+        x = self.listdata  # shorter name!
+        x[index + 1], x[index] = x[index], x[index + 1]
+        self.dataChanged.emit(QModelIndex(), QModelIndex())
 
 
 class ViewAssistMixin(object):
@@ -469,6 +488,10 @@ class ViewAssistMixin(object):
             [model.item_deletable(ri) for ri in selected_row_indexes])
         self.selected_maydelete.emit(is_selected, may_delete)
 
+    def get_n_rows(self):
+        model = self.model()
+        return model.rowCount()
+
     # -------------------------------------------------------------------------
     # Add
     # -------------------------------------------------------------------------
@@ -522,6 +545,26 @@ class ViewAssistMixin(object):
             return
         model = self.model()
         model.delete_item(row_index, delete_from_session=delete_from_session)
+
+    # -------------------------------------------------------------------------
+    # Move
+    # -------------------------------------------------------------------------
+
+    def move_selected_up(self):
+        row_index = self.get_selected_row_index()
+        if row_index is None or row_index == 0:
+            return
+        model = self.model()
+        model.move_up(row_index)
+        self.go_to(row_index - 1)
+
+    def move_selected_down(self):
+        row_index = self.get_selected_row_index()
+        if row_index is None or row_index == self.get_n_rows() - 1:
+            return
+        model = self.model()
+        model.move_down(row_index)
+        self.go_to(row_index + 1)
 
     # -------------------------------------------------------------------------
     # Edit
@@ -585,8 +628,8 @@ class GenericListModel(QAbstractListModel, DatabaseModelMixin):
     Note that it MODIFIES THE LIST PASSED TO IT.
     """
     def __init__(self, data, session, parent=None):
-        super().__init__(parent)
-        DatabaseModelMixin.__init__(self, session)
+        super().__init__(parent)  # QAbstractListModel
+        DatabaseModelMixin.__init__(self, session=session)
         self.listdata = data
 
     def rowCount(self, parent=QModelIndex()):
@@ -607,10 +650,11 @@ class ModalEditListView(QListView, ViewAssistMixin):
     # -------------------------------------------------------------------------
 
     def __init__(self, session, modal_dialog_class, *args, **kwargs):
-        super().__init__(*args)
+        super().__init__(*args)  # QListView
         self.readonly = kwargs.pop('readonly', False)
-        ViewAssistMixin.__init__(self, session, modal_dialog_class,
-                                 self.readonly)
+        ViewAssistMixin.__init__(self, session=session,
+                                 modal_dialog_class=modal_dialog_class,
+                                 readonly=self.readonly)
         # self.setEditTriggers(QAbstractItemView.DoubleClicked)
         # ... probably only relevant if we do NOT override edit().
         # Being able to select a single row is the default.
@@ -657,8 +701,8 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
         """
         header: list of colname, attr/func tuples
         """
-        super().__init__(parent)
-        DatabaseModelMixin.__init__(self, session)
+        super().__init__(parent)  # QAbstractTableModel
+        DatabaseModelMixin.__init__(self, session=session)
         self.listdata = data
         self.header_display = [x[0] for x in header]
         self.header_attr = [x[1] for x in header]
@@ -729,8 +773,11 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
 
     def __init__(self, session, modal_dialog_class, parent=None, sortable=True,
                  stretch_last_section=True, readonly=False):
-        super().__init__(parent=parent)
-        ViewAssistMixin.__init__(self, session, modal_dialog_class, readonly)
+        super().__init__(parent=parent)  # QTableView
+        ViewAssistMixin.__init__(self,
+                                 session=session,
+                                 modal_dialog_class=modal_dialog_class,
+                                 readonly=readonly)
         self.sortable = sortable
         self.row_sizing_done = False
         self.setSelectionMode(QAbstractItemView.SingleSelection)

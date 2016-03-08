@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# whisker/sqlalchemysupport.py
+# whisker/sqlalchemy.py
 
 from collections import Iterable
 from contextlib import contextmanager
@@ -32,8 +32,8 @@ from sqlalchemy.types import DateTime, TypeDecorator
 import sqlalchemy.dialects.mssql
 import sqlalchemy.dialects.mysql
 
-from .exceptions import ImproperlyConfigured
-from .lang import OrderedNamespace
+from whisker.exceptions import ImproperlyConfigured
+from whisker.lang import OrderedNamespace
 
 
 # =============================================================================
@@ -331,6 +331,12 @@ def copy_sqla_object(obj):
 
 
 def deepcopy_sqla_object(obj, session):
+    """
+    For this to succeed, the object must take a __init__ call with no
+    arguments.
+    (We can't specify the required args/kwargs, since we are copying a tree
+    of arbitrary objects.)
+    """
     newobj = None
     for part in walk(obj):
         log.debug("deepcopy_sqla_object: copying {}".format(part))

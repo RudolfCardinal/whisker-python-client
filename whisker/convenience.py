@@ -15,7 +15,7 @@ from colorama import Fore, Style
 import dataset
 import yaml
 
-from .constants import FILENAME_SAFE_ISOFORMAT
+from whisker.constants import FILENAME_SAFE_ISOFORMAT
 
 log = logging.getLogger(__name__)
 colorama.init()

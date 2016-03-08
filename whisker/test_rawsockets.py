@@ -15,7 +15,7 @@ from whisker.constants import (
     CMD_TIMER_SET_EVENT,
     CMD_WHISKER_STATUS,
 )
-from whisker.logsupport import configure_logger_for_colour
+from whisker.logging import configure_logger_for_colour
 from whisker.rawsocketclient import Whisker
 
 

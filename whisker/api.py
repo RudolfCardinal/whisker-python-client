@@ -1,13 +1,20 @@
 #!/usr/bin/env python
 # whisker/api.py
 
-from .callback import CallbackHandler
-from .constants import (
+import logging
+log = logging.getLogger(__name__)
+
+from whisker.callback import CallbackHandler
+from whisker.constants import (
+    CMD_LINE_CLEAR_ALL_EVENTS,
     CMD_LINE_SET_STATE,
+    CMD_LINE_SET_EVENT,
     CMD_TIMER_CLEAR_EVENT,
     CMD_TIMER_CLEAR_ALL_EVENTS,
     CMD_TIMER_SET_EVENT,
     CMD_TIMESTAMPS,
+    TIMESTAMP_REGEX,
+    VAL_BOTH,
     VAL_ON,
     VAL_OFF,
 )
@@ -19,6 +26,20 @@ from .constants import (
 
 def _on_val(on):
     return VAL_ON if on else VAL_OFF
+
+
+def split_terminal_timestamp(msg):
+    try:
+        m = TIMESTAMP_REGEX.match(msg)
+        mainmsg = m.group(1)
+        timestamp = int(m.group(2))
+        return (mainmsg, timestamp)
+    except:
+        return (msg, None)
+
+
+def on_off_to_boolean(msg):
+    return True if msg == "on" else False
 
 
 # =============================================================================
@@ -58,13 +79,18 @@ class WhiskerApi(object):
         self.timer_set_event(event, delay_ms)
         self.callback_handler.add_single(event, self._immsend, msg)
 
-    def call_after_delay(self, delay_ms, callback, args, kwargs, event=''):
+    def call_after_delay(self, delay_ms, callback, args=None, kwargs=None,
+                         event=''):
+        args = args or []
+        kwargs = kwargs or {}
         event = event or self.get_new_sysevent("call")
         self.timer_set_event(event, delay_ms)
         self.callback_handler.add_single(event, callback, args, kwargs)
 
-    def call_on_event(self, event, callback, args, kwargs,
+    def call_on_event(self, event, callback, args=None, kwargs=None,
                       swallow_event=False):
+        args = args or []
+        kwargs = kwargs or {}
         self.callback_handler.add_persistent(event, callback, args, kwargs,
                                              swallow_event=swallow_event)
 
@@ -112,7 +138,8 @@ class WhiskerApi(object):
         timing_sequence = timing_sequence[1:]
         event = self.get_new_sysevent(line, "off" if on_now else "on")
         self.call_after_delay(delay_ms, self.flash_line_ping_pong,
-                              line, not on_now, timing_sequence, event=event)
+                              args=[line, not on_now, timing_sequence],
+                              event=event)
 
     # -------------------------------------------------------------------------
     # Whisker command set: timers
@@ -145,6 +172,9 @@ class WhiskerApi(object):
             log.warn("line_set_event called with on=False, off=False")
             return
         self._immsend(CMD_LINE_SET_EVENT, line, transition, event)
+
+    def line_clear_all_events(self):
+        self._immsend(CMD_LINE_CLEAR_ALL_EVENTS)
 
     # -------------------------------------------------------------------------
     # Whisker command set: comms

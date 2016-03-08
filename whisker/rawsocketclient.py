@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# whisker/rawsockets.py
+# whisker/rawsocketclient.py
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 
@@ -22,7 +22,7 @@ import re
 import socket
 import time
 
-from .socketsupport import (
+from whisker.socket import (
     get_port,
     socket_receive,
     socket_send,

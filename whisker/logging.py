@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# whisker/log.py
+# whisker/logging.py
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 

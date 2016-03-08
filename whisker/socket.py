@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-# whisker/socketsupport.py
+# whisker/socket.py
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 
 import re
 import socket
 
-from .constants import BUFFERSIZE
+from whisker.constants import BUFFERSIZE
 
 
 def get_port(x):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# whisker/twisted.py
+# whisker/twistedclient.py
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 
@@ -29,8 +29,8 @@ from .constants import (
     SYNTAX_ERROR_PREFIX,
     WARNING_PREFIX,
 )
-from .interface import split_terminal_timestamp, on_off_to_boolean
-from .socketsupport import (
+from whisker.api import split_terminal_timestamp, on_off_to_boolean
+from whisker.socket import (
     get_port,
     socket_receive,
     socket_sendall,

@@ -33,7 +33,7 @@ EOL_LEN = len(EOL)
 
 IMMPORT_REGEX = re.compile(r"^ImmPort: (\d+)")
 CODE_REGEX = re.compile(r"^Code: (\w+)")
-TIMESTAMP_REGEX = re.compile(r"^(.*) \[(\d+)\]$")
+TIMESTAMP_REGEX = re.compile(r"^(.*)\s+\[(\d+)\]$")
 
 RESPONSE_SUCCESS = "Success"
 RESPONSE_FAILURE = "Failure"
@@ -70,6 +70,7 @@ CMD_TIMER_CLEAR_EVENT = "TimerClearEvent"
 CMD_TIMER_CLEAR_ALL_EVENTS = "TimerClearAllEvents"
 
 CMD_CLAIM_GROUP = "ClaimGroup"
+CMD_LINE_CLEAR_ALL_EVENTS = "LineClearAllEvents"
 CMD_LINE_CLAIM = "LineClaim"
 CMD_LINE_SET_STATE = "LineSetState"
 CMD_LINE_SET_EVENT = "LineSetEvent"

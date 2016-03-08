@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# whisker/qt.py
+# whisker/qtclient.py
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 
@@ -61,11 +61,11 @@ from .constants import (
     RESPONSE_SUCCESS,
     TIMESTAMP_REGEX,
 )
-from .api import WhiskerApi
-# from .debug_qt import debug_object, debug_thread
-from .exceptions import WhiskerCommandFailed
-from .lang import CompiledRegexMemory
-from .qtsupport import exit_on_exception, StatusMixin
+from whisker.api import WhiskerApi
+# from whisker.debug_qt import debug_object, debug_thread
+from whisker.exceptions import WhiskerCommandFailed
+from whisker.lang import CompiledRegexMemory
+from whisker.qt import exit_on_exception, StatusMixin
 
 INFINITE_WAIT = -1
 
