@@ -87,6 +87,7 @@ setup(
     packages=['whisker'],
 
     install_requires=[
+        'arrow',  # better datetime
         'attrdict',  # dictionaries with attribute-style access
         'colorama',  # colour at the command line
         'colorlog',  # colourful logs

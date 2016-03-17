@@ -26,7 +26,7 @@ def get_port(x):
 
 def socket_receive(socket, bufsize=BUFFERSIZE):
     # return socket.recv(BUFFERSIZE)  # Python 2
-    return socket.recv(BUFFERSIZE).decode('ascii')  # Python 2
+    return socket.recv(BUFFERSIZE).decode('ascii')  # Python 3
 
 
 def socket_sendall(socket, data):

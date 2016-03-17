@@ -6,8 +6,7 @@
 import argparse
 import logging
 
-from whisker.constants import (
-    DEFAULT_PORT,
+from whisker.api import (
     EVENT_PREFIX,
     PING_ACK,
     CMD_REPORT_NAME,
@@ -15,6 +14,7 @@ from whisker.constants import (
     CMD_TIMER_SET_EVENT,
     CMD_WHISKER_STATUS,
 )
+from whisker.constants import DEFAULT_PORT
 from whisker.logging import configure_logger_for_colour
 from whisker.rawsocketclient import Whisker
 

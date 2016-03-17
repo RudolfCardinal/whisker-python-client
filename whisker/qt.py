@@ -137,6 +137,10 @@ class StatusMixin(object):
     def debug(self, msg):
         self._statusmixin_log.debug(self._process_status_message(msg))
 
+    def critical(self, msg):
+        self._statusmixin_log.critical(self._process_status_message(msg))
+        self.error_sent.emit(msg, self._statusmixin_name)
+
     def error(self, msg):
         self._statusmixin_log.error(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)

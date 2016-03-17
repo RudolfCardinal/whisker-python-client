@@ -12,6 +12,7 @@ Last update: 10 Feb 2016
 """
 
 import logging
+log = logging.getLogger(__name__)
 import re
 import socket
 
@@ -20,7 +21,7 @@ from twisted.internet import reactor
 from twisted.internet.protocol import ClientFactory
 from twisted.protocols.basic import LineReceiver
 
-from .constants import (
+from whisker.api import (
     CLIENT_MESSAGE_PREFIX,
     ERROR_PREFIX,
     EVENT_PREFIX,
@@ -28,15 +29,14 @@ from .constants import (
     KEY_EVENT_PREFIX,
     SYNTAX_ERROR_PREFIX,
     WARNING_PREFIX,
+    split_terminal_timestamp,
+    on_off_to_boolean,
 )
-from whisker.api import split_terminal_timestamp, on_off_to_boolean
 from whisker.socket import (
     get_port,
     socket_receive,
     socket_sendall,
 )
-
-log = logging.getLogger(__name__)
 
 
 # =============================================================================

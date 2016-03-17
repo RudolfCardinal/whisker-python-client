@@ -8,13 +8,13 @@ import logging
 
 from twisted.internet import reactor
 
-from whisker.constants import (
-    DEFAULT_PORT,
+from whisker.api import (
     CMD_REPORT_NAME,
     CMD_TEST_NETWORK_LATENCY,
     CMD_TIMER_SET_EVENT,
     CMD_TIMESTAMPS,
 )
+from whisker.constants import DEFAULT_PORT
 from whisker.logging import (
     configure_logger_for_colour,
     # print_report_on_all_logs,

@@ -33,11 +33,11 @@ Attempted solution:
   http://code.qt.io/cgit/qt/qtbase.git/tree/src/corelib/kernel/qobject.cpp?h=5.4  # noqa
 """
 
-import datetime
 from enum import Enum
 import logging
 log = logging.getLogger(__name__)
 
+import arrow
 from PySide.QtCore import (
     QObject,
     Qt,
@@ -49,9 +49,8 @@ from PySide.QtNetwork import (
     QTcpSocket,
 )
 
-from .constants import (
+from whisker.api import (
     CODE_REGEX,
-    DEFAULT_PORT,
     EOL,
     EOL_LEN,
     EVENT_REGEX,
@@ -60,8 +59,9 @@ from .constants import (
     PING_ACK,
     RESPONSE_SUCCESS,
     TIMESTAMP_REGEX,
+    WhiskerApi,
 )
-from whisker.api import WhiskerApi
+from whisker.constants import DEFAULT_PORT
 # from whisker.debug_qt import debug_object, debug_thread
 from whisker.exceptions import WhiskerCommandFailed
 from whisker.lang import CompiledRegexMemory
@@ -124,16 +124,17 @@ class WhiskerOwner(QObject, StatusMixin):
     The use of 'main' here just refers to the main socket (as opposed to the
     immediate socket), not the thread that's doing most of the processing.
     """
-    # Outwards, to world:
+    # Outwards, to world/task:
     connected = Signal()
     disconnected = Signal()
     finished = Signal()
-    message_received = Signal(str, datetime.datetime, int)
-    event_received = Signal(str, datetime.datetime, int)
+    message_received = Signal(str, arrow.Arrow, int)
+    event_received = Signal(str, arrow.Arrow, int)
     # Inwards, to possessions:
     controller_finish_requested = Signal()
     mainsock_finish_requested = Signal()
     ping_requested = Signal()
+    # And don't forget the signals inherited from StatusMixin.
 
     def __init__(self, task, server, main_port=DEFAULT_PORT, parent=None,
                  connect_timeout_ms=5000, read_timeout_ms=500,
@@ -297,7 +298,7 @@ class WhiskerOwner(QObject, StatusMixin):
 class WhiskerMainSocketListener(QObject, StatusMixin):
     finished = Signal()
     disconnected = Signal()
-    line_received = Signal(str, datetime.datetime)
+    line_received = Signal(str, arrow.Arrow)
 
     def __init__(self, server, port, parent=None, connect_timeout_ms=5000,
                  read_timeout_ms=100, name="whisker_mainsocket"):
@@ -364,7 +365,7 @@ class WhiskerMainSocketListener(QObject, StatusMixin):
         and sends each line on to the receiver.
         """
         # self.debug("incoming: {}".format(repr(data)))
-        timestamp = datetime.datetime.now()
+        timestamp = arrow.now()
         data = self.residual + data
         fragments = data.split(EOL)
         lines = fragments[:-1]
@@ -386,8 +387,8 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
     finished = Signal()
     connected = Signal()
     disconnected = Signal()
-    message_received = Signal(str, datetime.datetime, int)
-    event_received = Signal(str, datetime.datetime, int)
+    message_received = Signal(str, arrow.Arrow, int)
+    event_received = Signal(str, arrow.Arrow, int)
 
     def __init__(self, server, parent=None, connect_timeout_ms=5000,
                  read_timeout_ms=500, name="whisker_controller",
@@ -576,7 +577,7 @@ class WhiskerTask(QObject, StatusMixin):
         """
         self.warning("on_connect: YOU SHOULD OVERRIDE THIS")
 
-    @exit_on_exception  # @Slot(str, datetime.datetime, int)
+    @exit_on_exception  # @Slot(str, arrow.Arrow, int)
     def on_event(self, event, timestamp, whisker_timestamp_ms):
         """The WhiskerController event_received signal comes here."""
         # You should override this
