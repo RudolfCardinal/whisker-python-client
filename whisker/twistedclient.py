@@ -12,7 +12,6 @@ Last update: 10 Feb 2016
 """
 
 import logging
-log = logging.getLogger(__name__)
 import re
 import socket
 
@@ -37,6 +36,9 @@ from whisker.socket import (
     socket_receive,
     socket_sendall,
 )
+
+log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 
 # =============================================================================

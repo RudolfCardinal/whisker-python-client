@@ -7,11 +7,12 @@ from collections import Counter, OrderedDict
 from functools import total_ordering
 import inspect
 import logging
-log = logging.getLogger(__name__)
 import os
 import re
 import subprocess
 import sys
+
+log = logging.getLogger(__name__)
 
 
 # =============================================================================
@@ -57,6 +58,20 @@ def trunc_if_integer(n):
     if n == int(n):
         return int(n)
     return n
+
+
+# =============================================================================
+# File output
+# =============================================================================
+
+def writeline_nl(fileobj, line):
+    fileobj.write(line + '\n')
+
+
+def writelines_nl(fileobj, lines):
+    # Since fileobj.writelines() doesn't add newlines...
+    # http://stackoverflow.com/questions/13730107/writelines-writes-lines-without-newline-just-fills-the-file  # noqa
+    fileobj.write('\n'.join(lines) + '\n')
 
 
 # =============================================================================

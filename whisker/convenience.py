@@ -18,6 +18,7 @@ import yaml
 from whisker.constants import FILENAME_SAFE_ISOFORMAT
 
 log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 colorama.init()
 
 

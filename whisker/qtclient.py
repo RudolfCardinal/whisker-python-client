@@ -9,9 +9,9 @@ Multithreaded framework for Whisker Python clients using Qt.
 Author: Rudolf Cardinal (rudolf@pobox.com)
 Created: late 2016
 Last update: 10 Feb 2016
-"""
 
-"""
+~~~
+
 Note funny bug: data sometimes sent twice.
 Looks like it might be this:
 http://www.qtcentre.org/threads/29462-QTcpSocket-sends-data-twice-with-flush()
@@ -35,7 +35,6 @@ Attempted solution:
 
 from enum import Enum
 import logging
-log = logging.getLogger(__name__)
 
 import arrow
 from PySide.QtCore import (
@@ -66,6 +65,8 @@ from whisker.constants import DEFAULT_PORT
 from whisker.exceptions import WhiskerCommandFailed
 from whisker.lang import CompiledRegexMemory
 from whisker.qt import exit_on_exception, StatusMixin
+
+log = logging.getLogger(__name__)
 
 INFINITE_WAIT = -1
 

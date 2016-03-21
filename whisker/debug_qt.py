@@ -6,10 +6,11 @@
 # See: http://stackoverflow.com/questions/2045352
 
 import logging
-log = logging.getLogger(__name__)
 import threading
 
 from PySide import QtCore
+
+log = logging.getLogger(__name__)
 
 _old_connect = QtCore.QObject.connect  # staticmethod
 _old_disconnect = QtCore.QObject.disconnect  # staticmethod
@@ -40,7 +41,9 @@ def enable_signal_debugging(**kwargs):
     """Call this to enable Qt Signal debugging. This will trap all
     connect, and disconnect calls."""
 
-    f = lambda *args: None
+    def f(*args):
+        return None
+
     connect_call = kwargs.get('connect_call', f)
     disconnect_call = kwargs.get('disconnect_call', f)
     emit_call = kwargs.get('emit_call', f)

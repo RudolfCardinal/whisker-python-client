@@ -6,7 +6,6 @@
 
 from functools import wraps
 import logging
-log = logging.getLogger(__name__)
 import sys
 import threading
 import traceback
@@ -41,6 +40,8 @@ from whisker.lang import (
     get_caller_name,
     methodcaller_nonesort,
 )
+
+log = logging.getLogger(__name__)
 
 
 # =============================================================================

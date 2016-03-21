@@ -79,8 +79,8 @@ class CallbackHandler(object):
         for an event."""
         self.callbacks = [
             x for x in self.callbacks
-            if not (x.event == event and (callback is None
-                                          or x.callback == callback))]
+            if not (x.event == event and (callback is None or
+                                          x.callback == callback))]
 
     def clear(self):
         """Removes all callbacks."""

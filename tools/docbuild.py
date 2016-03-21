@@ -11,14 +11,16 @@ For RST title conventions, see
 
 import docutils
 import logging
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
 import os
 from os.path import abspath, dirname, join
 import shutil
 import subprocess
 import sys
 import tempfile
+
+log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
+
 if sys.version_info[0] < 3:
     raise AssertionError("Need Python 3")
 
@@ -55,7 +57,7 @@ if WKHTMLTOPDF is None:
 
 
 def call(cmdargs, *args, **kwargs):
-    logger.debug("command: {}".format(cmdargs))
+    log.debug("command: {}".format(cmdargs))
     subprocess.call(cmdargs, *args, **kwargs)
 
 

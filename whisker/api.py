@@ -2,10 +2,11 @@
 # whisker/api.py
 
 import logging
-log = logging.getLogger(__name__)
 import re
 
 from whisker.callback import CallbackHandler
+
+log = logging.getLogger(__name__)
 
 # =============================================================================
 # API constants
@@ -101,12 +102,11 @@ def on_off_to_boolean(msg):
 
 
 def s_to_ms(time_seconds):
-    return time_seconds * 1000
+    return int(time_seconds * 1000)
 
 
 def min_to_ms(time_minutes):
-    return time_minutes * 60000
-
+    return int(time_minutes * 60000)
 
 
 # =============================================================================
@@ -137,8 +137,8 @@ class WhiskerApi(object):
         doesn't need to go to the main behavioural task."""
         n_called, swallow_event = self.callback_handler.process_event(event)
         return (
-            (n_called > 0 and swallow_event)
-            or event.startswith(self.sysevent_prefix)
+            (n_called > 0 and swallow_event) or
+            event.startswith(self.sysevent_prefix)
         )
 
     def send_after_delay(self, delay_ms, msg, event=''):
