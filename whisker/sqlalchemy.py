@@ -317,6 +317,11 @@ def database_is_mysql(dbsettings):
 # https://groups.google.com/forum/#!searchin/sqlalchemy/cascade%7Csort:date/sqlalchemy/eIOkkXwJ-Ms/JLnpI2wJAAAJ  # noqa
 
 def walk(obj):
+    """
+    Starting with a SQLAlchemy ORM object, this function walks a
+    relationship tree, yielding each of the objects once.
+    """
+    # http://docs.sqlalchemy.org/en/latest/faq/sessions.html#faq-walk-objects
     stack = [obj]
     seen = set()
     while stack:
@@ -336,36 +341,91 @@ def walk(obj):
 
 
 def copy_sqla_object(obj):
+    """
+    Given an SQLAlchemy object, creates a new object (FOR WHICH THE OBJECT
+    MUST SUPPORT CREATION USING __init__() WITH NO PARAMETERS), and copies
+    across all non-PK, non-FK, and non-relationship attributes.
+    """
     cls = type(obj)
     mapper = class_mapper(cls)
     newobj = cls()  # not: cls.__new__(cls)
     pk_keys = set([c.key for c in mapper.primary_key])
+    rel_keys = set([c.key for c in mapper.relationships])
+    fk_keys = set([c.key for c in mapper.columns if c.foreign_keys])
+    prohibited = pk_keys | rel_keys | fk_keys
+    log.debug("copy_sqla_object: skipping: {}".format(prohibited))
     for k in [p.key for p in mapper.iterate_properties
-              if p.key not in pk_keys]:
-        log.debug("copy_sqla_object: processing attribute {}".format(k))
+              if p.key not in prohibited]:
         try:
-            setattr(newobj, k, getattr(obj, k))
+            value = getattr(obj, k)
+            log.debug("copy_sqla_object: processing attribute {} = {}".format(
+                k, value))
+            setattr(newobj, k, value)
         except AttributeError:
+            log.debug("copy_sqla_object: failed attribute {}".format(k))
             pass
     return newobj
 
 
-def deepcopy_sqla_object(obj, session):
+def deepcopy_sqla_object(startobj, session, flush=True):
     """
     For this to succeed, the object must take a __init__ call with no
-    arguments.
-    (We can't specify the required args/kwargs, since we are copying a tree
-    of arbitrary objects.)
+    arguments. (We can't specify the required args/kwargs, since we are copying
+    a tree of arbitrary objects.)
     """
-    newobj = None
-    for part in walk(obj):
-        log.debug("deepcopy_sqla_object: copying {}".format(part))
-        newpart = copy_sqla_object(part)
-        if newobj is None:
-            # The first thing that comes back from walk() is the starting point
-            newobj = newpart
-        session.add(newpart)
-    return newobj
+    objmap = {}  # keys = old objects, values = new objects
+    log.debug("deepcopy_sqla_object: pass 1: create new objects")
+    # Pass 1: iterate through all objects. (Can't guarantee to get
+    # relationships correct until we've done this, since we don't know whether
+    # or where the "root" of the PK tree is.)
+    stack = [startobj]
+    while stack:
+        oldobj = stack.pop(0)
+        if oldobj in objmap:  # already seen
+            continue
+        log.debug("deepcopy_sqla_object: copying {}".format(oldobj))
+        newobj = copy_sqla_object(oldobj)
+        session.add(newobj)
+        objmap[oldobj] = newobj
+        insp = inspect(oldobj)
+        for relationship in insp.mapper.relationships:
+            log.debug("deepcopy_sqla_object: ... relationship: {}".format(
+                relationship))
+            related = getattr(oldobj, relationship.key)
+            if relationship.uselist:
+                stack.extend(related)
+            elif related is not None:
+                stack.append(related)
+    # Pass 2: set all relationship properties.
+    log.debug("deepcopy_sqla_object: pass 2: set relationships")
+    for oldobj, newobj in objmap.items():
+        log.debug("deepcopy_sqla_object: newobj: {}".format(newobj))
+        insp = inspect(oldobj)
+        # insp.mapper.relationships is of type
+        # sqlalchemy.utils._collections.ImmutableProperties, which is basically
+        # a sort of AttrDict.
+        for relationship in insp.mapper.relationships:
+            # The relationship is an abstract object (so getting the
+            # relationship from the old object and from the new, with e.g.
+            # newrel = newinsp.mapper.relationships[oldrel.key],
+            # yield the same object. All we need from it is the key name.
+            log.debug("deepcopy_sqla_object: ... relationship: {}".format(
+                relationship.key))
+            related_old = getattr(oldobj, relationship.key)
+            if relationship.uselist:
+                related_new = [objmap[r] for r in related_old]
+            elif related_old is not None:
+                related_new = objmap[related_old]
+            else:
+                related_new = None
+            log.debug("deepcopy_sqla_object: ... ... adding: {}".format(
+                related_new))
+            setattr(newobj, relationship.key, related_new)
+    # Done
+    log.debug("deepcopy_sqla_object: done")
+    if flush:
+        session.flush()
+    return objmap[startobj]  # returns the new object matching startobj
 
 
 # =============================================================================
@@ -387,10 +447,11 @@ def dump_connection_info(engine, fileobj=sys.stdout):
     writeline_nl(fileobj, sql_comment('Database info: {}'.format(meta)))
 
 
-def dump_ddl(metadata, dialect_name, fileobj=sys.stdout):
+def dump_ddl(metadata, dialect_name, fileobj=sys.stdout, checkfirst=True):
     """
     Sends schema-creating DDL from the metadata to the dump engine.
     This makes CREATE TABLE statements.
+    If checkfirst is True, it uses CREATE TABLE IF NOT EXISTS or equivalent.
     """
     # http://docs.sqlalchemy.org/en/rel_0_8/faq.html#how-can-i-get-the-create-table-drop-table-output-as-a-string  # noqa
     # http://stackoverflow.com/questions/870925/how-to-generate-a-file-with-ddl-in-the-engines-sql-dialect-in-sqlalchemy  # noqa
@@ -403,7 +464,11 @@ def dump_ddl(metadata, dialect_name, fileobj=sys.stdout):
                  sql_comment("Schema (for dialect {}):".format(dialect_name)))
     engine = create_engine('{dialect}://'.format(dialect=dialect_name),
                            strategy='mock', executor=dump)
-    metadata.create_all(engine, checkfirst=False)
+    metadata.create_all(engine, checkfirst=checkfirst)
+    # ... checkfirst doesn't seem to be working for the mock strategy...
+    # http://docs.sqlalchemy.org/en/latest/core/metadata.html
+    # ... does it implement a *real* check (impossible here), rather than
+    # issuing CREATE ... IF NOT EXISTS?
 
 
 def quick_mapper(table):

@@ -115,7 +115,7 @@ class Whisker(object):
         self.immsock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         self.immsock.setblocking(True)
-        self.send_immediate("Link "+code)
+        self.send_immediate("Link " + code)
         sleeptime = 0.1
         log.info("Sleeping for " + str(sleeptime) +
                  " seconds as the Nagle-disabling feature of Python "

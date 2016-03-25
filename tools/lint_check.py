@@ -17,4 +17,4 @@ for dirpath, subdirs, files in os.walk(PROJECT_BASE_DIR):
         filename, ext = splitext(f)
         if ext == '.py':
             filepath = join(dirpath, f)
-            subprocess.call([FLAKE8, filepath])
+            subprocess.call([FLAKE8, "--ignore=T003", filepath])
