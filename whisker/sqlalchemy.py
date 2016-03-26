@@ -340,19 +340,22 @@ def walk(obj):
                 stack.append(related)
 
 
-def copy_sqla_object(obj):
+def copy_sqla_object(obj, omit_fk=True):
     """
     Given an SQLAlchemy object, creates a new object (FOR WHICH THE OBJECT
     MUST SUPPORT CREATION USING __init__() WITH NO PARAMETERS), and copies
-    across all non-PK, non-FK, and non-relationship attributes.
+    across all attributes, omitting PKs, FKs (by default), and relationship
+    attributes.
     """
     cls = type(obj)
     mapper = class_mapper(cls)
     newobj = cls()  # not: cls.__new__(cls)
     pk_keys = set([c.key for c in mapper.primary_key])
     rel_keys = set([c.key for c in mapper.relationships])
-    fk_keys = set([c.key for c in mapper.columns if c.foreign_keys])
-    prohibited = pk_keys | rel_keys | fk_keys
+    prohibited = pk_keys | rel_keys
+    if omit_fk:
+        fk_keys = set([c.key for c in mapper.columns if c.foreign_keys])
+        prohibited = prohibited | fk_keys
     log.debug("copy_sqla_object: skipping: {}".format(prohibited))
     for k in [p.key for p in mapper.iterate_properties
               if p.key not in prohibited]:
@@ -385,7 +388,13 @@ def deepcopy_sqla_object(startobj, session, flush=True):
             continue
         log.debug("deepcopy_sqla_object: copying {}".format(oldobj))
         newobj = copy_sqla_object(oldobj)
-        session.add(newobj)
+        # Don't insert the new object into the session here; it may trigger
+        # an autoflush as the relationships are queried, and the new objects
+        # are not ready for insertion yet (as their relationships aren't set).
+        # Not also the session.no_autoflush option:
+        # "sqlalchemy.exc.OperationalError: (raised as a result of Query-
+        # invoked autoflush; consider using a session.no_autoflush block if
+        # this flush is occurring prematurely)..."
         objmap[oldobj] = newobj
         insp = inspect(oldobj)
         for relationship in insp.mapper.relationships:
@@ -421,6 +430,10 @@ def deepcopy_sqla_object(startobj, session, flush=True):
             log.debug("deepcopy_sqla_object: ... ... adding: {}".format(
                 related_new))
             setattr(newobj, relationship.key, related_new)
+    # Now we can do session insert.
+    log.debug("deepcopy_sqla_object: pass 3: insert into session")
+    for newobj in objmap.values():
+        session.add(newobj)
     # Done
     log.debug("deepcopy_sqla_object: done")
     if flush:
@@ -664,7 +677,7 @@ def dump_orm_object_as_insert_sql(engine, session, obj, fileobj):
     # insp: an InstanceState
     # http://docs.sqlalchemy.org/en/latest/orm/internals.html#sqlalchemy.orm.state.InstanceState  # noqa
     # insp.mapper: a Mapper
-    # http://docs.sqlalchemy.org/en/latest/orm/mapping_api.html#sqlalchemy.orm.mapper.Mapper
+    # http://docs.sqlalchemy.org/en/latest/orm/mapping_api.html#sqlalchemy.orm.mapper.Mapper  # noqa
 
     # Don't do this:
     #   table = insp.mapper.mapped_table

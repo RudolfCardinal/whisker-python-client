@@ -3,7 +3,7 @@
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 
-import colorlog
+from colorlog import ColoredFormatter
 import json
 import logging
 
@@ -57,17 +57,18 @@ COLOUR_LOG_FORMAT = (
 )
 LOG_DATEFMT = '%Y-%m-%d %H:%M:%S'
 
-COLOUR_FORMATTER = colorlog.ColoredFormatter(
+LOG_COLORS = {
+    'DEBUG': 'cyan',
+    'INFO': 'green',
+    'WARNING': 'yellow',
+    'ERROR': 'red',
+    'CRITICAL': 'red,bg_white',
+}
+COLOUR_FORMATTER = ColoredFormatter(
     COLOUR_LOG_FORMAT,
     datefmt=LOG_DATEFMT,
     reset=True,
-    log_colors={
-        'DEBUG': 'cyan',
-        'INFO': 'green',
-        'WARNING': 'yellow',
-        'ERROR': 'red',
-        'CRITICAL': 'red,bg_white',
-    },
+    log_colors=LOG_COLORS,
     secondary_log_colors={},
     style='%'
 )
@@ -97,6 +98,19 @@ def configure_all_loggers_for_colour(remove_existing=True):
     apply_handler_to_all_logs(COLOUR_HANDLER, remove_existing=remove_existing)
 
 
+def apply_handler_to_root_log(handler, remove_existing=False):
+    """
+    Applies a handler to all logs, optionally removing existing handlers.
+    Should ONLY be called from the "if __name__ == 'main'" script:
+        https://docs.python.org/3.4/howto/logging.html#library-config
+    Generally MORE SENSIBLE just to apply a handler to the root logger.
+    """
+    rootlog = logging.getLogger()
+    if remove_existing:
+        rootlog.handlers = []
+    rootlog.addHandler(handler)
+
+
 def apply_handler_to_all_logs(handler, remove_existing=False):
     """
     Applies a handler to all logs, optionally removing existing handlers.
@@ -108,6 +122,19 @@ def apply_handler_to_all_logs(handler, remove_existing=False):
         if remove_existing:
             obj.handlers = []  # http://stackoverflow.com/questions/7484454
         obj.addHandler(handler)
+
+
+def copy_root_log_to_file(filename, fmt=LOG_FORMAT, datefmt=LOG_DATEFMT):
+    """
+    Copy all currently configured logs to the specified file.
+    Should ONLY be called from the "if __name__ == 'main'" script:
+        https://docs.python.org/3.4/howto/logging.html#library-config
+    """
+    fh = logging.FileHandler(filename)
+    # default file mode is 'a' for append
+    formatter = logging.Formatter(fmt=fmt, datefmt=datefmt)
+    fh.setFormatter(formatter)
+    apply_handler_to_root_log(fh)
 
 
 def copy_all_logs_to_file(filename, fmt=LOG_FORMAT, datefmt=LOG_DATEFMT):
