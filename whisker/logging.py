@@ -3,9 +3,11 @@
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 
-from colorlog import ColoredFormatter
+import cgi
 import json
 import logging
+
+from colorlog import ColoredFormatter
 
 """
 See https://docs.python.org/3.4/howto/logging.html#library-config
@@ -49,6 +51,10 @@ LIBRARY CODE should use the following general methods.
 
 """
 
+# =============================================================================
+# Constants
+# =============================================================================
+
 
 LOG_FORMAT = '%(asctime)s.%(msecs)03d:%(levelname)s:%(name)s:%(message)s'
 COLOUR_LOG_FORMAT = (
@@ -76,6 +82,10 @@ COLOUR_HANDLER = logging.StreamHandler()
 COLOUR_HANDLER.setLevel(logging.DEBUG)
 COLOUR_HANDLER.setFormatter(COLOUR_FORMATTER)
 
+
+# =============================================================================
+# Helper functions
+# =============================================================================
 
 def configure_logger_for_colour(log, remove_existing=True):
     """
@@ -194,3 +204,79 @@ def print_report_on_all_logs():
         d[name] = get_log_report(obj)
     d['(root logger)'] = get_log_report(logging.getLogger())
     print(json.dumps(d, sort_keys=True, indent=4, separators=(',', ': ')))
+
+
+# =============================================================================
+# HTML formatter
+# =============================================================================
+
+class HtmlColorFormatter(logging.Formatter):
+    log_colors = {
+        logging.DEBUG: '#008B8B',  # dark cyan
+        logging.INFO: '#00FF00',  # green
+        logging.WARNING: '#FFFF00',  # yellow
+        logging.ERROR: '#FF0000',  # red
+        logging.CRITICAL: '#FF0000',  # red
+    }
+    log_background_colors = {
+        logging.DEBUG: None,
+        logging.INFO: None,
+        logging.WARNING: None,
+        logging.ERROR: None,
+        logging.CRITICAL: '#FFFFFF',  # white
+    }
+
+    def __init__(self):
+        # https://hg.python.org/cpython/file/3.5/Lib/logging/__init__.py
+        super().__init__(
+            fmt='%(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S',
+            style='%'
+        )
+
+    def format(self, record):
+        # record is a LogRecord
+        # https://docs.python.org/3.4/library/logging.html#logging.LogRecord
+
+        # message = super().format(record)
+        super().format(record)
+        # Since fmt does not contain asctime, the Formatter.format()
+        # will not write asctime (since its usesTime()) function will be
+        # false. Therefore:
+        record.asctime = self.formatTime(record, self.datefmt)
+        bg_col = self.log_background_colors[record.levelno]
+        html = (
+            '<span style="color:#008B8B">{time}.{ms:03d} {name}:{lvname}: '
+            '</span><span style="color:{color}{bg}">{msg}</font><br>'.format(
+                time=record.asctime,
+                ms=int(record.msecs),
+                name=record.name,
+                lvname=record.levelname,
+                color=self.log_colors[record.levelno],
+                msg=cgi.escape(record.message),
+                bg=";background-color:{}".format(bg_col) if bg_col else "",
+            )
+        )
+        # print("record.__dict__: {}".format(record.__dict__))
+        # print("html: {}".format(html))
+        return html
+
+
+# =============================================================================
+# HTML handler (using HtmlColorFormatter) that sends output to a function,
+# e.g. for display in a Qt window
+# =============================================================================
+
+class HtmlColorHandler(logging.StreamHandler):
+    def __init__(self, logfunction, level=logging.INFO):
+        super().__init__()
+        self.logfunction = logfunction
+        self.setFormatter(HtmlColorFormatter())
+        self.setLevel(level)
+
+    def emit(self, record):
+        try:
+            html = self.format(record)
+            self.logfunction(html)
+        except:
+            self.handleError(record)

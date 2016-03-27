@@ -25,13 +25,19 @@ from PySide.QtGui import (
     QDialog,
     QDialogButtonBox,
     QGroupBox,
+    QHBoxLayout,
     QItemSelection,
     QItemSelectionModel,
     QListView,
+    QMainWindow,
     QMessageBox,
+    QPushButton,
     QRadioButton,
     QTableView,
+    QTextCursor,
+    QTextEdit,
     QVBoxLayout,
+    QWidget,
 )
 
 from whisker.lang import (
@@ -40,6 +46,7 @@ from whisker.lang import (
     get_caller_name,
     methodcaller_nonesort,
 )
+from whisker.logging import HtmlColorHandler
 
 log = logging.getLogger(__name__)
 
@@ -94,6 +101,124 @@ class StyledQGroupBox(QGroupBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setStyleSheet(GROUPBOX_STYLESHEET)
+
+
+# =============================================================================
+# Hard-to-close dialog-style box for a GUI Python log window
+# =============================================================================
+
+LOGEDIT_STYLESHEET = """
+QTextEdit {
+    border: 1px solid black;
+    font-family: 'Dejavu Sans Mono', 'Courier';
+    font-size: 10pt;
+    background-color: black;
+    color: white;
+}
+"""
+
+
+class LogWindow(QMainWindow):
+    emit_msg = Signal(str)
+
+    def __init__(self, level=logging.INFO, window_title="Python log"):
+        super().__init__()
+        self.setStyleSheet(LOGEDIT_STYLESHEET)
+
+        self.handler = HtmlColorHandler(self.log_message, level)
+        self.may_close = False
+        self.set_may_close(self.may_close)
+
+        self.setWindowTitle(window_title)
+        self.setMinimumWidth(800)
+        self.setMinimumHeight(400)
+
+        log_group = StyledQGroupBox("Log")
+        log_layout_1 = QVBoxLayout()
+        log_layout_2 = QHBoxLayout()
+        self.log = QTextEdit()
+        self.log.setReadOnly(True)
+        self.log.setLineWrapMode(QTextEdit.NoWrap)
+        log_clear_button = QPushButton('Clear log')
+        log_clear_button.clicked.connect(self.log.clear)
+        log_copy_button = QPushButton('Copy to clipboard')
+        log_copy_button.clicked.connect(self.copy_whole_log)
+        log_layout_2.addWidget(log_clear_button)
+        log_layout_2.addWidget(log_copy_button)
+        log_layout_2.addStretch()
+        log_layout_1.addWidget(self.log)
+        log_layout_1.addLayout(log_layout_2)
+        log_group.setLayout(log_layout_1)
+
+        main_widget = QWidget(self)
+        self.setCentralWidget(main_widget)
+        main_layout = QVBoxLayout(main_widget)
+        main_layout.addWidget(log_group)
+
+        self.emit_msg.connect(self.log_internal)
+
+    def get_handler(self):
+        return self.handler
+
+    def set_may_close(self, may_close):
+        # log.debug("LogWindow: may_close({})".format(may_close))
+        self.may_close = may_close
+        # return
+        if may_close:
+            self.setWindowFlags(self.windowFlags() | Qt.WindowCloseButtonHint)
+        else:
+            self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)
+        self.show()
+        # ... or it will be hidden (in a logical not a real way!) by
+        # setWindowFlags(), and thus mess up the logic for the whole Qt app
+        # exiting (since qt_app.exec_() runs until there are no more windows
+        # being shown).
+
+    def copy_whole_log(self):
+        # Ctrl-C will copy the selected parts.
+        # log.copy() will copy the selected parts.
+        self.log.selectAll()
+        self.log.copy()
+        self.log.moveCursor(QTextCursor.End)
+        self.scroll_to_end_of_log()
+
+    def scroll_to_end_of_log(self):
+        vsb = self.log.verticalScrollBar()
+        vsb.setValue(vsb.maximum())
+        hsb = self.log.horizontalScrollBar()
+        hsb.setValue(0)
+
+    def closeEvent(self, event):
+        """Trap exit."""
+        if not self.may_close:
+            # log.debug("LogWindow: ignore closeEvent")
+            event.ignore()
+        else:
+            # log.debug("LogWindow: accept closeEvent")
+            event.accept()
+
+    def log_message(self, html):
+        # Jump threads via a signal
+        self.emit_msg.emit(html)
+
+    @Slot(str)
+    def log_internal(self, html):
+        self.log.moveCursor(QTextCursor.End)
+        self.log.insertHtml(html)
+        self.scroll_to_end_of_log()
+
+    @Slot()
+    def exit(self):
+        # log.debug("LogWindow: exit")
+        self.may_close = True
+        # closed = QMainWindow.close(self)
+        # log.debug("closed: {}".format(closed))
+        QMainWindow.close(self)
+
+    @Slot()
+    def may_exit(self):
+        # log.debug("LogWindow: may_exit")
+        self.set_may_close(True)
 
 
 # =============================================================================
