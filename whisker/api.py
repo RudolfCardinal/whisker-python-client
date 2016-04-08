@@ -129,7 +129,6 @@ CMD_LOG_WRITE = "LogWrite"
 CMD_PERMIT_CLIENT_MESSAGES = "PermitClientMessages"
 CMD_REPORT_COMMENT = "ReportComment"
 CMD_REPORT_NAME = "ReportName"
-CMD_REPORT_NAME = "ReportName"
 CMD_REPORT_STATUS = "ReportStatus"
 CMD_REQUEST_TIME = "RequestTime"
 CMD_RESET_CLOCK = "ResetClock"
@@ -647,6 +646,32 @@ class WhiskerApi(object):
         reply = self._immresp(*args)
         return reply == RESPONSE_SUCCESS
 
+    def _immresp_with_timestamp(self, *args):
+        reply = self._immsend_get_reply(*args)
+        (reply, whisker_timestamp) = split_timestamp(reply)
+        return (reply, whisker_timestamp)
+
+    # -------------------------------------------------------------------------
+    # Front-end functions for these
+    # -------------------------------------------------------------------------
+
+    def get_command_boolean(self, *args):
+        return self._immbool(*args)
+
+    def command(self, *args):
+        return self._immbool(*args)
+
+    def command_exc(self, *args):
+        """Complete command or raise WhiskerCommandFailed."""
+        if not self._immbool(*args):
+            raise WhiskerCommandFailed(msg_from_args(*args))
+
+    def get_response(self, *args):
+        return self._immresp(*args)
+
+    def get_response_with_timestamp(self, *args):
+        return self._immresp_with_timestamp(*args)
+
     # -------------------------------------------------------------------------
     # Custom event handling, e.g. for line flashing
     # -------------------------------------------------------------------------
@@ -763,7 +788,7 @@ class WhiskerApi(object):
         return self._immbool(CMD_PERMIT_CLIENT_MESSAGES, _on_val(permit))
 
     def send_to_client(self, client_num, msg):
-        return self._immbool(CMD_SEND_TO_CLIENT, client_num, msg)
+        return self._immbool(CMD_SEND_TO_CLIENT, client_num, quote(msg))
 
     def set_media_directory(self, directory):
         return self._immbool(CMD_SET_MEDIA_DIRECTORY, quote(directory))
@@ -786,6 +811,15 @@ class WhiskerApi(object):
             return int(reply)
         except:
             return None
+
+    def ping(self):
+        reply = self._immresp(PING)
+        success = reply == PING_ACK
+        if success:
+            self.info("Successfully pinged server")
+        else:
+            self.warning("Failed to ping server")
+        return success
 
     def shutdown(self):
         return self._immbool(CMD_SHUTDOWN)
@@ -1352,13 +1386,13 @@ class WhiskerApi(object):
     # Whisker command set: display: video extras
     # -------------------------------------------------------------------------
 
-    def display_add_obj_video(self, doc, video, x, y, filename, loop=False,
+    def display_add_obj_video(self, doc, video, pos, filename, loop=False,
                               playmode=VideoPlayMode.wait, width=-1, height=-1,
                               play_audio=True, valign=VerticalAlign.top,
                               halign=HorizontalAlign.left,
                               bg_colour=(0, 0, 0)):
         args = [
-            x, y,
+            pos[0], pos[1],
             quote(filename),
             FLAG_LOOP if loop else FLAG_VIDEO_NOLOOP,
             VIDEO_PLAYMODE_FLAGS[playmode],
@@ -1420,3 +1454,6 @@ class WhiskerApi(object):
 
     def line_off(self, line):
         self.line_set_state(line, False)
+
+    def broadcast(self, msg):
+        return self.send_to_client(-1, msg)

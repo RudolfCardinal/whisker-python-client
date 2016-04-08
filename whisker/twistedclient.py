@@ -125,11 +125,8 @@ class WhiskerTask(object):
         reply = self.immsocket.send_and_get_reply(*args)
         return reply
 
-    def command(self, *args):
-        return self.send_and_get_reply(" ".join([str(x) for x in args]))
-
     def incoming_message(self, msg):
-        log.debug("INCOMING MESSAGE: " + str(msg))
+        # log.debug("INCOMING MESSAGE: " + str(msg))
         handled = False
         if not self.immport:
             m = re.search(r"^ImmPort: (\d+)", msg)
@@ -232,19 +229,19 @@ class WhiskerTask(object):
 
     def incoming_info(self, msg):
         """Override this."""
-        log.debug(msg)
+        log.info(msg)
 
     def incoming_warning(self, msg):
         """Override this."""
-        log.debug(msg)
+        log.warning(msg)
 
     def incoming_error(self, msg):
         """Override this."""
-        log.debug(msg)
+        log.error(msg)
 
     def incoming_syntax_error(self, msg):
         """Override this."""
-        log.debug(msg)
+        log.error(msg)
 
 
 class WhiskerMainPortFactory(ClientFactory):
@@ -336,7 +333,7 @@ class WhiskerImmSocket(object):
 
     def getlines_immsock(self):
         """Yield a set of lines from the socket."""
-        log.debug("WhiskerImmSocket: getlines_immsock")
+        # log.debug("WhiskerImmSocket: getlines_immsock")
         # http://stackoverflow.com/questions/822001/python-sockets-buffering
         buf = socket_receive(self.immsock)
         done = False

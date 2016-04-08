@@ -52,6 +52,7 @@ from whisker.api import (
     CODE_REGEX,
     EOL,
     EOL_LEN,
+    ERROR_REGEX,
     EVENT_REGEX,
     IMMPORT_REGEX,
     msg_from_args,
@@ -59,6 +60,8 @@ from whisker.api import (
     PING_ACK,
     RESPONSE_SUCCESS,
     split_timestamp,
+    SYNTAX_ERROR_REGEX,
+    WARNING_REGEX,
     WhiskerApi,
 )
 from whisker.constants import DEFAULT_PORT
@@ -188,6 +191,10 @@ class WhiskerOwner(QObject, StatusMixin):
         self.controller.message_received.connect(self.message_received)
         self.controller.event_received.connect(self.event_received)
         self.controller.event_received.connect(self.task.on_event)
+        self.controller.warning_received.connect(self.task.on_warning)
+        self.controller.error_received.connect(self.task.on_error)
+        self.controller.syntax_error_received.connect(
+            self.task.on_syntax_error)
 
         # Abort events
         self.mainsock.disconnected.connect(self.on_disconnect)
@@ -381,6 +388,9 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
     disconnected = Signal()
     message_received = Signal(str, arrow.Arrow, int)
     event_received = Signal(str, arrow.Arrow, int)
+    warning_received = Signal(str, arrow.Arrow, int)
+    syntax_error_received = Signal(str, arrow.Arrow, int)
+    error_received = Signal(str, arrow.Arrow, int)
 
     def __init__(self, server, parent=None, connect_timeout_ms=5000,
                  read_timeout_ms=500, name="whisker_controller",
@@ -441,6 +451,12 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
             if self.process_backend_event(event):
                 return
             self.event_received.emit(event, timestamp, whisker_timestamp)
+        elif WARNING_REGEX.match(msg):
+            self.warning_received.emit(msg, timestamp, whisker_timestamp)
+        elif SYNTAX_ERROR_REGEX.match(msg):
+            self.syntax_error_received.emit(msg, timestamp, whisker_timestamp)
+        elif ERROR_REGEX.match(msg):
+            self.error_received.emit(msg, timestamp, whisker_timestamp)
 
     @exit_on_exception
     def task_finished(self):
@@ -481,31 +497,6 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         reply = self.getline_immsock()
         return reply
 
-    def get_response_with_timestamp(self, *args):
-        reply = self.get_immsock_response(*args)
-        if not reply:
-            return (None, None)
-        (reply, whisker_timestamp) = split_timestamp(reply)
-        return (reply, whisker_timestamp)
-
-    def get_response(self, *args):
-        (reply, whisker_timestamp) = self.get_response_with_timestamp(*args)
-        return reply
-
-    def get_command_boolean(self, *args):
-        reply = self.get_response(*args)
-        success = reply == RESPONSE_SUCCESS
-        # self.debug("get_command_boolean: {} -> {}".format(msg, success))
-        return success
-
-    def command(self, *args):
-        return self.get_command_boolean(*args)
-
-    def command_exc(self, *args):
-        """Complete command or raise WhiskerCommandFailed."""
-        if not self.command(*args):
-            raise WhiskerCommandFailed(msg_from_args(*args))
-
     def is_connected(self):
         return is_socket_connected(self.immsocket)
         # ... if the immediate socket is running, the main socket should be
@@ -513,20 +504,6 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
     def close_immsocket(self):
         if is_socket_connected(self.immsocket):
             self.immsocket.close()
-
-    @exit_on_exception
-    def ping(self):
-        reply = self.get_response(PING)
-        if reply:
-            self.status("Successfully pinged server")
-        else:
-            self.status("Failed to ping server")
-
-    def send_to_client(self, clientnum, msg):
-        return self.command("SendToClient {} {}".format(clientnum, quote(msg)))
-
-    def broadcast(self, msg):
-        return self.send_to_client(-1, msg)
 
 
 # =============================================================================
@@ -579,3 +556,15 @@ class WhiskerTask(QObject, StatusMixin):
         # You should override this
         msg = "SHOULD BE OVERRIDDEN. EVENT: {}".format(event)
         self.status(msg)
+
+    @exit_on_exception  # @Slot(str, arrow.Arrow, int)
+    def on_warning(self, msg, timestamp, whisker_timestamp_ms):
+        self.warning(msg)
+
+    @exit_on_exception  # @Slot(str, arrow.Arrow, int)
+    def on_error(self, msg, timestamp, whisker_timestamp_ms):
+        self.error(msg)
+
+    @exit_on_exception  # @Slot(str, arrow.Arrow, int)
+    def on_syntax_error(self, msg, timestamp, whisker_timestamp_ms):
+        self.error(msg)
