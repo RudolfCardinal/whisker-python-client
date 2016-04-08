@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # whisker/sqlalchemy.py
 
+"""
+"""
+
 from collections import Iterable
 from contextlib import contextmanager
 import datetime
@@ -152,6 +155,12 @@ def upgrade_database(alembic_config_filename, alembic_base_dir=None):
 # =============================================================================
 
 def get_database_engine(settings, unbreak_sqlite_transactions=True):
+    """
+    The 'settings' object used here is a dictionary with the following keys:
+        url  # str
+        echo  # bool
+        connect_args  # a dictionary
+    """
     database_url = settings['url']
     engine = create_engine(database_url,
                            echo=settings['echo'],

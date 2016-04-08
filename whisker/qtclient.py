@@ -54,10 +54,11 @@ from whisker.api import (
     EOL_LEN,
     EVENT_REGEX,
     IMMPORT_REGEX,
+    msg_from_args,
     PING,
     PING_ACK,
     RESPONSE_SUCCESS,
-    TIMESTAMP_REGEX,
+    split_timestamp,
     WhiskerApi,
 )
 from whisker.constants import DEFAULT_PORT
@@ -89,16 +90,6 @@ def disable_nagle(socket):
 
 def get_socket_error(socket):
     return "{}: {}".format(socket.error(), socket.errorString())
-
-
-def split_timestamp(msg):
-    m = TIMESTAMP_REGEX.match(msg)
-    if m:
-        msg = m.group(1)
-        whisker_timestamp = int(m.group(2))
-    else:
-        whisker_timestamp = None
-    return (msg, whisker_timestamp)
 
 
 def quote(msg):
@@ -396,7 +387,8 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
                  sysevent_prefix="sys_"):
         super().__init__(parent)
         StatusMixin.__init__(self, name, log)
-        WhiskerApi.__init__(self, whisker_immsend_fn=self.command)
+        WhiskerApi.__init__(
+            self, whisker_immsend_get_reply_fn=self.get_immsock_response)
         self.server = server
         self.connect_timeout_ms = connect_timeout_ms
         self.read_timeout_ms = read_timeout_ms
@@ -456,7 +448,8 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         self.close_immsocket()
         self.finished.emit()
 
-    def sendline_immsock(self, msg):
+    def sendline_immsock(self, *args):
+        msg = msg_from_args(*args)
         self.debug("Sending to server (IMM): {}".format(msg))
         self.immsocket.write(msg + EOL)
         self.immsocket.waitForBytesWritten(INFINITE_WAIT)
@@ -477,39 +470,41 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         eol_index = data.index(EOL)
         line = data[:eol_index]
         self.residual = data[eol_index + EOL_LEN:]
-        # self.debug("LINE: {}".format(line))
+        self.debug("Reply from server (IMM): {}".format(line))
         return line
 
-    def get_response_with_timestamp(self, msg):
+    def get_immsock_response(self, *args):
         if not self.is_connected():
             self.error("Not connected")
-            return (None, None)
-        self.sendline_immsock(msg)
+            return None
+        self.sendline_immsock(*args)
         reply = self.getline_immsock()
-        (reply, whisker_timestamp) = split_timestamp(reply)
-        self.debug("Immediate socket reply (timestamp={}): {}".format(
-            whisker_timestamp, reply))
-        return (reply, whisker_timestamp)
-
-    def get_response(self, msg):
-        (reply, whisker_timestamp) = self.get_response_with_timestamp(msg)
         return reply
 
-    def get_command_boolean(self, msg):
-        reply = self.get_response(msg)
+    def get_response_with_timestamp(self, *args):
+        reply = self.get_immsock_response(*args)
+        if not reply:
+            return (None, None)
+        (reply, whisker_timestamp) = split_timestamp(reply)
+        return (reply, whisker_timestamp)
+
+    def get_response(self, *args):
+        (reply, whisker_timestamp) = self.get_response_with_timestamp(*args)
+        return reply
+
+    def get_command_boolean(self, *args):
+        reply = self.get_response(*args)
         success = reply == RESPONSE_SUCCESS
         # self.debug("get_command_boolean: {} -> {}".format(msg, success))
         return success
 
     def command(self, *args):
-        msg = " ".join(str(x) for x in args)
-        return self.get_command_boolean(msg)
+        return self.get_command_boolean(*args)
 
     def command_exc(self, *args):
         """Complete command or raise WhiskerCommandFailed."""
-        msg = " ".join(str(x) for x in args)
-        if not self.command(msg):
-            raise WhiskerCommandFailed(msg)
+        if not self.command(*args):
+            raise WhiskerCommandFailed(msg_from_args(*args))
 
     def is_connected(self):
         return is_socket_connected(self.immsocket)

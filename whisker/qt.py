@@ -121,7 +121,8 @@ QTextEdit {
 class LogWindow(QMainWindow):
     emit_msg = Signal(str)
 
-    def __init__(self, level=logging.INFO, window_title="Python log"):
+    def __init__(self, level=logging.INFO, window_title="Python log",
+                 logger=None, min_width=800, min_height=400):
         super().__init__()
         self.setStyleSheet(LOGEDIT_STYLESHEET)
 
@@ -130,8 +131,10 @@ class LogWindow(QMainWindow):
         self.set_may_close(self.may_close)
 
         self.setWindowTitle(window_title)
-        self.setMinimumWidth(800)
-        self.setMinimumHeight(400)
+        if min_width:
+            self.setMinimumWidth(min_width)
+        if min_height:
+            self.setMinimumHeight(min_height)
 
         log_group = StyledQGroupBox("Log")
         log_layout_1 = QVBoxLayout()
@@ -156,6 +159,9 @@ class LogWindow(QMainWindow):
         main_layout.addWidget(log_group)
 
         self.emit_msg.connect(self.log_internal)
+
+        if logger:
+            logger.addHandler(self.get_handler())
 
     def get_handler(self):
         return self.handler

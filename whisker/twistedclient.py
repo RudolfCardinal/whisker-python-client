@@ -26,10 +26,12 @@ from whisker.api import (
     EVENT_PREFIX,
     INFO_PREFIX,
     KEY_EVENT_PREFIX,
+    msg_from_args,
+    on_off_to_boolean,
+    split_timestamp,
     SYNTAX_ERROR_PREFIX,
     WARNING_PREFIX,
-    split_terminal_timestamp,
-    on_off_to_boolean,
+    WhiskerApi,
 )
 from whisker.socket import (
     get_port,
@@ -56,6 +58,8 @@ class WhiskerTask(object):
         self.mainsocket = None
         self.immsocket = None
         self.mainfactory = WhiskerMainPortFactory(self)
+        self.whisker = WhiskerApi(
+            whisker_immsend_get_reply_fn=self.send_and_get_reply)
 
     @classmethod
     def set_verbose_logging(cls, verbose):
@@ -107,17 +111,18 @@ class WhiskerTask(object):
         """Override this."""
         pass
 
-    def send(self, msg):
+    def send(self, *args):
         if not self.mainsocket:
             log.error("can't send without a mainsocket")
             return
+        msg = msg_from_args(*args)
         self.mainsocket.send(msg)
 
-    def send_and_get_reply(self, msg):
+    def send_and_get_reply(self, *args):
         if not self.immsocket:
             log.error("can't send_and_get_reply without an immsocket")
             return
-        reply = self.immsocket.send_and_get_reply(msg)
+        reply = self.immsocket.send_and_get_reply(*args)
         return reply
 
     def command(self, *args):
@@ -141,7 +146,7 @@ class WhiskerTask(object):
         if handled:
             return
 
-        (msg, timestamp) = split_terminal_timestamp(msg)
+        (msg, timestamp) = split_timestamp(msg)
 
         if msg == "Ping":
             # If the server has sent us a Ping, acknowledge it.
@@ -348,7 +353,8 @@ class WhiskerImmSocket(object):
         if buf:
             yield buf
 
-    def send_and_get_reply(self, msg):
+    def send_and_get_reply(self, *args):
+        msg = msg_from_args(*args)
         log.debug("Immediate socket sending: " + msg)
         socket_sendall(self.immsock, msg + "\n")
         reply = next(self.getlines_immsock())
