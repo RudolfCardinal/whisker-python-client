@@ -118,6 +118,7 @@ def get_class_from_frame(fr):
     return None
 
 
+# noinspection PyProtectedMember
 def get_caller_name(back=0):
     """
     Return details about the CALLER OF THE CALLER (plus n calls further back)
@@ -215,6 +216,7 @@ def launch_external_file(filename):
     if sys.platform.startswith('linux'):
         subprocess.call(["xdg-open", filename])
     else:
+        # noinspection PyUnresolvedReferences
         os.startfile(filename)
 
 
@@ -229,12 +231,13 @@ class MinType(object):
         return True
 
     def __eq__(self, other):
-        return (self is other)
+        return self is other
 
 
 mintype_singleton = MinType()
 
 
+# noinspection PyPep8Naming
 class attrgetter_nonesort:
     """
     Modification of operator.attrgetter
@@ -280,6 +283,7 @@ class attrgetter_nonesort:
         return self.__class__, self._attrs
 
 
+# noinspection PyPep8Naming
 class methodcaller_nonesort:
     """
     As above, but for methodcaller.

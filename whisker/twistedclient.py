@@ -76,6 +76,7 @@ class WhiskerTask(object):
                 s=self.server,
                 p=self.mainport
             ))
+        # noinspection PyUnresolvedReferences
         reactor.connectTCP(self.server, self.mainport, self.mainfactory)
 
     def connect_immediate(self):
@@ -206,6 +207,7 @@ class WhiskerTask(object):
             t=timestamp
         ))
 
+    # noinspection PyMethodMayBeStatic
     def incoming_client_message(self, fromclientnum, msg, timestamp=None):
         """Override this."""
         log.debug(
@@ -216,6 +218,7 @@ class WhiskerTask(object):
                 t=timestamp
             ))
 
+    # noinspection PyMethodMayBeStatic
     def incoming_key_event(self, key, depressed, document, timestamp=None):
         """Override this."""
         log.debug(
@@ -227,18 +230,22 @@ class WhiskerTask(object):
                 t=timestamp
             ))
 
+    # noinspection PyMethodMayBeStatic
     def incoming_info(self, msg):
         """Override this."""
         log.info(msg)
 
+    # noinspection PyMethodMayBeStatic
     def incoming_warning(self, msg):
         """Override this."""
         log.warning(msg)
 
+    # noinspection PyMethodMayBeStatic
     def incoming_error(self, msg):
         """Override this."""
         log.error(msg)
 
+    # noinspection PyMethodMayBeStatic
     def incoming_syntax_error(self, msg):
         """Override this."""
         log.error(msg)
@@ -299,6 +306,9 @@ class WhiskerMainPortProtocol(LineReceiver):
     def send(self, data):
         log.debug("Main port sending: {}".format(data))
         self.sendLine(data.encode(self.encoding))
+
+    def rawDataReceived(self, data):
+        pass
 
 
 class WhiskerImmSocket(object):

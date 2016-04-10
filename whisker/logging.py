@@ -3,7 +3,7 @@
 # Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
 # See LICENSE for details.
 
-import cgi
+from html import escape
 import json
 import logging
 
@@ -128,6 +128,7 @@ def apply_handler_to_all_logs(handler, remove_existing=False):
         https://docs.python.org/3.4/howto/logging.html#library-config
     Generally MORE SENSIBLE just to apply a handler to the root logger.
     """
+    # noinspection PyUnresolvedReferences
     for name, obj in logging.Logger.manager.loggerDict.items():
         if remove_existing:
             obj.handlers = []  # http://stackoverflow.com/questions/7484454
@@ -160,6 +161,7 @@ def copy_all_logs_to_file(filename, fmt=LOG_FORMAT, datefmt=LOG_DATEFMT):
     apply_handler_to_all_logs(fh)
 
 
+# noinspection PyProtectedMember
 def get_formatter_report(f):
     """Returns information on a log formatter, as a dictionary.
     For debugging."""
@@ -200,6 +202,7 @@ def print_report_on_all_logs():
     Use print() to report information on all logs.
     """
     d = {}
+    # noinspection PyUnresolvedReferences
     for name, obj in logging.Logger.manager.loggerDict.items():
         d[name] = get_log_report(obj)
     d['(root logger)'] = get_log_report(logging.getLogger())
@@ -253,7 +256,7 @@ class HtmlColorFormatter(logging.Formatter):
                 name=record.name,
                 lvname=record.levelname,
                 color=self.log_colors[record.levelno],
-                msg=cgi.escape(record.message),
+                msg=escape(record.message),
                 bg=";background-color:{}".format(bg_col) if bg_col else "",
             )
         )
@@ -275,6 +278,7 @@ class HtmlColorHandler(logging.StreamHandler):
         self.setLevel(level)
 
     def emit(self, record):
+        # noinspection PyBroadException
         try:
             html = self.format(record)
             self.logfunction(html)

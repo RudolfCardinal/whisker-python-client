@@ -29,6 +29,7 @@ def shuffle_list_within_chunks(x, chunksize):
                     ^^^^^^^^^^  ^^^^^^^^^^  ^^^^^^^^^^^^^
     """
     starts = list(range(0, len(x), chunksize))
+    # noinspection PyTypeChecker
     ends = starts[1:] + [None]
     for start, end in zip(starts, ends):
         shuffle_list_slice(x, start, end)

@@ -121,6 +121,7 @@ QTextEdit {
 class LogWindow(QMainWindow):
     emit_msg = Signal(str)
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, level=logging.INFO, window_title="Python log",
                  logger=None, min_width=800, min_height=400):
         super().__init__()
@@ -241,10 +242,10 @@ class StatusMixin(object):
     status_sent = Signal(str, str)
     error_sent = Signal(str, str)
 
-    def __init__(self, name, log, thread_info=True, caller_info=True):
+    def __init__(self, name, logger, thread_info=True, caller_info=True):
         # Somewhat verbose names to make conflict with a user class unlikely.
         self._statusmixin_name = name
-        self._statusmixin_log = log
+        self._statusmixin_log = logger
         self._statusmixin_debug_thread_info = thread_info
         self._statusmixin_debug_caller_info = caller_info
 
@@ -305,6 +306,7 @@ class TransactionalEditDialogMixin(object):
     """
     ok = Signal()
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, session, obj, layout, readonly=False):
         # Store variables
         self.obj = obj
@@ -338,8 +340,10 @@ class TransactionalEditDialogMixin(object):
     def ok_clicked(self):
         try:
             self.dialog_to_object(self.obj)
+            # noinspection PyUnresolvedReferences
             self.accept()
         except Exception as e:
+            # noinspection PyCallByClass,PyTypeChecker
             QMessageBox.about(self, "Invalid data", str(e))
             # ... str(e) will be a simple message for ValidationError
 
@@ -429,10 +433,13 @@ class TransactionalEditDialogMixin(object):
         # begin_session() / commit() / rollback() calls.
         # The context manager provided by begin_nested() will commit, or roll
         # back on an exception.
+        result = None
         if self.readonly:
+            # noinspection PyUnresolvedReferences
             return self.exec_()  # enforces modal
         try:
             with self.session.begin_nested():
+                # noinspection PyUnresolvedReferences
                 result = self.exec_()  # enforces modal
                 if result == QDialog.Accepted:
                     return result
@@ -449,6 +456,9 @@ class TransactionalEditDialogMixin(object):
 
         # The read-only situation REQUIRES that the session itself is
         # read-only.
+
+    def dialog_to_object(self, obj):
+        raise NotImplementedError
 
 
 class TransactionalDialog(QDialog):
@@ -469,6 +479,7 @@ class TransactionalDialog(QDialog):
     def exec_(self, *args, **kwargs):
         if self.readonly:
             return super().exec_(*args, **kwargs)  # enforces modal
+        result = None
         try:
             with self.session.begin_nested():
                 result = super().exec_(*args, **kwargs)  # enforces modal
@@ -488,8 +499,9 @@ class TransactionalDialog(QDialog):
 # =============================================================================
 
 class DatabaseModelMixin(object):
-    def __init__(self, session, parent=None):
+    def __init__(self, session, listdata):
         self.session = session
+        self.listdata = listdata
         log.debug("DatabaseModelMixin: session={}".format(repr(session)))
 
     def get_object(self, index):
@@ -498,6 +510,7 @@ class DatabaseModelMixin(object):
             return None
         return self.listdata[index]
 
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def item_deletable(self, rowindex):
         """Override this if you need to prevent rows being deleted."""
         return True
@@ -508,8 +521,10 @@ class DatabaseModelMixin(object):
         if delete_from_session:
             obj = self.listdata[row_index]
             self.session.delete(obj)
+        # noinspection PyUnresolvedReferences
         self.beginRemoveRows(QModelIndex(), row_index, row_index)
         del self.listdata[row_index]
+        # noinspection PyUnresolvedReferences
         self.endRemoveRows()
 
     def insert_at_index(self, obj, index=None, add_to_session=True,
@@ -523,8 +538,10 @@ class DatabaseModelMixin(object):
             if flush:
                 self.session.flush()
         # http://stackoverflow.com/questions/4702972
+        # noinspection PyUnresolvedReferences
         self.beginInsertRows(QModelIndex(), 0, 0)
         self.listdata.insert(index, obj)
+        # noinspection PyUnresolvedReferences
         self.endInsertRows()
 
     def move_up(self, index):
@@ -534,6 +551,7 @@ class DatabaseModelMixin(object):
             return
         x = self.listdata  # shorter name!
         x[index - 1], x[index] = x[index], x[index - 1]
+        # noinspection PyUnresolvedReferences
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def move_down(self, index):
@@ -543,6 +561,7 @@ class DatabaseModelMixin(object):
             return
         x = self.listdata  # shorter name!
         x[index + 1], x[index] = x[index], x[index + 1]
+        # noinspection PyUnresolvedReferences
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
 
@@ -562,12 +581,15 @@ class ViewAssistMixin(object):
         self.readonly = readonly
         self.selection_model = None
 
-    def set_model_common(self, model, ListBase):
+    def set_model_common(self, model, list_base_class):
         if self.selection_model:
+            # noinspection PyUnresolvedReferences
             self.selection_model.selectionChanged.disconnect()
-        ListBase.setModel(self, model)
+        list_base_class.setModel(self, model)
         self.selection_model = QItemSelectionModel(model)
+        # noinspection PyUnresolvedReferences
         self.selection_model.selectionChanged.connect(self._selection_changed)
+        # noinspection PyUnresolvedReferences
         self.setSelectionModel(self.selection_model)
 
     # -------------------------------------------------------------------------
@@ -595,6 +617,7 @@ class ViewAssistMixin(object):
         index = self.get_selected_row_index()
         if index is None:
             return None
+        # noinspection PyUnresolvedReferences
         model = self.model()
         if model is None:
             return None
@@ -604,6 +627,7 @@ class ViewAssistMixin(object):
         raise NotImplementedError()
 
     def go_to(self, row):
+        # noinspection PyUnresolvedReferences
         model = self.model()
         if row is None:
             # Go to the end.
@@ -612,6 +636,7 @@ class ViewAssistMixin(object):
                 return
             row = nrows - 1
         modelindex = model.index(row, 0)  # second parameter is column
+        # noinspection PyUnresolvedReferences
         self.setCurrentIndex(modelindex)
 
     def _selection_changed(self, selected, deselected):
@@ -619,12 +644,14 @@ class ViewAssistMixin(object):
         selected_model_indexes = selected.indexes()
         selected_row_indexes = [mi.row() for mi in selected_model_indexes]
         is_selected = bool(selected_row_indexes)
+        # noinspection PyUnresolvedReferences
         model = self.model()
         may_delete = is_selected and all(
             [model.item_deletable(ri) for ri in selected_row_indexes])
         self.selected_maydelete.emit(is_selected, may_delete)
 
     def get_n_rows(self):
+        # noinspection PyUnresolvedReferences
         model = self.model()
         return model.rowCount()
 
@@ -635,6 +662,7 @@ class ViewAssistMixin(object):
     def insert_at_index(self, obj, index=None,
                         add_to_session=True, flush=True):
         # index: None for end, 0 for start
+        # noinspection PyUnresolvedReferences
         model = self.model()
         model.insert_at_index(obj, index,
                               add_to_session=add_to_session, flush=flush)
@@ -653,6 +681,7 @@ class ViewAssistMixin(object):
         if self.readonly:
             log.warning("Can't add; readonly")
             return
+        result = None
         try:
             with self.session.begin_nested():
                 self.session.add(new_object)
@@ -679,6 +708,7 @@ class ViewAssistMixin(object):
     def remove_by_index(self, row_index, delete_from_session=True):
         if row_index is None:
             return
+        # noinspection PyUnresolvedReferences
         model = self.model()
         model.delete_item(row_index, delete_from_session=delete_from_session)
 
@@ -690,6 +720,7 @@ class ViewAssistMixin(object):
         row_index = self.get_selected_row_index()
         if row_index is None or row_index == 0:
             return
+        # noinspection PyUnresolvedReferences
         model = self.model()
         model.move_up(row_index)
         self.go_to(row_index - 1)
@@ -698,6 +729,7 @@ class ViewAssistMixin(object):
         row_index = self.get_selected_row_index()
         if row_index is None or row_index == self.get_n_rows() - 1:
             return
+        # noinspection PyUnresolvedReferences
         model = self.model()
         model.move_down(row_index)
         self.go_to(row_index + 1)
@@ -706,6 +738,7 @@ class ViewAssistMixin(object):
     # Edit
     # -------------------------------------------------------------------------
 
+    # noinspection PyUnusedLocal
     def edit(self, index, trigger, event):
         if trigger != QAbstractItemView.DoubleClicked:
             return False
@@ -717,6 +750,7 @@ class ViewAssistMixin(object):
             return
         if readonly is None:
             readonly = self.readonly
+        # noinspection PyUnresolvedReferences
         model = self.model()
         item = model.listdata[index.row()]
         win = self.modal_dialog_class(self.session, item, readonly=readonly)
@@ -765,8 +799,7 @@ class GenericListModel(QAbstractListModel, DatabaseModelMixin):
     """
     def __init__(self, data, session, parent=None):
         super().__init__(parent)  # QAbstractListModel
-        DatabaseModelMixin.__init__(self, session=session)
-        self.listdata = data
+        DatabaseModelMixin.__init__(self, session=session, listdata=data)
 
     def rowCount(self, parent=QModelIndex()):
         """Qt override."""
@@ -838,11 +871,9 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
         header: list of colname, attr/func tuples
         """
         super().__init__(parent)  # QAbstractTableModel
-        DatabaseModelMixin.__init__(self, session=session)
-        self.listdata = data
+        DatabaseModelMixin.__init__(self, session=session, listdata=data)
         self.header_display = [x[0] for x in header]
         self.header_attr = [x[1] for x in header]
-        self.session = session
         self.deletable = deletable
         self.default_sort_column_num = None
         self.default_sort_order = default_sort_order
@@ -885,6 +916,7 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
         # log.debug("GenericAttrTableModel.sort")
         if not self.listdata:
             return
+        # noinspection PyUnresolvedReferences
         self.layoutAboutToBeChanged.emit()
         colname = self.header_attr[col]
         isfunc = callable(getattr(self.listdata[0], colname))
@@ -897,6 +929,7 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
                                    key=attrgetter_nonesort(colname))
         if order == Qt.DescendingOrder:
             self.listdata.reverse()
+        # noinspection PyUnresolvedReferences
         self.layoutChanged.emit()
 
 
@@ -915,7 +948,7 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
                                  modal_dialog_class=modal_dialog_class,
                                  readonly=readonly)
         self.sortable = sortable
-        self.row_sizing_done = False
+        self.sizing_done = False
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSortingEnabled(sortable)
@@ -990,11 +1023,11 @@ class RadioGroup(object):
         self.map_id_to_value = {}
         self.map_value_to_button = {}
         for i, (value, text) in enumerate(value_text_tuples):
-            id = i + 1  # start with 1
+            id_ = i + 1  # start with 1
             button = QRadioButton(text)
-            self.bg.addButton(button, id)
+            self.bg.addButton(button, id_)
             self.buttons.append(button)
-            self.map_id_to_value[id] = value
+            self.map_id_to_value[id_] = value
             self.map_value_to_button[value] = button
 
     def get_value(self):
@@ -1023,6 +1056,7 @@ class RadioGroup(object):
 def exit_on_exception(func):
     @wraps(func)
     def with_exit_on_exception(*args, **kwargs):
+        # noinspection PyBroadException
         try:
             return func(*args, **kwargs)
         except:

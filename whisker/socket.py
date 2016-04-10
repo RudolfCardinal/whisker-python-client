@@ -24,16 +24,16 @@ def get_port(x):
 # to/from the socket. Translation occurs here:
 
 
-def socket_receive(socket, bufsize=BUFFERSIZE):
-    # return socket.recv(BUFFERSIZE)  # Python 2
-    return socket.recv(BUFFERSIZE).decode('ascii')  # Python 3
+def socket_receive(sock, bufsize=BUFFERSIZE):
+    # return socket.recv(bufsize)  # Python 2
+    return sock.recv(bufsize).decode('ascii')  # Python 3
 
 
-def socket_sendall(socket, data):
+def socket_sendall(sock, data):
     # return socket.sendall(data)  # Python 2
-    return socket.sendall(data.encode('ascii'))  # Python 3
+    return sock.sendall(data.encode('ascii'))  # Python 3
 
 
-def socket_send(socket, data):
+def socket_send(sock, data):
     # return socket.send(data)  # Python 2
-    return socket.send(data.encode('ascii'))  # Python 3
+    return sock.send(data.encode('ascii'))  # Python 3

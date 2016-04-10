@@ -44,7 +44,7 @@ class CallbackDefinition(object):
         self.callback(*self.args, **self.kwargs)
 
     def is_defunct(self):
-        return self.target_n_calls > 0 and self.n_calls >= self.target_n_calls
+        return 0 < self.target_n_calls <= self.n_calls
 
 
 class CallbackHandler(object):
@@ -58,7 +58,6 @@ class CallbackHandler(object):
     def add(self, target_n_calls, event, callback, args=None, kwargs=None,
             swallow_event=True):
         """Adds a callback."""
-        swallow_event = kwargs.pop('swallow_event', True)
         cd = CallbackDefinition(event, callback, args, kwargs,
                                 target_n_calls=target_n_calls,
                                 swallow_event=swallow_event)
@@ -67,12 +66,12 @@ class CallbackHandler(object):
     def add_single(self, event, callback, args=None, kwargs=None,
                    swallow_event=True):
         """Adds a single-shot callback."""
-        self.add(1, event, callback, args, kwargs)
+        self.add(1, event, callback, args, kwargs, swallow_event=swallow_event)
 
     def add_persistent(self, event, callback, args=None, kwargs=None,
                        swallow_event=True):
         """Adds a persistent callback."""
-        self.add(0, event, callback, args, kwargs)
+        self.add(0, event, callback, args, kwargs, swallow_event=swallow_event)
 
     def remove(self, event, callback=None):
         """Removes a callback (either by event/callback pair, or all callbacks

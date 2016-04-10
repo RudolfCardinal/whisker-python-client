@@ -57,6 +57,7 @@ class Whisker(object):
         if not self.connect_main(server, mainport):  # Log in to the server.
             return False
         # Listen to the server until we can connect the immediate socket.
+        immport = None
         for line in self.getlines_mainsock():
             # The server has sent us a message via the main socket.
             log.debug("SERVER: " + line)

@@ -4,11 +4,12 @@
 import json
 
 # Demo starting values
-config = {
-    "session": 3,
-    "stimulus_order": [3, 2, 1],
-    "subject": "S1"
-}
+# config = {
+#     "session": 3,
+#     "stimulus_order": [3, 2, 1],
+#     "subject": "S1"
+# }
+
 # or, equivalently:
 config = dict(
     session=3,

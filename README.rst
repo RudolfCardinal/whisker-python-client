@@ -2,9 +2,9 @@
 
 .. include:: doc/symbols/isonum.txt
 
-===============================================================================
+=======
 whisker
-===============================================================================
+=======
 
 Python package for Whisker clients.
 
@@ -12,7 +12,7 @@ Python package for Whisker clients.
   See http://www.whiskercontrol.com/
 
 TL;DR
-===============================================================================
+=====
 
 -   :code:`pip install whisker`
 -   Fire up your Whisker server.
@@ -22,14 +22,14 @@ TL;DR
     task" at the end.
 
 Author/licensing
-===============================================================================
+================
 
 By Rudolf Cardinal (rudolf@pobox.com).
 Copyright |copy| Rudolf Cardinal.
 Licensed under a permissive open-source license; see LICENSE.
 
 Usage
-===============================================================================
+=====
 
 There are three styles of Whisker client available. Full worked exampes are
 shown below, along with a rationale for their use. The outlines, however,
@@ -70,10 +70,10 @@ Raw socket client (deprecated)
 
 
 Rationale
-===============================================================================
+=========
 
 Approaches to sockets and message passing
--------------------------------------------------------------------------------
+-----------------------------------------
 
 Whisker allows a multitude of clients in a great many languages -- anything
 that can "speak" down a TCP/IP port, such as C++, Visual Basic, Perl, and
@@ -159,7 +159,7 @@ Use Twisted and avoid any UI code while the task is running.
 
 
 Database access
--------------------------------------------------------------------------------
+---------------
 
 Database backend
 ~~~~~~~~~~~~~~~~
@@ -196,7 +196,7 @@ However, the other very pleasantly simple front-end is dataset:
 
 
 User interface
--------------------------------------------------------------------------------
+--------------
 
 A GUI can consume a lot of programmer effort. Let's keep this minimal or
 absent as the general rule; for more advanced coding, the coder can do
@@ -204,7 +204,7 @@ his/her own thing (a suggestion: Qt).
 
 
 Task configuration
--------------------------------------------------------------------------------
+------------------
 
 Much of the GUI is usually about configuration. So let's get rid of all
 that, because we're aiming at very simple programming here. Let's just
@@ -276,7 +276,7 @@ Verdict for simple uses
 Use YAML with AttrDict.
 
 Package distribution
--------------------------------------------------------------------------------
+--------------------
 
 This should be via PyPI, so users can just do:
 
@@ -289,7 +289,7 @@ This should be via PyPI, so users can just do:
     from whisker import ...
 
 A complete simple task
-===============================================================================
+======================
 
 Having done :code:`pip install whisker`, you should be able to do this:
 

@@ -33,8 +33,8 @@ Attempted solution:
   http://code.qt.io/cgit/qt/qtbase.git/tree/src/corelib/kernel/qobject.cpp?h=5.4  # noqa
 """
 
-from enum import Enum
 import logging
+from enum import Enum
 
 import arrow
 from PySide.QtCore import (
@@ -58,15 +58,14 @@ from whisker.api import (
     msg_from_args,
     PING,
     PING_ACK,
-    RESPONSE_SUCCESS,
     split_timestamp,
     SYNTAX_ERROR_REGEX,
     WARNING_REGEX,
     WhiskerApi,
 )
 from whisker.constants import DEFAULT_PORT
+
 # from whisker.debug_qt import debug_object, debug_thread
-from whisker.exceptions import WhiskerCommandFailed
 from whisker.lang import CompiledRegexMemory
 from whisker.qt import exit_on_exception, StatusMixin
 
@@ -83,7 +82,7 @@ class ThreadOwnerState(Enum):
 
 
 def is_socket_connected(socket):
-    return (socket and socket.state() == QAbstractSocket.ConnectedState)
+    return socket and socket.state() == QAbstractSocket.ConnectedState
 
 
 def disable_nagle(socket):
@@ -131,6 +130,7 @@ class WhiskerOwner(QObject, StatusMixin):
     ping_requested = Signal()
     # And don't forget the signals inherited from StatusMixin.
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, task, server, main_port=DEFAULT_PORT, parent=None,
                  connect_timeout_ms=5000, read_timeout_ms=500,
                  name="whisker_owner", sysevent_prefix='sys_'):
@@ -320,6 +320,7 @@ class WhiskerMainSocketListener(QObject, StatusMixin):
         self.status("Connecting to {}:{} with timeout {} ms".format(
             self.server, self.port, self.connect_timeout_ms))
         self.socket = QTcpSocket(self)
+        # noinspection PyUnresolvedReferences
         self.socket.disconnected.connect(self.disconnected)
         self.socket.connectToHost(self.server, self.port)
         if not self.socket.waitForConnected(self.connect_timeout_ms):
@@ -398,7 +399,9 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         super().__init__(parent)
         StatusMixin.__init__(self, name, log)
         WhiskerApi.__init__(
-            self, whisker_immsend_get_reply_fn=self.get_immsock_response)
+            self,
+            whisker_immsend_get_reply_fn=self.get_immsock_response,
+            sysevent_prefix=sysevent_prefix)
         self.server = server
         self.connect_timeout_ms = connect_timeout_ms
         self.read_timeout_ms = read_timeout_ms
@@ -422,6 +425,7 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         if gre.search(CODE_REGEX, msg):
             code = gre.group(1)
             self.immsocket = QTcpSocket(self)
+            # noinspection PyUnresolvedReferences
             self.immsocket.disconnected.connect(self.disconnected)
             self.debug(
                 "Connecting immediate socket to {}:{} with timeout {}".format(
@@ -557,14 +561,17 @@ class WhiskerTask(QObject, StatusMixin):
         msg = "SHOULD BE OVERRIDDEN. EVENT: {}".format(event)
         self.status(msg)
 
+    # noinspection PyUnusedLocal
     @exit_on_exception  # @Slot(str, arrow.Arrow, int)
     def on_warning(self, msg, timestamp, whisker_timestamp_ms):
         self.warning(msg)
 
+    # noinspection PyUnusedLocal
     @exit_on_exception  # @Slot(str, arrow.Arrow, int)
     def on_error(self, msg, timestamp, whisker_timestamp_ms):
         self.error(msg)
 
+    # noinspection PyUnusedLocal
     @exit_on_exception  # @Slot(str, arrow.Arrow, int)
     def on_syntax_error(self, msg, timestamp, whisker_timestamp_ms):
         self.error(msg)

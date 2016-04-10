@@ -31,8 +31,8 @@ def load_config_or_die(mandatory=None, defaults=None, log_config=False):
             of attributes
     defaults: a dict-like object of defaults
     """
-    def _fail_mandatory(attrname):
-        errmsg = "Setting '{}' missing from config file".format(attrname)
+    def _fail_mandatory(attrname_):
+        errmsg = "Setting '{}' missing from config file".format(attrname_)
         log.critical(errmsg)
         sys.exit(1)
 
@@ -83,6 +83,7 @@ def connect_to_db_using_attrdict(database_url, show_url=False,
                            engine_kwargs=engine_kwargs)
 
 
+# noinspection PyShadowingBuiltins
 def ask_user(prompt, default=None, type=str, min=None, max=None,
              options=None, allow_none=True):
     """
@@ -124,7 +125,7 @@ def ask_user(prompt, default=None, type=str, min=None, max=None,
             if options and value not in options:
                 raise ValueError()
             return value
-        except:
+        except (TypeError, ValueError):
             print("Bad input value; try again.")
 
 
@@ -151,10 +152,10 @@ def save_data(tablename, results, taskname, timestamp=None,
             "save_data: file {} not created; empty results?".format(filename))
 
 
-def insert_and_set_id(table, object, idfield='id'):
+def insert_and_set_id(table, obj, idfield='id'):
     """The dataset table's insert() command returns the primary key.
     However, it doesn't store that back, and we want users to do that
     consistently."""
-    pk = table.insert(object)
-    object[idfield] = pk
+    pk = table.insert(obj)
+    obj[idfield] = pk
     return pk

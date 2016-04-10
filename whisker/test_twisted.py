@@ -41,13 +41,13 @@ VIDEO = "_video"
 
 
 class MyWhiskerTask(WhiskerTask):
-    def __init__(self, display_num, audio_num, input, output,
+    def __init__(self, display_num, audio_num, input_line, output_line,
                  media_dir, bitmap, video, wav):
         super().__init__()  # call base class init
         self.display_num = display_num
         self.audio_num = audio_num
-        self.input = input
-        self.output = output
+        self.input = input_line
+        self.output = output_line
         self.media_dir = media_dir
         self.bitmap = bitmap
         self.video = video
@@ -69,18 +69,18 @@ class MyWhiskerTask(WhiskerTask):
         # ---------------------------------------------------------------------
         # Display
         # ---------------------------------------------------------------------
-        BG_COL = (0, 0, 100)
+        bg_col = (0, 0, 100)
         pen = Pen(width=3, colour=(255, 255, 150), style=PenStyle.solid)
         brush = Brush(
             colour=(255, 0, 0), bg_colour=(0, 255, 0),
             opaque=True, style=BrushStyle.hatched,
             hatch_style=BrushHatchStyle.bdiagonal)
-        self.whisker.claim_display_by_num(self.display_num, alias=DISPLAY)
+        self.whisker.claim_display(number=self.display_num, alias=DISPLAY)
         display_size = self.whisker.display_get_size(DISPLAY)
         log.info("display_size: {}".format(display_size))
         self.whisker.display_scale_documents(DISPLAY, True)
         self.whisker.display_create_document(DOC)
-        self.whisker.display_set_background_colour(DOC, BG_COL)
+        self.whisker.display_set_background_colour(DOC, bg_col)
         self.whisker.display_blank(DISPLAY)
         self.whisker.display_create_document("junk")
         self.whisker.display_delete_document("junk")
@@ -163,6 +163,7 @@ class MyWhiskerTask(WhiskerTask):
     def incoming_event(self, event, timestamp=None):
         print("Event: {e} (timestamp {t})".format(e=event, t=timestamp))
         if event == "EndOfTask":
+            # noinspection PyUnresolvedReferences
             reactor.stop()
         elif event == "play":
             self.whisker.video_play(DOC, VIDEO)
@@ -223,8 +224,8 @@ def main():
     w = MyWhiskerTask(
         display_num=args.display_num,
         audio_num=args.audio_num,
-        input=args.input,
-        output=args.output,
+        input_line=args.input,
+        output_line=args.output,
         media_dir=args.media_dir,
         bitmap=args.bitmap,
         video=args.video,

@@ -13,6 +13,7 @@ import os
 import sys
 
 from alembic.config import Config
+# noinspection PyUnresolvedReferences
 from alembic.migration import MigrationContext
 from alembic.runtime.environment import EnvironmentContext
 from alembic.script import ScriptDirectory
@@ -47,11 +48,10 @@ from whisker.lang import OrderedNamespace, writeline_nl, writelines_nl
 
 log = logging.getLogger(__name__)
 
-arrow = None
 try:
     import arrow
-except:
-    pass
+except ImportError:
+    arrow = None
 
 
 # =============================================================================
@@ -80,8 +80,9 @@ def get_head_revision_from_alembic(alembic_config_filename,
     """
     Ask Alembic what its head revision is.
     Arguments:
-        base_dir: directory to start in, so relative paths in the config
-            file work.
+        alembic_config_filename: config filename
+        alembic_base_dir: directory to start in, so relative paths in the
+            config file work.
     """
     if alembic_base_dir is None:
         alembic_base_dir = os.path.dirname(alembic_config_filename)
@@ -113,7 +114,7 @@ def get_current_and_head_revision(database_url, alembic_config_filename,
     log.info("Current database version: {}".format(current_revision))
 
     # Are we where we want to be?
-    return (current_revision, head_revision)
+    return current_revision, head_revision
 
 
 def upgrade_database(alembic_config_filename, alembic_base_dir=None):
@@ -132,6 +133,7 @@ def upgrade_database(alembic_config_filename, alembic_base_dir=None):
 
     revision = 'head'  # where we want to get to
 
+    # noinspection PyUnusedLocal,PyProtectedMember
     def upgrade(rev, context):
         return script._upgrade_revs(revision, rev)
 
@@ -173,6 +175,7 @@ def get_database_engine(settings, unbreak_sqlite_transactions=True):
     # Detailed in sqlalchemy/dialects/sqlite/pysqlite.py; see
     # "Serializable isolation / Savepoints / Transactional DDL"
 
+    # noinspection PyUnusedLocal
     @event.listens_for(engine, "connect")
     def do_connect(dbapi_connection, connection_record):
         # disable pysqlite's emitting of the BEGIN statement entirely.
@@ -191,6 +194,7 @@ def get_database_engine(settings, unbreak_sqlite_transactions=True):
 # Plain functions: not thread-aware; generally AVOID these
 # -----------------------------------------------------------------------------
 
+# noinspection PyPep8Naming
 def get_database_session_thread_unaware(settings):
     log.warning("get_database_session_thread_unaware() called")
     engine = get_database_engine(settings)
@@ -220,10 +224,12 @@ def session_scope_thread_unaware(settings):
 # https://writeonly.wordpress.com/2009/07/16/simple-read-only-sqlalchemy-sessions/  # noqa
 # http://docs.sqlalchemy.org/en/latest/orm/session_api.html
 
+# noinspection PyUnusedLocal
 def noflush_readonly(*args, **kwargs):
     log.debug("Attempt to flush a readonly database session blocked")
 
 
+# noinspection PyPep8Naming
 def get_database_engine_session_thread_scope(settings, readonly=False,
                                              autoflush=True):
     if readonly:
@@ -272,6 +278,7 @@ class SqlAlchemyAttrDictMixin(object):
         Returns what looks like a plain object with the values of the
         SQLAlchemy ORM object.
         """
+        # noinspection PyUnresolvedReferences
         columns = self.__table__.columns.keys()
         values = (getattr(self, x) for x in columns)
         zipped = zip(columns, values)
@@ -478,8 +485,9 @@ def dump_ddl(metadata, dialect_name, fileobj=sys.stdout, checkfirst=True):
     # http://docs.sqlalchemy.org/en/rel_0_8/faq.html#how-can-i-get-the-create-table-drop-table-output-as-a-string  # noqa
     # http://stackoverflow.com/questions/870925/how-to-generate-a-file-with-ddl-in-the-engines-sql-dialect-in-sqlalchemy  # noqa
     # https://github.com/plq/scripts/blob/master/pg_dump.py
-    def dump(sql, *multiparams, **params):
-        compsql = sql.compile(dialect=engine.dialect)
+    # noinspection PyUnusedLocal
+    def dump(querysql, *multiparams, **params):
+        compsql = querysql.compile(dialect=engine.dialect)
         writeline_nl(fileobj, "{sql};".format(sql=compsql))
 
     writeline_nl(fileobj,
@@ -493,6 +501,7 @@ def dump_ddl(metadata, dialect_name, fileobj=sys.stdout, checkfirst=True):
     # issuing CREATE ... IF NOT EXISTS?
 
 
+# noinspection PyPep8Naming
 def quick_mapper(table):
     # http://www.tylerlesmann.com/2009/apr/27/copying-databases-across-platforms-sqlalchemy/  # noqa
     Base = declarative_base()
@@ -522,6 +531,7 @@ class StringLiteral(String):
         return process
 
 
+# noinspection PyPep8Naming
 def make_literal_query_fn(dialect):
     DialectClass = dialect.__class__
 
@@ -552,6 +562,7 @@ def make_literal_query_fn(dialect):
     return literal_query
 
 
+# noinspection PyProtectedMember
 def get_literal_query(statement, bind=None):
     # http://stackoverflow.com/questions/5631078/sqlalchemy-print-the-actual-query  # noqa
     """
@@ -573,6 +584,7 @@ def get_literal_query(statement, bind=None):
     compiler = statement._compiler(dialect)
 
     class LiteralCompiler(compiler.__class__):
+        # noinspection PyMethodMayBeStatic
         def visit_bindparam(self, bindparam, within_columns_clause=False,
                             literal_binds=False, **kwargs):
             return super().render_literal_bindparam(
@@ -582,6 +594,7 @@ def get_literal_query(statement, bind=None):
                 **kwargs
             )
 
+        # noinspection PyUnusedLocal
         def render_literal_value(self, value, type_):
             """Render the value of a bind parameter as a quoted literal.
 
@@ -614,7 +627,7 @@ def get_literal_query(statement, bind=None):
     return compiler.process(statement) + ";"
 
 
-def dump_table_as_insert_sql(engine, session, table_name, fileobj,
+def dump_table_as_insert_sql(engine, table_name, fileobj,
                              wheredict=None, include_ddl=False,
                              multirow=False):
     # http://stackoverflow.com/questions/5631078/sqlalchemy-print-the-actual-query  # noqa
@@ -680,7 +693,7 @@ def dump_table_as_insert_sql(engine, session, table_name, fileobj,
     log.debug("... done")
 
 
-def dump_orm_object_as_insert_sql(engine, session, obj, fileobj):
+def dump_orm_object_as_insert_sql(engine, obj, fileobj):
     # literal_query = make_literal_query_fn(engine.dialect)
     insp = inspect(obj)
     # insp: an InstanceState
@@ -740,7 +753,7 @@ def bulk_insert_extras(dialect_name, fileobj, start):
     writelines_nl(fileobj, lines)
 
 
-def dump_orm_tree_as_insert_sql(engine, session, baseobj, fileobj):
+def dump_orm_tree_as_insert_sql(engine, baseobj, fileobj):
     """
     Sends an object, and all its relations (discovered via "relationship"
     links) as INSERT commands in SQL, to fileobj.
@@ -760,7 +773,7 @@ def dump_orm_tree_as_insert_sql(engine, session, baseobj, fileobj):
         sql_comment("Data for all objects related to the first below:"))
     bulk_insert_extras(engine.dialect.name, fileobj, start=True)
     for part in walk(baseobj):
-        dump_orm_object_as_insert_sql(engine, session, part, fileobj)
+        dump_orm_object_as_insert_sql(engine, part, fileobj)
     bulk_insert_extras(engine.dialect.name, fileobj, start=False)
 
 
@@ -806,6 +819,7 @@ class ArrowMicrosecondType(TypeDecorator):
     def process_literal_param(self, value, dialect):
         return str(value)
 
+    # noinspection PyMethodMayBeStatic
     def _coerce(self, value):
         if value is None:
             return None
@@ -817,9 +831,11 @@ class ArrowMicrosecondType(TypeDecorator):
             value = arrow.get(value)
         return value
 
+    # noinspection PyUnusedLocal
     def coercion_listener(self, target, value, oldvalue, initiator):
         return self._coerce(value)
 
     @property
     def python_type(self):
+        # noinspection PyUnresolvedReferences
         return self.impl.type.python_type

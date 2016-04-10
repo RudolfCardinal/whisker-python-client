@@ -10,11 +10,7 @@ from attrdict import AttrDict
 from datetime import datetime
 from twisted.internet import reactor
 from whisker.logging import configure_logger_for_colour
-from whisker.constants import (DEFAULT_PORT,
-                               CMD_REPORT_NAME,
-                               CMD_TEST_NETWORK_LATENCY,
-                               CMD_TIMER_SET_EVENT,
-                               CMD_TIMESTAMPS)
+from whisker.constants import DEFAULT_PORT,
 from whisker.convenience import (load_config_or_die,
                                  connect_to_db_using_attrdict,
                                  insert_and_set_id,
@@ -59,14 +55,13 @@ class MyWhiskerTask(WhiskerTask):
         """At this point, we are fully connected to the Whisker server."""
         print("Task running.")
         period_ms = 1000
-        self.command(CMD_TIMESTAMPS, "on")
-        self.command(CMD_REPORT_NAME, TASKNAME_LONG)
-        self.send(CMD_TEST_NETWORK_LATENCY)
-        self.command(CMD_TIMER_SET_EVENT, period_ms,
-                     self.session.num_pings - 1, "TimerFired")
-        self.command(CMD_TIMER_SET_EVENT,
-                     period_ms * (self.session.num_pings + 1),
-                     0, "EndOfTask")
+        self.whisker.timestamps(True)
+        self.whisker.report_name(TASKNAME_LONG)
+        self.whisker.get_network_latency_ms()
+        self.whisker.timer_set_event("TimerFired", period_ms,
+                                     self.session.num_pings - 1)
+        self.whisker.timer_set_event("EndOfTask",
+                                     period_ms * (self.session.num_pings + 1))
 
     def incoming_event(self, event, timestamp=None):
         """An event has arrived from the Whisker server."""
@@ -76,6 +71,7 @@ class MyWhiskerTask(WhiskerTask):
             e=event, t=timestamp, n=now.isoformat()))
         # We could do lots of things at this point. But let's keep it simple:
         if event == "EndOfTask":
+            # noinspection PyUnresolvedReferences
             reactor.stop()  # stops Twisted and thus network processing
         else:
             trial = AttrDict(
@@ -91,57 +87,67 @@ class MyWhiskerTask(WhiskerTask):
 
 
 # =============================================================================
-# Load config; establish database connection; ask the user for anything else
+# Main execution sequence
 # =============================================================================
 
-log.info("Asking user for config filename")
-config = load_config_or_die(
-    mandatory=['database_url'],
-    defaults=dict(server='localhost', port=DEFAULT_PORT),
-    log_config=True  # send to console (NB beware security of database URLs)
-)
-db = connect_to_db_using_attrdict(config.database_url)
+def main():
+    # -------------------------------------------------------------------------
+    # Load config; establish database connection; ask the user for anything else
+    # -------------------------------------------------------------------------
 
-# Any additional user input required?
-num_pings = ask_user("Number of pings", default=10, type=int, min=1)
-dummy = ask_user("Irrelevant: Heads or tails", default='H', options=['H', 'T'])
+    log.info("Asking user for config filename")
+    config = load_config_or_die(
+        mandatory=['database_url'],
+        defaults=dict(server='localhost', port=DEFAULT_PORT),
+        log_config=True  # send to console (beware security of database URLs)
+    )
+    db = connect_to_db_using_attrdict(config.database_url)
 
-# =============================================================================
-# Set up task and go
-# =============================================================================
+    # Any additional user input required?
+    num_pings = ask_user("Number of pings", default=10, type=int, min=1)
+    ask_user("Irrelevant: Heads or tails", default='H', options=['H', 'T'])
 
-session = AttrDict(start=datetime.now(),
-                   subject=config.subject,
-                   session=config.session,
-                   num_pings=num_pings)
-insert_and_set_id(db[SESSION_TABLE], session)  # save to database
-log.info("Off we go...")
-task = MyWhiskerTask(config, db, session)
-task.connect(config.server, config.port)
-reactor.run()  # starts Twisted and thus network processing
-log.info("Finished.")
+    # -------------------------------------------------------------------------
+    # Set up task and go
+    # -------------------------------------------------------------------------
 
-# =============================================================================
-# All done. Calculate summaries. Save data from this session to new CSV files.
-# =============================================================================
+    session = AttrDict(start=datetime.now(),
+                       subject=config.subject,
+                       session=config.session,
+                       num_pings=num_pings)
+    insert_and_set_id(db[SESSION_TABLE], session)  # save to database
+    log.info("Off we go...")
+    task = MyWhiskerTask(config, db, session)
+    task.connect(config.server, config.port)
+    # noinspection PyUnresolvedReferences
+    reactor.run()  # starts Twisted and thus network processing
+    log.info("Finished.")
 
-# Retrieve all our trials. (There may also be many others in the database.)
-# NOTE that find() returns an iterator (you get to iterate through it ONCE).
-# Since we want to use this more than once (below), use a list.
-trials = list(db[TRIAL_TABLE].find(session_id=session.id))
+    # -------------------------------------------------------------------------
+    # Done. Calculate summaries. Save data from this session to new CSV files.
+    # -------------------------------------------------------------------------
 
-# Calculate some summary measures
-summary = AttrDict(
-    session_id=session.id,  # foreign key
-    n_pings_received=sum(t.received for t in trials)
-)
-insert_and_set_id(db[SUMMARY_TABLE], summary)  # save to database
+    # Retrieve all our trials. (There may also be many others in the database.)
+    # NOTE that find() returns an iterator (you get to iterate through it ONCE).
+    # Since we want to use this more than once (below), use a list.
+    trials = list(db[TRIAL_TABLE].find(session_id=session.id))
 
-# Save data. (Since the session and summary objects are single objects, we
-# encapsulate them in a list.)
-save_data("session", [session], timestamp=session.start,
-          taskname=TASKNAME_SHORT)
-save_data("trial", trials, timestamp=session.start,
-          taskname=TASKNAME_SHORT)
-save_data("summary", [summary], timestamp=session.start,
-          taskname=TASKNAME_SHORT)
+    # Calculate some summary measures
+    summary = AttrDict(
+        session_id=session.id,  # foreign key
+        n_pings_received=sum(t.received for t in trials)
+    )
+    insert_and_set_id(db[SUMMARY_TABLE], summary)  # save to database
+
+    # Save data. (Since the session and summary objects are single objects, we
+    # encapsulate them in a list.)
+    save_data("session", [session], timestamp=session.start,
+              taskname=TASKNAME_SHORT)
+    save_data("trial", trials, timestamp=session.start,
+              taskname=TASKNAME_SHORT)
+    save_data("summary", [summary], timestamp=session.start,
+              taskname=TASKNAME_SHORT)
+
+
+if __name__ == '__main__':
+    main()

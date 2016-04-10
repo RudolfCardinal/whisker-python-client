@@ -19,6 +19,8 @@ _old_emit = QtCore.QObject.emit  # normal method
 
 def _wrap_connect(callable_object):
     """Returns a wrapped call to the old version of QtCore.QObject.connect"""
+
+    # noinspection PyDecorator
     @staticmethod
     def call(*args):
         callable_object(*args)
@@ -30,6 +32,8 @@ def _wrap_disconnect(callable_object):
     """
     Returns a wrapped call to the old version of QtCore.QObject.disconnect
     """
+
+    # noinspection PyDecorator
     @staticmethod
     def call(*args):
         callable_object(*args)
@@ -41,6 +45,7 @@ def enable_signal_debugging(**kwargs):
     """Call this to enable Qt Signal debugging. This will trap all
     connect, and disconnect calls."""
 
+    # noinspection PyUnusedLocal
     def f(*args):
         return None
 
@@ -66,15 +71,16 @@ def simple_emit_debugger(*args):
     emitter = args[0]
     # emitter_qthread = emitter.thread()
     log.debug(
-        "EMIT: emitter={}, "  # emitter's thread={}, currentThreadId={}, "
-        "thread name={}, signal={}, args={}".format(
-            emitter,
-            # emitter_qthread,
-            # emitter_qthread.currentThreadId(),
-            threading.current_thread().name,
-            repr(args[1]),
-            repr(args[2:]),
+        "EMIT: emitter={e}, "
+        "thread name={n}, signal={s}, args={a}".format(
+            e=emitter,
+            n=threading.current_thread().name,
+            s=repr(args[1]),
+            a=repr(args[2:]),
         )
+        # emitter's thread={t}, currentThreadId={i}, "
+        # t=emitter_qthread,
+        # i=emitter_qthread.currentThreadId(),
     )
 
 

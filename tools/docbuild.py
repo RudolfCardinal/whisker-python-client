@@ -61,7 +61,7 @@ def call(cmdargs, *args, **kwargs):
     subprocess.call(cmdargs, *args, **kwargs)
 
 
-if __name__ == '__main__':
+def main():
     logging.basicConfig(level=logging.DEBUG)
     os.makedirs(BUILD_DIR, exist_ok=True)
     htmlfile = tempfile.NamedTemporaryFile(
@@ -87,3 +87,7 @@ Making documentation
     htmlfile.close()
     call([WKHTMLTOPDF, htmlfile.name, PDF])
     os.remove(htmlfile.name)
+
+
+if __name__ == '__main__':
+    main()
