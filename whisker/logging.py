@@ -229,13 +229,14 @@ class HtmlColorFormatter(logging.Formatter):
         logging.CRITICAL: '#FFFFFF',  # white
     }
 
-    def __init__(self):
+    def __init__(self, append_br=False, replace_nl_with_br=True):
         # https://hg.python.org/cpython/file/3.5/Lib/logging/__init__.py
         super().__init__(
             fmt='%(message)s',
             datefmt='%Y-%m-%d %H:%M:%S',
             style='%'
         )
+        self.append_br = append_br
 
     def format(self, record):
         # record is a LogRecord
@@ -250,7 +251,7 @@ class HtmlColorFormatter(logging.Formatter):
         bg_col = self.log_background_colors[record.levelno]
         html = (
             '<span style="color:#008B8B">{time}.{ms:03d} {name}:{lvname}: '
-            '</span><span style="color:{color}{bg}">{msg}</font><br>'.format(
+            '</span><span style="color:{color}{bg}">{msg}</font>{br}'.format(
                 time=record.asctime,
                 ms=int(record.msecs),
                 name=record.name,
@@ -258,6 +259,7 @@ class HtmlColorFormatter(logging.Formatter):
                 color=self.log_colors[record.levelno],
                 msg=escape(record.message),
                 bg=";background-color:{}".format(bg_col) if bg_col else "",
+                br="<br>" if self.append_br else "",
             )
         )
         # print("record.__dict__: {}".format(record.__dict__))

@@ -31,11 +31,12 @@ from PySide.QtGui import (
     QListView,
     QMainWindow,
     QMessageBox,
+    QPlainTextEdit,
     QPushButton,
     QRadioButton,
     QTableView,
     QTextCursor,
-    QTextEdit,
+    # QTextEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -108,7 +109,7 @@ class StyledQGroupBox(QGroupBox):
 # =============================================================================
 
 LOGEDIT_STYLESHEET = """
-QTextEdit {
+QPlainTextEdit {
     border: 1px solid black;
     font-family: 'Dejavu Sans Mono', 'Courier';
     font-size: 10pt;
@@ -123,7 +124,8 @@ class LogWindow(QMainWindow):
 
     # noinspection PyUnresolvedReferences
     def __init__(self, level=logging.INFO, window_title="Python log",
-                 logger=None, min_width=800, min_height=400):
+                 logger=None, min_width=800, min_height=400,
+                 maximumBlockCount=1000):
         super().__init__()
         self.setStyleSheet(LOGEDIT_STYLESHEET)
 
@@ -140,9 +142,13 @@ class LogWindow(QMainWindow):
         log_group = StyledQGroupBox("Log")
         log_layout_1 = QVBoxLayout()
         log_layout_2 = QHBoxLayout()
-        self.log = QTextEdit()
+        self.log = QPlainTextEdit()
+        # QPlainTextEdit better than QTextEdit because it supports
+        # maximumBlockCount while still allowing HTML (via appendHtml,
+        # not insertHtml).
         self.log.setReadOnly(True)
-        self.log.setLineWrapMode(QTextEdit.NoWrap)
+        self.log.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.log.setMaximumBlockCount(maximumBlockCount)
         log_clear_button = QPushButton('Clear log')
         log_clear_button.clicked.connect(self.log.clear)
         log_copy_button = QPushButton('Copy to clipboard')
@@ -210,9 +216,12 @@ class LogWindow(QMainWindow):
 
     @Slot(str)
     def log_internal(self, html):
-        self.log.moveCursor(QTextCursor.End)
-        self.log.insertHtml(html)
-        self.scroll_to_end_of_log()
+        # self.log.moveCursor(QTextCursor.End)
+        # self.log.insertHtml(html)
+        self.log.appendHtml(html)
+        # self.scroll_to_end_of_log()
+        # ... unnecessary; if you're at the end, it scrolls, and if you're at
+        # the top, it doesn't bug you.
 
     @Slot()
     def exit(self):
@@ -226,6 +235,62 @@ class LogWindow(QMainWindow):
     def may_exit(self):
         # log.debug("LogWindow: may_exit")
         self.set_may_close(True)
+
+
+# =============================================================================
+# TextLogElement - add a text log to your dialog box
+# =============================================================================
+
+class TextLogElement(object):
+    def __init__(self, maximumBlockCount=1000,
+                 font_size_pt=10, font_family="Courier", title="Log"):
+        # For nested layouts: (1) create everything, (2) lay out
+        self.log_group = StyledQGroupBox(title)
+        log_layout_1 = QVBoxLayout()
+        log_layout_2 = QHBoxLayout()
+        self.log = QPlainTextEdit()
+        self.log.setReadOnly(True)
+        self.log.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.log.setMaximumBlockCount(maximumBlockCount)
+
+        font = self.log.font()
+        font.setFamily(font_family)
+        font.setPointSize(font_size_pt)
+
+        log_clear_button = QPushButton('Clear log')
+        log_clear_button.clicked.connect(self.log.clear)
+        log_copy_button = QPushButton('Copy to clipboard')
+        log_copy_button.clicked.connect(self.copy_whole_log)
+        log_layout_2.addWidget(log_clear_button)
+        log_layout_2.addWidget(log_copy_button)
+        log_layout_2.addStretch(1)
+        log_layout_1.addWidget(self.log)
+        log_layout_1.addLayout(log_layout_2)
+        self.log_group.setLayout(log_layout_1)
+
+    def get_widget(self):
+        return self.log_group
+
+    def add(self, msg):
+        # http://stackoverflow.com/questions/16568451
+        # self.log.moveCursor(QTextCursor.End)
+        self.log.appendPlainText(msg)
+        # ... will append it as a *paragraph*, i.e. no need to add a newline
+        # self.scroll_to_end_of_log()
+
+    def copy_whole_log(self):
+        # Ctrl-C will copy the selected parts.
+        # log.copy() will copy the selected parts.
+        self.log.selectAll()
+        self.log.copy()
+        self.log.moveCursor(QTextCursor.End)
+        self.scroll_to_end_of_log()
+
+    def scroll_to_end_of_log(self):
+        vsb = self.log.verticalScrollBar()
+        vsb.setValue(vsb.maximum())
+        hsb = self.log.horizontalScrollBar()
+        hsb.setValue(0)
 
 
 # =============================================================================
