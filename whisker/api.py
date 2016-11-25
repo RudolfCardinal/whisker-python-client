@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from enum import Enum, unique
 import logging
 import re
+from typing import Any, Callable, Iterator, List, Optional, Tuple
 
 from whisker.callback import CallbackHandler
 from whisker.exceptions import WhiskerCommandFailed
@@ -258,6 +259,10 @@ VAL_TOUCH_UP = "TouchUp"
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+ColourType = Tuple[int, int, int]
+
+PointType = Tuple[int, int]
+SizeType = Tuple[int, int]
 
 
 @unique
@@ -462,11 +467,11 @@ BRUSH_HATCH_VALUES = {
 # Helper functions
 # =============================================================================
 
-def _on_val(on):
+def _on_val(on: bool) -> str:
     return VAL_ON if on else VAL_OFF
 
 
-def split_timestamp(msg):
+def split_timestamp(msg: str) -> Tuple[str, Optional[int]]:
     try:
         m = TIMESTAMP_REGEX.match(msg)
         mainmsg = m.group(1)
@@ -476,28 +481,28 @@ def split_timestamp(msg):
         return msg, None
 
 
-def on_off_to_boolean(msg):
+def on_off_to_boolean(msg: str) -> bool:
     return True if msg == VAL_ON else False
 
 
-def s_to_ms(time_seconds):
+def s_to_ms(time_seconds: float) -> int:
     return int(time_seconds * 1000)
 
 
-def min_to_ms(time_minutes):
+def min_to_ms(time_minutes: float) -> int:
     return int(time_minutes * 60000)
 
 
-def quote(string):
+def quote(string: str) -> str:
     return QUOTE + string + QUOTE  # suboptimal! Doesn't escape quotes.
 
 
-def msg_from_args(*args):
+def msg_from_args(*args) -> str:
     strings = [str(x) for x in args if x is not None]
     return " ".join(x for x in strings if x)
 
 
-def is_ducktype_colour(colour):
+def is_ducktype_colour(colour: Any) -> bool:
     try:
         assert len(colour) == 3
         (r, g, b) = colour
@@ -507,13 +512,13 @@ def is_ducktype_colour(colour):
         return False
 
 
-def assert_ducktype_colour(colour):
+def assert_ducktype_colour(colour: Any) -> None:
     if not is_ducktype_colour(colour):
         raise ValueError(
             "Bad colour: must be (R, G, B) tuple. Was: {}".format(colour))
 
 
-def is_ducktype_pos(pos):
+def is_ducktype_pos(pos: Any) -> bool:
     try:
         assert len(pos) == 2
         (x, y) = [float(val) for val in pos]
@@ -523,26 +528,27 @@ def is_ducktype_pos(pos):
         return False
 
 
-def assert_ducktype_pos(pos):
+def assert_ducktype_pos(pos: Any) -> None:
     if not is_ducktype_pos(pos):
         raise ValueError(
             "Bad position: must be (X, Y) tuple. Was: {}".format(pos))
 
 
-def is_ducktype_int(x):
+def is_ducktype_int(x: Any) -> bool:
     try:
         return int(x) == float(x)
     except (TypeError, ValueError):
         return False
 
 
-def is_ducktype_nonnegative_int(x):
+def is_ducktype_nonnegative_int(x: Any) -> bool:
     return is_ducktype_int(x) and int(x) >= 0
 
 
 class Rectangle(object):
-    def __init__(self, left, top, width=None, height=None,
-                 right=None, bottom=None):
+    def __init__(self, left: int, top: int,
+                 width: int = None, height: int = None,
+                 right: int = None, bottom: int = None) -> None:
         # Origin is at top left, as per Whisker.
         if width is None and right is None:
             raise ValueError("Bad rectangle width/right specification")
@@ -564,52 +570,55 @@ class Rectangle(object):
         self._top = top
 
     @property
-    def left(self):
+    def left(self) -> int:
         return self._left
 
     @property
-    def top(self):
+    def top(self) -> int:
         return self._top
 
     @property
-    def width(self):
+    def width(self) -> int:
         return self._width
 
     @property
-    def height(self):
+    def height(self) -> int:
         return self._height
 
     @property
-    def right(self):
+    def right(self) -> int:
         return self._left + self._width
 
     @property
-    def bottom(self):
+    def bottom(self) -> int:
         return self._top + self._height
 
     @property
-    def centre_x(self):
-        return self._left + self._width / 2
+    def centre_x(self) -> int:
+        return int(self._left + self._width / 2)
 
     @property
-    def centre_y(self):
-        return self._top + self._height / 2
+    def centre_y(self) -> int:
+        return int(self._top + self._height / 2)
 
     @property
-    def centre(self):
+    def centre(self) -> PointType:
         return self.centre_x, self.centre_y
 
     @property
-    def left_top(self):
+    def left_top(self) -> PointType:
         return self._left, self.top
 
     @property
-    def right_bottom(self):
+    def right_bottom(self) -> PointType:
         return self.right, self.bottom
 
 
 class Pen(object):
-    def __init__(self, width=1, colour=WHITE, style=PenStyle.solid):
+    def __init__(self,
+                 width: int = 1,
+                 colour: ColourType = WHITE,
+                 style: PenStyle = PenStyle.solid) -> None:
         assert_ducktype_colour(colour)
         assert isinstance(style, PenStyle)
         self.style = style
@@ -617,7 +626,7 @@ class Pen(object):
         self.colour = colour
 
     @property
-    def whisker_option_string(self):
+    def whisker_option_string(self) -> str:
         args = [
             FLAG_PEN_COLOUR, self.colour[0], self.colour[1], self.colour[2],
             FLAG_PEN_WIDTH, self.width,
@@ -627,8 +636,12 @@ class Pen(object):
 
 
 class Brush(object):
-    def __init__(self, colour=WHITE, bg_colour=BLACK, opaque=True,
-                 style=BrushStyle.solid, hatch_style=BrushHatchStyle.cross):
+    def __init__(self,
+                 colour: ColourType = WHITE,
+                 bg_colour: ColourType = BLACK,
+                 opaque: bool = True,
+                 style: BrushStyle = BrushStyle.solid,
+                 hatch_style: BrushHatchStyle = BrushHatchStyle.cross) -> None:
         assert_ducktype_colour(colour)
         assert_ducktype_colour(bg_colour)
         assert isinstance(style, BrushStyle)
@@ -640,7 +653,7 @@ class Brush(object):
         self.hatch_style = hatch_style
 
     @property
-    def whisker_option_string(self):
+    def whisker_option_string(self) -> str:
         args = [BRUSH_STYLE_FLAGS[self.style]]
         if self.style == BrushStyle.solid:
             args.extend(self.colour)
@@ -663,7 +676,9 @@ class Brush(object):
 # =============================================================================
 
 class WhiskerApi(object):
-    def __init__(self, whisker_immsend_get_reply_fn, sysevent_prefix="sys_"):
+    def __init__(self,
+                 whisker_immsend_get_reply_fn: Callable[..., str],
+                 sysevent_prefix: str = "sys_") -> None:
         """
         The function whisker_immsend_get_reply_fn must take arguments *args,
         join stringified versions of them using a space as the separator, and
@@ -679,16 +694,16 @@ class WhiskerApi(object):
     # Internal derived comms
     # -------------------------------------------------------------------------
 
-    def _immresp(self, *args):
+    def _immresp(self, *args) -> str:
         reply = self._immsend_get_reply(*args)
         (reply, whisker_timestamp) = split_timestamp(reply)
         return reply
 
-    def _immbool(self, *args):
+    def _immbool(self, *args) -> bool:
         reply = self._immresp(*args)
         return reply == RESPONSE_SUCCESS
 
-    def _immresp_with_timestamp(self, *args):
+    def _immresp_with_timestamp(self, *args) -> Tuple[str, Optional[int]]:
         reply = self._immsend_get_reply(*args)
         (reply, whisker_timestamp) = split_timestamp(reply)
         return reply, whisker_timestamp
@@ -697,34 +712,34 @@ class WhiskerApi(object):
     # Front-end functions for these
     # -------------------------------------------------------------------------
 
-    def get_command_boolean(self, *args):
+    def get_command_boolean(self, *args) -> bool:
         return self._immbool(*args)
 
-    def command(self, *args):
+    def command(self, *args) -> bool:
         return self._immbool(*args)
 
-    def command_exc(self, *args):
+    def command_exc(self, *args) -> None:
         """Complete command or raise WhiskerCommandFailed."""
         if not self._immbool(*args):
             raise WhiskerCommandFailed(msg_from_args(*args))
 
-    def get_response(self, *args):
+    def get_response(self, *args) -> str:
         return self._immresp(*args)
 
-    def get_response_with_timestamp(self, *args):
+    def get_response_with_timestamp(self, *args) -> Tuple[str, Optional[int]]:
         return self._immresp_with_timestamp(*args)
 
     # -------------------------------------------------------------------------
     # Custom event handling, e.g. for line flashing
     # -------------------------------------------------------------------------
 
-    def get_new_sysevent(self, *args):
+    def get_new_sysevent(self, *args) -> str:
         self.sysevent_counter += 1
         return self.sysevent_prefix + "_".join(
             str(x) for x in [self.sysevent_counter] + list(args)
         ).replace(" ", "")
 
-    def process_backend_event(self, event):
+    def process_backend_event(self, event: str) -> bool:
         """Returns True if the backend API has dealt with the event and it
         doesn't need to go to the main behavioural task."""
         n_called, swallow_event = self.callback_handler.process_event(event)
@@ -733,40 +748,56 @@ class WhiskerApi(object):
             event.startswith(self.sysevent_prefix)
         )
 
-    def send_after_delay(self, delay_ms, msg, event=''):
+    def send_after_delay(self, delay_ms: int, msg: str,
+                         event: str = '') -> None:
         event = event or self.get_new_sysevent("send", msg)
         self.timer_set_event(event, delay_ms)
-        self.callback_handler.add_single(event, self._immsend_get_reply, msg)
+        self.callback_handler.add_single(event, self._immsend_get_reply, [msg])
 
-    def call_after_delay(self, delay_ms, callback, args=None, kwargs=None,
-                         event=''):
+    def call_after_delay(self,
+                         delay_ms: int,
+                         callback: Callable[..., None],
+                         args: List[Any] = None,
+                         kwargs: List[Any] = None,
+                         event: str = '') -> None:
         args = args or []
         kwargs = kwargs or {}
         event = event or self.get_new_sysevent("call")
         self.timer_set_event(event, delay_ms)
         self.callback_handler.add_single(event, callback, args, kwargs)
 
-    def call_on_event(self, event, callback, args=None, kwargs=None,
-                      swallow_event=False):
+    def call_on_event(self,
+                      event: str,
+                      callback: Callable[..., None],
+                      args: List[Any] = None,
+                      kwargs: List[Any] = None,
+                      swallow_event: bool = False) -> None:
         args = args or []
         kwargs = kwargs or {}
         self.callback_handler.add_persistent(event, callback, args, kwargs,
                                              swallow_event=swallow_event)
 
-    def clear_event_callback(self, event, callback=None):
+    def clear_event_callback(self,
+                             event: str,
+                             callback: Callable[..., None] = None) -> None:
         self.callback_handler.remove(event, callback=callback)
 
-    def clear_all_callbacks(self):
+    def clear_all_callbacks(self) -> None:
         self.callback_handler.clear()
 
-    def debug_callbacks(self):
+    def debug_callbacks(self) -> None:
         self.callback_handler.debug()
 
     # -------------------------------------------------------------------------
     # Line flashing
     # -------------------------------------------------------------------------
 
-    def flash_line_pulses(self, line, count, on_ms, off_ms, on_at_rest=False):
+    def flash_line_pulses(self,
+                          line: str,
+                          count: int,
+                          on_ms: int,
+                          off_ms: int,
+                          on_at_rest: bool = False) -> int:
         assert count > 0
         # Generally better to ping-pong the events, rather than line them up
         # in advance, in case the user specifies very rapid oscillation that
@@ -788,7 +819,10 @@ class WhiskerApi(object):
         self.flash_line_ping_pong(line, on_now, timing_sequence)
         return total_duration_ms
 
-    def flash_line_ping_pong(self, line, on_now, timing_sequence):
+    def flash_line_ping_pong(self,
+                             line: str,
+                             on_now: bool,
+                             timing_sequence: List[int]) -> None:
         """
         line: line number/name
         on_now: switch it on or off now?
@@ -808,47 +842,47 @@ class WhiskerApi(object):
     # Whisker command set: comms, misc
     # -------------------------------------------------------------------------
 
-    def timestamps(self, on):
+    def timestamps(self, on: bool) -> bool:
         return self._immbool(CMD_TIMESTAMPS, _on_val(on))
 
-    def reset_clock(self):
+    def reset_clock(self) -> bool:
         return self._immbool(CMD_RESET_CLOCK)
 
-    def get_server_version(self):
+    def get_server_version(self) -> str:
         return self._immresp(CMD_VERSION)
 
-    def get_server_version_numeric(self):
+    def get_server_version_numeric(self) -> float:
         return float(self.get_server_version())
 
-    def get_server_time_ms(self):
+    def get_server_time_ms(self) -> int:
         return int(self._immresp(CMD_REQUEST_TIME))
 
-    def get_client_number(self):
+    def get_client_number(self) -> int:
         return int(self._immresp(CMD_CLIENT_NUMBER))
 
-    def permit_client_messages(self, permit):
+    def permit_client_messages(self, permit: bool) -> bool:
         return self._immbool(CMD_PERMIT_CLIENT_MESSAGES, _on_val(permit))
 
-    def send_to_client(self, client_num, *args):
+    def send_to_client(self, client_num: int, *args) -> bool:
         return self._immbool(CMD_SEND_TO_CLIENT, client_num,
                              msg_from_args(*args))
 
-    def set_media_directory(self, directory):
+    def set_media_directory(self, directory: str) -> bool:
         return self._immbool(CMD_SET_MEDIA_DIRECTORY, quote(directory))
 
-    def report_name(self, *args):
+    def report_name(self, *args) -> bool:
         return self._immbool(CMD_REPORT_NAME, msg_from_args(*args))
         # quotes not necessary
 
-    def report_status(self, *args):
+    def report_status(self, *args) -> bool:
         return self._immbool(CMD_REPORT_STATUS, msg_from_args(*args))
         # quotes not necessary
 
-    def report_comment(self, *args):
+    def report_comment(self, *args) -> bool:
         return self._immbool(CMD_REPORT_COMMENT, msg_from_args(*args))
         # quotes not necessary
 
-    def get_network_latency_ms(self):
+    def get_network_latency_ms(self) -> Optional[int]:
         reply = self._immresp(CMD_TEST_NETWORK_LATENCY)
         if reply != PING:
             return None
@@ -858,33 +892,38 @@ class WhiskerApi(object):
         except (TypeError, ValueError):
             return None
 
-    def ping(self):
+    def ping(self) -> bool:
         reply = self._immresp(PING)
         success = reply == PING_ACK
         return success
 
-    def shutdown(self):
+    def shutdown(self) -> bool:
         return self._immbool(CMD_SHUTDOWN)
 
-    def authenticate_get_challenge(self, package, client_name):
+    def authenticate_get_challenge(self, package: str,
+                                   client_name: str) -> str:
         reply = self._immresp(CMD_AUTHENTICATE, package, client_name)
         if not reply.startswith(MSG_AUTHENTICATE_CHALLENGE + " "):
             return None
         challenge = reply.split()[1]
         return challenge
 
-    def authenticate_provide_response(self, response):
+    def authenticate_provide_response(self, response: str) -> bool:
         return self._immbool(CMD_AUTHENTICATE_RESPONSE, response)
 
     # -------------------------------------------------------------------------
     # Whisker command set: logs
     # -------------------------------------------------------------------------
 
-    def log_open(self, filename):
+    def log_open(self, filename: str) -> bool:
         return self._immbool(CMD_LOG_OPEN, quote(filename))
 
-    def log_set_options(self, events=True, key_events=True, client_client=True,
-                        comms=False, signature=True):
+    def log_set_options(self,
+                        events: bool = True,
+                        key_events: bool = True,
+                        client_client: bool = True,
+                        comms: bool = False,
+                        signature: bool = True) -> bool:
         return self._immbool(
             CMD_LOG_SET_OPTIONS,
             FLAG_EVENTS, _on_val(events),
@@ -894,37 +933,39 @@ class WhiskerApi(object):
             FLAG_SIGNATURE, _on_val(signature),
         )
 
-    def log_pause(self):
+    def log_pause(self) -> bool:
         return self._immbool(CMD_LOG_PAUSE)
 
-    def log_resume(self):
+    def log_resume(self) -> bool:
         return self._immbool(CMD_LOG_RESUME)
 
-    def log_write(self, *args):
+    def log_write(self, *args) -> bool:
         return self._immbool(CMD_LOG_WRITE, msg_from_args(*args))
 
-    def log_close(self):
+    def log_close(self) -> bool:
         return self._immbool(CMD_LOG_CLOSE)
 
     # -------------------------------------------------------------------------
     # Whisker command set: timers
     # -------------------------------------------------------------------------
 
-    def timer_set_event(self, event, duration_ms, reload_count=0):
+    def timer_set_event(self, event: str, duration_ms: int,
+                        reload_count: int = 0) -> bool:
         return self._immbool(CMD_TIMER_SET_EVENT, duration_ms, reload_count,
                              event)
 
-    def timer_clear_event(self, event):
+    def timer_clear_event(self, event: str) -> bool:
         return self._immbool(CMD_TIMER_CLEAR_EVENT, event)
 
-    def timer_clear_all_events(self):
+    def timer_clear_all_events(self) -> bool:
         return self._immbool(CMD_TIMER_CLEAR_ALL_EVENTS)
 
     # -------------------------------------------------------------------------
     # Whisker command set: claiming, relinquishing
     # -------------------------------------------------------------------------
 
-    def claim_group(self, group, prefix="", suffix=""):
+    def claim_group(self, group: str, prefix: str = "",
+                    suffix: str = "") -> bool:
         args = [CMD_CLAIM_GROUP, group]
         if prefix:
             args += [FLAG_PREFIX, prefix]
@@ -932,14 +973,19 @@ class WhiskerApi(object):
             args += [FLAG_SUFFIX, suffix]
         return self._immbool(*args)
 
-    def claim_line(self, number=None, group=None, device=None,
-                   output=False, reset_state=ResetState.leave, alias=""):
+    def claim_line(self,
+                   number: int = None,
+                   group: str = None,
+                   device: str = None,
+                   output: bool = False,
+                   reset_state: ResetState = ResetState.leave,
+                   alias: str = "") -> bool:
         assert (
             (is_ducktype_nonnegative_int(number) or (group and device)) and
             not (number is not None and group)
         ), "Specify number [integer >= 0] OR (group AND device)"
         assert isinstance(reset_state, ResetState)
-        args = [CMD_LINE_CLAIM]
+        args = [CMD_LINE_CLAIM]  # type: List[Any]
         if number is not None:
             args.append(number)
         else:
@@ -952,18 +998,19 @@ class WhiskerApi(object):
             args.extend([FLAG_ALIAS, alias])
         return self._immbool(*args)
 
-    def relinquish_all_lines(self):
+    def relinquish_all_lines(self) -> bool:
         return self._immbool(CMD_LINE_RELINQUISH_ALL)
 
-    def line_set_alias(self, line, alias):
+    def line_set_alias(self, line: str, alias: str) -> bool:
         return self._immbool(CMD_LINE_SET_ALIAS, line, alias)
 
-    def claim_audio(self, number=None, group=None, device=None, alias=""):
+    def claim_audio(self, number: int = None, group: str = None,
+                    device: str = None, alias: str = "") -> bool:
         assert (
             (is_ducktype_nonnegative_int(number) or (group and device)) and
             not (number is not None and group)
         ), "Specify number [integer >= 0] OR (group AND device)"
-        args = [CMD_AUDIO_CLAIM]
+        args = [CMD_AUDIO_CLAIM]  # type: List[Any]
         if number is not None:
             args.append(number)
         else:
@@ -972,19 +1019,20 @@ class WhiskerApi(object):
             args.extend([FLAG_ALIAS, alias])
         return self._immbool(*args)
 
-    def audio_set_alias(self, from_, to):
+    def audio_set_alias(self, from_: str, to: str) -> bool:
         return self._immbool(CMD_AUDIO_SET_ALIAS, from_, to)
 
-    def relinquish_all_audio(self):
+    def relinquish_all_audio(self) -> bool:
         return self._immbool(CMD_AUDIO_RELINQUISH_ALL)
 
-    def claim_display(self, number=None, group=None, device=None, alias=""):
+    def claim_display(self, number: int = None, group: str = None,
+                      device: str = None, alias: str = "") -> bool:
         # Autocreating debug views not supported (see C++ WhiskerClientLib).
         assert (
             (is_ducktype_nonnegative_int(number) or (group and device)) and
             not (number is not None and group)
         ), "Specify number [integer >= 0] OR (group AND device)"
-        args = [CMD_DISPLAY_CLAIM]
+        args = [CMD_DISPLAY_CLAIM]  # type: List[Any]
         if number is not None:
             args.append(number)
         else:
@@ -993,20 +1041,22 @@ class WhiskerApi(object):
             args.extend([FLAG_ALIAS, alias])
         return self._immbool(*args)
 
-    def display_set_alias(self, from_, to):
+    def display_set_alias(self, from_: str, to: str) -> bool:
         return self._immbool(CMD_DISPLAY_SET_ALIAS, from_, to)
 
-    def relinquish_all_displays(self):
+    def relinquish_all_displays(self) -> bool:
         return self._immbool(CMD_DISPLAY_RELINQUISH_ALL)
 
-    def display_create_device(self, name, resize=True, directdraw=True,
-                              rectangle=None, debug_touches=False):
+    def display_create_device(self, name: str, resize: bool = True,
+                              directdraw: bool = True,
+                              rectangle: Rectangle = None,
+                              debug_touches: bool = False) -> bool:
         args = [
             CMD_DISPLAY_CREATE_DEVICE,
             name,
             FLAG_RESIZE, _on_val(resize),
             FLAG_DIRECTDRAW, _on_val(directdraw),
-        ]
+        ]  # type: List[Any]
         if rectangle:
             args.extend([
                 rectangle.left,
@@ -1018,17 +1068,17 @@ class WhiskerApi(object):
             args.append(FLAG_DEBUG_TOUCHES)
         return self._immbool(*args)
 
-    def display_delete_device(self, device):
+    def display_delete_device(self, device: str) -> bool:
         return self._immbool(CMD_DISPLAY_DELETE_DEVICE, device)
 
     # -------------------------------------------------------------------------
     # Whisker command set: lines
     # -------------------------------------------------------------------------
 
-    def line_set_state(self, line, on):
+    def line_set_state(self, line: str, on: bool) -> bool:
         return self._immbool(CMD_LINE_SET_STATE, line, _on_val(on))
 
-    def line_read_state(self, line):
+    def line_read_state(self, line: str) -> bool:
         """Returns a boolean representing the line state, or None upon
         failure."""
         reply = self._immresp(CMD_LINE_READ_STATE, line)
@@ -1039,39 +1089,43 @@ class WhiskerApi(object):
         else:
             return None
 
-    def line_set_event(self, line, event, event_type=LineEventType.on):
+    def line_set_event(self, line: str, event: str,
+                       event_type: LineEventType = LineEventType.on) -> bool:
         assert isinstance(event_type, LineEventType)
         return self._immbool(CMD_LINE_SET_EVENT, line,
                              LINE_EVENT_TYPES[event_type], event)
 
-    def line_clear_event(self, event):
+    def line_clear_event(self, event: str) -> bool:
         return self._immbool(CMD_LINE_CLEAR_EVENT, event)
 
-    def line_clear_event_by_line(self, line, event_type):
+    def line_clear_event_by_line(self, line: str,
+                                 event_type: LineEventType) -> bool:
         assert isinstance(event_type, LineEventType)
         return self._immbool(CMD_LINE_CLEAR_EVENTS_BY_LINE, line,
                              LINE_EVENT_TYPES[event_type])
 
-    def line_clear_all_events(self):
+    def line_clear_all_events(self) -> bool:
         return self._immbool(CMD_LINE_CLEAR_ALL_EVENTS)
 
-    def line_set_safety_timer(self, line, time_ms, safety_state):
+    def line_set_safety_timer(self, line: str, time_ms: int,
+                              safety_state: SafetyState) -> bool:
         assert isinstance(safety_state, SafetyState)
         return self._immbool(CMD_LINE_SET_SAFETY_TIMER, line, time_ms,
                              LINE_SAFETY_STATES[safety_state])
 
-    def line_clear_safety_timer(self, line):
+    def line_clear_safety_timer(self, line: str) -> bool:
         return self._immbool(CMD_LINE_CLEAR_SAFETY_TIMER, line)
 
     # -------------------------------------------------------------------------
     # Whisker command set: audio
     # -------------------------------------------------------------------------
 
-    def audio_play_wav(self, device, filename):
+    def audio_play_wav(self, device: str, filename: str) -> bool:
         return self._immbool(CMD_AUDIO_PLAY_FILE, device, quote(filename))
 
-    def audio_load_tone(self, device, buffer_, frequency_hz, tone_type,
-                        duration_ms):
+    def audio_load_tone(self, device: str, buffer_: str,
+                        frequency_hz: int, tone_type: ToneType,
+                        duration_ms: int) -> bool:
         assert isinstance(tone_type, ToneType)
         return self._immbool(
             CMD_AUDIO_LOAD_TONE,
@@ -1082,35 +1136,37 @@ class WhiskerApi(object):
             duration_ms
         )
 
-    def audio_load_wav(self, device, sound, filename):
+    def audio_load_wav(self, device: str, sound: str, filename: str) -> bool:
         return self._immbool(CMD_AUDIO_LOAD_SOUND, device, sound,
                              quote(filename))
 
-    def audio_play_sound(self, device, sound, loop=False):
+    def audio_play_sound(self, device: str, sound: str,
+                         loop: bool = False) -> bool:
         args = [CMD_AUDIO_PLAY_SOUND, device, sound]
         if loop:
             args.append(FLAG_LOOP)
         return self._immbool(*args)
 
-    def audio_unload_sound(self, device, sound):
+    def audio_unload_sound(self, device: str, sound: str) -> bool:
         return self._immbool(CMD_AUDIO_UNLOAD_SOUND, device, sound)
 
-    def audio_stop_sound(self, device, sound):
+    def audio_stop_sound(self, device: str, sound: str) -> bool:
         return self._immbool(CMD_AUDIO_STOP_SOUND, device, sound)
 
-    def audio_silence_device(self, device):
+    def audio_silence_device(self, device: str) -> bool:
         return self._immbool(CMD_AUDIO_SILENCE_DEVICE, device)
 
-    def audio_unload_all(self, device):
+    def audio_unload_all(self, device: str) -> bool:
         return self._immbool(CMD_AUDIO_UNLOAD_ALL, device)
 
-    def audio_set_sound_volume(self, device, sound, volume):
+    def audio_set_sound_volume(self, device: str, sound: str,
+                               volume: int) -> bool:
         return self._immbool(CMD_AUDIO_SET_SOUND_VOLUME, device, sound, volume)
 
-    def audio_silence_all_devices(self):
+    def audio_silence_all_devices(self) -> bool:
         return self._immbool(CMD_AUDIO_SILENCE_ALL_DEVICES)
 
-    def audio_get_sound_duration_ms(self, device, sound):
+    def audio_get_sound_duration_ms(self, device: str, sound: str) -> bool:
         reply = self._immresp(CMD_AUDIO_GET_SOUND_LENGTH, device, sound)
         try:
             return int(reply)
@@ -1121,7 +1177,7 @@ class WhiskerApi(object):
     # Whisker command set: display: display operations
     # -------------------------------------------------------------------------
 
-    def display_get_size(self, device):
+    def display_get_size(self, device: str) -> Optional[SizeType]:
         """Returns a (width, height) tuple, or None."""
         reply = self._immresp(CMD_DISPLAY_GET_SIZE, device)
         try:
@@ -1133,78 +1189,86 @@ class WhiskerApi(object):
         except (AttributeError, TypeError, ValueError, AssertionError):
             return None
 
-    def display_scale_documents(self, device, scale=True):
+    def display_scale_documents(self, device: str, scale: bool = True) -> bool:
         return self._immbool(CMD_DISPLAY_SCALE_DOCUMENTS, device,
                              _on_val(scale))
 
-    def display_show_document(self, device, doc):
+    def display_show_document(self, device: str, doc: str) -> bool:
         return self._immbool(CMD_DISPLAY_SHOW_DOCUMENT, device, doc)
 
-    def display_blank(self, device):
+    def display_blank(self, device: str) -> bool:
         return self._immbool(CMD_DISPLAY_BLANK, device)
 
     # -------------------------------------------------------------------------
     # Whisker command set: display: document operations
     # -------------------------------------------------------------------------
 
-    def display_create_document(self, doc):
+    def display_create_document(self, doc: str) -> bool:
         return self._immbool(CMD_DISPLAY_CREATE_DOCUMENT, doc)
 
-    def display_delete_document(self, doc):
+    def display_delete_document(self, doc: str) -> bool:
         return self._immbool(CMD_DISPLAY_DELETE_DOCUMENT, doc)
 
-    def display_set_document_size(self, doc, width, height):
+    def display_set_document_size(self, doc: str,
+                                  width: int, height: int) -> bool:
         return self._immbool(CMD_DISPLAY_SET_DOCUMENT_SIZE, doc, width, height)
 
-    def display_set_background_colour(self, doc, colour=BLACK):
+    def display_set_background_colour(self, doc: str,
+                                      colour: ColourType = BLACK) -> bool:
         return self._immbool(CMD_DISPLAY_SET_BACKGROUND_COLOUR, doc,
                              colour[0], colour[1], colour[2])
 
-    def display_delete_obj(self, doc, obj):
+    def display_delete_obj(self, doc: str, obj: str) -> bool:
         return self._immbool(CMD_DISPLAY_DELETE_OBJECT, doc, obj)
 
-    def display_add_obj(self, doc, obj, obj_type, *parameters):
+    def display_add_obj(self, doc: str, obj: str, obj_type: str,
+                        *parameters) -> bool:
         return self._immbool(CMD_DISPLAY_ADD_OBJECT, doc, obj, obj_type,
                              *parameters)
 
-    def display_set_event(self, doc, obj, event,
-                          event_type=DocEventType.touch_down):
+    def display_set_event(
+            self, doc: str, obj: str, event: str,
+            event_type: DocEventType = DocEventType.touch_down) -> bool:
         assert isinstance(event_type, DocEventType)
         return self._immbool(CMD_DISPLAY_SET_EVENT, doc, obj,
                              DOC_EVENT_TYPES[event_type], quote(event))
 
-    def display_clear_event(self, doc, obj,
-                            event_type=DocEventType.touch_down):
+    def display_clear_event(
+            self, doc: str, obj: str,
+            event_type: DocEventType = DocEventType.touch_down) -> bool:
         assert isinstance(event_type, DocEventType)
         return self._immbool(CMD_DISPLAY_CLEAR_EVENT, doc, obj,
                              DOC_EVENT_TYPES[event_type])
 
-    def display_set_obj_event_transparency(self, doc, obj, transparent=False):
+    def display_set_obj_event_transparency(self, doc: str, obj: str,
+                                           transparent: bool = False) -> bool:
         return self._immbool(CMD_DISPLAY_SET_OBJ_EVENT_TRANSPARENCY,
                              doc, obj, _on_val(transparent))
 
-    def display_event_coords(self, on):
+    def display_event_coords(self, on: bool) -> bool:
         return self._immbool(CMD_DISPLAY_EVENT_COORDS, _on_val(on))
 
-    def display_bring_to_front(self, doc, obj):
+    def display_bring_to_front(self, doc: str, obj: str) -> bool:
         return self._immbool(CMD_DISPLAY_BRING_TO_FRONT, doc, obj)
 
-    def display_send_to_back(self, doc, obj):
+    def display_send_to_back(self, doc: str, obj: str) -> bool:
         return self._immbool(CMD_DISPLAY_SEND_TO_BACK, doc, obj)
 
-    def display_keyboard_events(self, doc, key_event_type=KeyEventType.down):
+    def display_keyboard_events(
+            self, doc: str,
+            key_event_type: KeyEventType = KeyEventType.down) -> bool:
         assert isinstance(key_event_type, KeyEventType)
         return self._immbool(CMD_DISPLAY_KEYBOARD_EVENTS, doc,
                              KEY_EVENT_TYPES[key_event_type])
 
-    def display_cache_changes(self, doc):
+    def display_cache_changes(self, doc: str) -> bool:
         return self._immbool(CMD_DISPLAY_CACHE_CHANGES, doc)
 
-    def display_show_changes(self, doc):
+    def display_show_changes(self, doc: str) -> bool:
         return self._immbool(CMD_DISPLAY_SHOW_CHANGES, doc)
 
     @contextmanager
-    def display_cache_wrapper(self, doc):
+    def display_cache_wrapper(self, doc: str) -> Iterator[None]:
         """
         Use like:
             with something.display_cache_wrapper(doc):
@@ -1214,7 +1278,7 @@ class WhiskerApi(object):
         yield
         self.display_show_changes(doc)
 
-    def display_get_document_size(self, doc):
+    def display_get_document_size(self, doc: str) -> Optional[SizeType]:
         """Returns a (width, height) tuple, or None."""
         reply = self._immresp(CMD_DISPLAY_GET_DOCUMENT_SIZE, doc)
         try:
@@ -1226,7 +1290,8 @@ class WhiskerApi(object):
         except (AttributeError, TypeError, ValueError, AssertionError):
             return None
 
-    def display_get_object_extent(self, doc, obj):
+    def display_get_object_extent(self, doc: str,
+                                  obj: str) -> Optional[Rectangle]:
         """Returns a rect, or None."""
         reply = self._immresp(CMD_DISPLAY_GET_OBJECT_EXTENT, doc, obj)
         try:
@@ -1242,14 +1307,16 @@ class WhiskerApi(object):
         except (AttributeError, TypeError, ValueError, AssertionError):
             return None
 
-    def display_set_background_event(self, doc, event,
-                                     event_type=DocEventType.touch_down):
+    def display_set_background_event(
+            self, doc: str, event: str,
+            event_type: DocEventType = DocEventType.touch_down) -> bool:
         assert isinstance(event_type, DocEventType)
         return self._immbool(CMD_DISPLAY_SET_BACKGROUND_EVENT, doc,
                              DOC_EVENT_TYPES[event_type], quote(event))
 
-    def display_clear_background_event(self, doc,
-                                       event_type=DocEventType.touch_down):
+    def display_clear_background_event(
+            self, doc: str,
+            event_type: DocEventType = DocEventType.touch_down) -> bool:
         assert isinstance(event_type, DocEventType)
         return self._immbool(CMD_DISPLAY_CLEAR_BACKGROUND_EVENT, doc,
                              DOC_EVENT_TYPES[event_type])
@@ -1258,11 +1325,22 @@ class WhiskerApi(object):
     # Whisker command set: display: specific object creation
     # -------------------------------------------------------------------------
 
-    def display_add_obj_text(self, doc, obj, pos, text, height=0, font="",
-                             italic=False, underline=False, weight=0,
-                             colour=WHITE, opaque=False, bg_colour=BLACK,
-                             valign=TextVerticalAlign.top,
-                             halign=TextHorizontalAlign.left):
+    def display_add_obj_text(
+            self,
+            doc: str,
+            obj: str,
+            pos: PointType,
+            text: str,
+            height: int = 0,
+            font: str = "",
+            italic: bool = False,
+            underline: bool = False,
+            weight: int = 0,
+            colour: ColourType = WHITE,
+            opaque: bool = False,
+            bg_colour: ColourType = BLACK,
+            valign: TextVerticalAlign = TextVerticalAlign.top,
+            halign: TextHorizontalAlign = TextHorizontalAlign.left) -> bool:
         """Position is an (x, y) tuple. Colours are R, G, B tuples."""
         assert_ducktype_pos(pos)
         assert_ducktype_colour(colour)
@@ -1288,10 +1366,17 @@ class WhiskerApi(object):
         ] + fontargs
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_TEXT, *args)
 
-    def display_add_obj_bitmap(self, doc, obj, pos, filename,
-                               stretch=False, height=-1, width=-1,
-                               valign=VerticalAlign.top,
-                               halign=HorizontalAlign.left):
+    def display_add_obj_bitmap(
+            self,
+            doc: str,
+            obj: str,
+            pos: PointType,
+            filename: str,
+            stretch: bool = False,
+            height: int = -1,
+            width: int = -1,
+            valign: VerticalAlign = VerticalAlign.top,
+            halign: HorizontalAlign = HorizontalAlign.left) -> bool:
         assert_ducktype_pos(pos)
         assert isinstance(valign, VerticalAlign)
         assert isinstance(halign, HorizontalAlign)
@@ -1306,7 +1391,12 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_BITMAP, *args)
 
-    def display_add_obj_line(self, doc, obj, start, end, pen):
+    def display_add_obj_line(self,
+                             doc: str,
+                             obj: str,
+                             start: PointType,
+                             end: PointType,
+                             pen: Pen) -> bool:
         """Coordinates are (x, y) tuples."""
         assert_ducktype_pos(start)
         assert_ducktype_pos(end)
@@ -1318,7 +1408,11 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_LINE, *args)
 
-    def display_add_obj_arc(self, doc, obj, rect, start, end, pen):
+    def display_add_obj_arc(self,
+                            doc: str,
+                            obj: str,
+                            rect: Rectangle,
+                            start, end, pen) -> bool:
         """The arc fits into the rect."""
         assert isinstance(rect, Rectangle)
         assert_ducktype_pos(start)
@@ -1333,8 +1427,14 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_ARC, *args)
 
-    def display_add_obj_bezier(self, doc, obj, start, control1, control2, end,
-                               pen):
+    def display_add_obj_bezier(self,
+                               doc: str,
+                               obj: str,
+                               start: PointType,
+                               control1: PointType,
+                               control2: PointType,
+                               end: PointType,
+                               pen: Pen) -> bool:
         assert_ducktype_pos(start)
         assert_ducktype_pos(control1)
         assert_ducktype_pos(control2)
@@ -1350,8 +1450,14 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_BEZIER, *args)
 
-    def display_add_obj_chord(self, doc, obj, rect, line_start, line_end,
-                              pen, brush):
+    def display_add_obj_chord(self,
+                              doc: str,
+                              obj: str,
+                              rect: Rectangle,
+                              line_start: PointType,
+                              line_end: PointType,
+                              pen: Pen,
+                              brush: Brush) -> bool:
         """The chord is the intersection of an ellipse (defined by the rect)
         and a line that intersects it."""
         assert isinstance(rect, Rectangle)
@@ -1369,7 +1475,12 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_CHORD, *args)
 
-    def display_add_obj_ellipse(self, doc, obj, rect, pen, brush):
+    def display_add_obj_ellipse(self,
+                                doc: str,
+                                obj: str,
+                                rect: Rectangle,
+                                pen: Pen,
+                                brush: Brush) -> bool:
         """The ellipse fits into the rectangle (and its centre is at the centre
         of the rectangle)."""
         assert isinstance(rect, Rectangle)
@@ -1383,8 +1494,14 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_ELLIPSE, *args)
 
-    def display_add_obj_pie(self, doc, obj, rect, arc_start, arc_end,
-                            pen, brush):
+    def display_add_obj_pie(self,
+                            doc: str,
+                            obj: str,
+                            rect: Rectangle,
+                            arc_start: PointType,
+                            arc_end: PointType,
+                            pen: Pen,
+                            brush: Brush) -> bool:
         """See Whisker docs."""
         assert isinstance(rect, Rectangle)
         assert_ducktype_pos(arc_start)
@@ -1401,13 +1518,18 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_PIE, *args)
 
-    def display_add_obj_polygon(self, doc, obj, points, pen, brush,
-                                alternate=False):
+    def display_add_obj_polygon(self,
+                                doc: str,
+                                obj: str,
+                                points: List[PointType],
+                                pen: Pen,
+                                brush: Brush,
+                                alternate: bool = False) -> bool:
         """See Whisker docs."""
         assert len(points) >= 3
         assert isinstance(pen, Pen)
         assert isinstance(brush, Brush)
-        args = [str(len(points))]
+        args = [str(len(points))]  # type: List[Any]
         for point in points:
             assert_ducktype_pos(point)
             args.extend([point[0], point[1]])
@@ -1418,7 +1540,12 @@ class WhiskerApi(object):
         ])
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_POLYGON, *args)
 
-    def display_add_obj_rectangle(self, doc, obj, rect, pen, brush):
+    def display_add_obj_rectangle(self,
+                                  doc: str,
+                                  obj: str,
+                                  rect: Rectangle,
+                                  pen: Pen,
+                                  brush: Brush) -> bool:
         """See Whisker docs."""
         assert isinstance(rect, Rectangle)
         assert isinstance(pen, Pen)
@@ -1431,8 +1558,14 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_RECTANGLE, *args)
 
-    def display_add_obj_roundrect(self, doc, obj, rect, ellipse_height,
-                                  ellipse_width, pen, brush):
+    def display_add_obj_roundrect(self,
+                                  doc: str,
+                                  obj: str,
+                                  rect: Rectangle,
+                                  ellipse_height: int,
+                                  ellipse_width: int,
+                                  pen: Pen,
+                                  brush: Brush) -> bool:
         """See Whisker docs."""
         assert isinstance(rect, Rectangle)
         assert isinstance(pen, Pen)
@@ -1446,14 +1579,21 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, obj, VAL_OBJTYPE_ROUNDRECT, *args)
 
-    def display_add_obj_camcogquadpattern(
-            self, doc, obj, pos,
-            pixel_width, pixel_height,
-            top_left_patterns, top_right_patterns,
-            bottom_left_patterns, bottom_right_patterns,
-            top_left_colour, top_right_colour,
-            bottom_left_colour, bottom_right_colour,
-            bg_colour):
+    def display_add_obj_camcogquadpattern(self,
+                                          doc: str,
+                                          obj: str,
+                                          pos: PointType,
+                                          pixel_width: int,
+                                          pixel_height: int,
+                                          top_left_patterns: List[int],
+                                          top_right_patterns: List[int],
+                                          bottom_left_patterns: List[int],
+                                          bottom_right_patterns: List[int],
+                                          top_left_colour: ColourType,
+                                          top_right_colour: ColourType,
+                                          bottom_left_colour: ColourType,
+                                          bottom_right_colour: ColourType,
+                                          bg_colour: ColourType) -> bool:
         """
         See Whisker docs.
         Patterns are lists (of length 8) of bytes.
@@ -1485,10 +1625,19 @@ class WhiskerApi(object):
     # Whisker command set: display: video extras
     # -------------------------------------------------------------------------
 
-    def display_add_obj_video(self, doc, video, pos, filename, loop=False,
-                              playmode=VideoPlayMode.wait, width=-1, height=-1,
-                              play_audio=True, valign=VerticalAlign.top,
-                              halign=HorizontalAlign.left, bg_colour=BLACK):
+    def display_add_obj_video(self,
+                              doc: str,
+                              video: str,
+                              pos: PointType,
+                              filename: str,
+                              loop: bool = False,
+                              playmode: VideoPlayMode = VideoPlayMode.wait,
+                              width: int = -1,
+                              height: int = -1,
+                              play_audio: bool = True,
+                              valign: VerticalAlign = VerticalAlign.top,
+                              halign: HorizontalAlign = HorizontalAlign.left,
+                              bg_colour: ColourType = BLACK) -> bool:
         assert isinstance(playmode, VideoPlayMode)
         assert isinstance(valign, VerticalAlign)
         assert isinstance(halign, HorizontalAlign)
@@ -1507,55 +1656,56 @@ class WhiskerApi(object):
         ]
         return self.display_add_obj(doc, video, VAL_OBJTYPE_VIDEO, *args)
 
-    def display_set_audio_device(self, display_device, audio_device):
+    def display_set_audio_device(self, display_device: str,
+                                 audio_device: str) -> bool:
         """Devices may be specified as numbers or names."""
         return self._immbool(CMD_DISPLAY_SET_AUDIO_DEVICE, display_device,
                              audio_device)
 
-    def video_play(self, doc, video):
+    def video_play(self, doc: str, video: str) -> bool:
         return self._immbool(CMD_VIDEO_PLAY, doc, video)
 
-    def video_pause(self, doc, video):
+    def video_pause(self, doc: str, video: str) -> bool:
         return self._immbool(CMD_VIDEO_PAUSE, doc, video)
 
-    def video_stop(self, doc, video):
+    def video_stop(self, doc: str, video: str) -> bool:
         return self._immbool(CMD_VIDEO_STOP, doc, video)
 
-    def video_timestamps(self, on):
+    def video_timestamps(self, on: bool) -> bool:
         return self._immbool(CMD_VIDEO_TIMESTAMPS, _on_val(on))
 
-    def video_get_time_ms(self, doc, video):
+    def video_get_time_ms(self, doc: str, video: str) -> Optional[int]:
         reply = self._immresp(CMD_VIDEO_GET_TIME, doc, video)
         try:
             return int(reply.split()[1])
         except (IndexError, ValueError):
             return None
 
-    def video_get_duration_ms(self, doc, video):
+    def video_get_duration_ms(self, doc: str, video: str) -> Optional[int]:
         reply = self._immresp(CMD_VIDEO_GET_DURATION, doc, video)
         try:
             return int(reply.split()[1])
         except (IndexError, ValueError):
             return None
 
-    def video_seek_relative(self, doc, video, time_ms):
+    def video_seek_relative(self, doc: str, video: str, time_ms: int) -> bool:
         return self._immbool(CMD_VIDEO_SEEK_RELATIVE, doc, video, time_ms)
 
-    def video_seek_absolute(self, doc, video, time_ms):
+    def video_seek_absolute(self, doc: str, video: str, time_ms: int) -> bool:
         return self._immbool(CMD_VIDEO_SEEK_ABSOLUTE, doc, video, time_ms)
 
-    def video_set_volume(self, doc, video, volume):
+    def video_set_volume(self, doc: str, video: str, volume: int) -> bool:
         return self._immbool(CMD_VIDEO_SET_VOLUME, doc, video, volume)
 
     # -------------------------------------------------------------------------
     # Shortcuts to Whisker commands
     # -------------------------------------------------------------------------
 
-    def line_on(self, line):
+    def line_on(self, line: str) -> None:
         self.line_set_state(line, True)
 
-    def line_off(self, line):
+    def line_off(self, line: str) -> None:
         self.line_set_state(line, False)
 
-    def broadcast(self, *args):
+    def broadcast(self, *args) -> bool:
         return self.send_to_client(-1, *args)

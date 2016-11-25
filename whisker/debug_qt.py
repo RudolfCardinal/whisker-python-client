@@ -8,17 +8,18 @@
 import logging
 import threading
 
-from PySide import QtCore
+# noinspection PyPackageRequirements
+from PySide.QtCore import QObject, QThread
 
 log = logging.getLogger(__name__)
 
-_old_connect = QtCore.QObject.connect  # staticmethod
-_old_disconnect = QtCore.QObject.disconnect  # staticmethod
-_old_emit = QtCore.QObject.emit  # normal method
+_old_connect = QObject.connect  # staticmethod
+_old_disconnect = QObject.disconnect  # staticmethod
+_old_emit = QObject.emit  # normal method
 
 
 def _wrap_connect(callable_object):
-    """Returns a wrapped call to the old version of QtCore.QObject.connect"""
+    """Returns a wrapped call to the old version of QObject.connect"""
 
     # noinspection PyDecorator
     @staticmethod
@@ -30,7 +31,7 @@ def _wrap_connect(callable_object):
 
 def _wrap_disconnect(callable_object):
     """
-    Returns a wrapped call to the old version of QtCore.QObject.disconnect
+    Returns a wrapped call to the old version of QObject.disconnect
     """
 
     # noinspection PyDecorator
@@ -41,7 +42,7 @@ def _wrap_disconnect(callable_object):
     return call
 
 
-def enable_signal_debugging(**kwargs):
+def enable_signal_debugging(**kwargs) -> None:
     """Call this to enable Qt Signal debugging. This will trap all
     connect, and disconnect calls."""
 
@@ -53,21 +54,21 @@ def enable_signal_debugging(**kwargs):
     disconnect_call = kwargs.get('disconnect_call', f)
     emit_call = kwargs.get('emit_call', f)
 
-    QtCore.QObject.connect = _wrap_connect(connect_call)
-    QtCore.QObject.disconnect = _wrap_disconnect(disconnect_call)
+    QObject.connect = _wrap_connect(connect_call)
+    QObject.disconnect = _wrap_disconnect(disconnect_call)
 
     def new_emit(self, *args):
         emit_call(self, *args)
         _old_emit(self, *args)
 
-    QtCore.QObject.emit = new_emit
+    QObject.emit = new_emit
 
 
-def simple_connect_debugger(*args):
+def simple_connect_debugger(*args) -> None:
     log.debug("CONNECT: args={}".format(args))
 
 
-def simple_emit_debugger(*args):
+def simple_emit_debugger(*args) -> None:
     emitter = args[0]
     # emitter_qthread = emitter.thread()
     log.debug(
@@ -84,17 +85,17 @@ def simple_emit_debugger(*args):
     )
 
 
-def enable_signal_debugging_simply():
+def enable_signal_debugging_simply() -> None:
     enable_signal_debugging(connect_call=simple_connect_debugger,
                             emit_call=simple_emit_debugger)
 
 
-def debug_object(obj):
+def debug_object(obj: QObject) -> None:
     log.debug("Object {} belongs to QThread {}".format(obj, obj.thread()))
     # Does nothing if library compiled in release mode:
     # log.debug("... dumpObjectInfo: {}".format(obj.dumpObjectInfo()))
     # log.debug("... dumpObjectTree: {}".format(obj.dumpObjectTree()))
 
 
-def debug_thread(thread):
+def debug_thread(thread: QThread) -> None:
     log.debug("QThread {}".format(thread))

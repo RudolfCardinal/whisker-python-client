@@ -76,6 +76,7 @@ setup(
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3 :: Only',
 
         'Topic :: System :: Hardware',
@@ -94,6 +95,8 @@ setup(
         'dataset',  # databases for lazy people (used by demo)
         # 'PySide==1.2.4',  # Python interface to Qt
         'Twisted',  # TCP/IP communications
+        'typing==3.5.2.2',  # part of stdlib in Python 3.5, but not 3.4
+        'pyyaml',  # Yet Another Markup Language
 
         # ---------------------------------------------------------------------
         # For development only:

@@ -6,6 +6,7 @@
 from html import escape
 import json
 import logging
+from typing import Any, Callable, Dict
 
 from colorlog import ColoredFormatter
 
@@ -87,7 +88,8 @@ COLOUR_HANDLER.setFormatter(COLOUR_FORMATTER)
 # Helper functions
 # =============================================================================
 
-def configure_logger_for_colour(log, remove_existing=True):
+def configure_logger_for_colour(log: logging.Logger,
+                                remove_existing: bool = True) -> None:
     """
     Applies a preconfigured datetime/colour scheme to a logger.
     Should ONLY be called from the "if __name__ == 'main'" script:
@@ -98,7 +100,7 @@ def configure_logger_for_colour(log, remove_existing=True):
     log.addHandler(COLOUR_HANDLER)
 
 
-def configure_all_loggers_for_colour(remove_existing=True):
+def configure_all_loggers_for_colour(remove_existing: bool = True) -> None:
     """
     Applies a preconfigured datetime/colour scheme to ALL logger.
     Should ONLY be called from the "if __name__ == 'main'" script:
@@ -108,7 +110,8 @@ def configure_all_loggers_for_colour(remove_existing=True):
     apply_handler_to_all_logs(COLOUR_HANDLER, remove_existing=remove_existing)
 
 
-def apply_handler_to_root_log(handler, remove_existing=False):
+def apply_handler_to_root_log(handler: logging.Handler,
+                              remove_existing: bool = False) -> None:
     """
     Applies a handler to all logs, optionally removing existing handlers.
     Should ONLY be called from the "if __name__ == 'main'" script:
@@ -121,7 +124,8 @@ def apply_handler_to_root_log(handler, remove_existing=False):
     rootlog.addHandler(handler)
 
 
-def apply_handler_to_all_logs(handler, remove_existing=False):
+def apply_handler_to_all_logs(handler: logging.Handler,
+                              remove_existing: bool = False) -> None:
     """
     Applies a handler to all logs, optionally removing existing handlers.
     Should ONLY be called from the "if __name__ == 'main'" script:
@@ -135,7 +139,9 @@ def apply_handler_to_all_logs(handler, remove_existing=False):
         obj.addHandler(handler)
 
 
-def copy_root_log_to_file(filename, fmt=LOG_FORMAT, datefmt=LOG_DATEFMT):
+def copy_root_log_to_file(filename: str,
+                          fmt: str = LOG_FORMAT,
+                          datefmt: str = LOG_DATEFMT) -> None:
     """
     Copy all currently configured logs to the specified file.
     Should ONLY be called from the "if __name__ == 'main'" script:
@@ -148,7 +154,9 @@ def copy_root_log_to_file(filename, fmt=LOG_FORMAT, datefmt=LOG_DATEFMT):
     apply_handler_to_root_log(fh)
 
 
-def copy_all_logs_to_file(filename, fmt=LOG_FORMAT, datefmt=LOG_DATEFMT):
+def copy_all_logs_to_file(filename: str,
+                          fmt: str = LOG_FORMAT,
+                          datefmt: str = LOG_DATEFMT) -> None:
     """
     Copy all currently configured logs to the specified file.
     Should ONLY be called from the "if __name__ == 'main'" script:
@@ -162,7 +170,7 @@ def copy_all_logs_to_file(filename, fmt=LOG_FORMAT, datefmt=LOG_DATEFMT):
 
 
 # noinspection PyProtectedMember
-def get_formatter_report(f):
+def get_formatter_report(f: logging.Formatter) -> Dict[str, str]:
     """Returns information on a log formatter, as a dictionary.
     For debugging."""
     if f is None:
@@ -174,7 +182,7 @@ def get_formatter_report(f):
     }
 
 
-def get_handler_report(h):
+def get_handler_report(h: logging.Handler) -> Dict[str, Any]:
     """Returns information on a log handler, as a dictionary. For debugging."""
     return {
         'get_name()': h.get_name(),
@@ -184,8 +192,10 @@ def get_handler_report(h):
     }
 
 
-def get_log_report(log):
+def get_log_report(log: logging.Logger) -> Dict[str, Any]:
     """Returns information on a log, as a dictionary. For debugging."""
+    # suppress invalid error for Logger.manager:
+    # noinspection PyUnresolvedReferences
     return {
         '(object)': str(log),
         'level': log.level,
@@ -197,7 +207,7 @@ def get_log_report(log):
     }
 
 
-def print_report_on_all_logs():
+def print_report_on_all_logs() -> None:
     """
     Use print() to report information on all logs.
     """
@@ -229,7 +239,8 @@ class HtmlColorFormatter(logging.Formatter):
         logging.CRITICAL: '#FFFFFF',  # white
     }
 
-    def __init__(self, append_br=False, replace_nl_with_br=True):
+    def __init__(self, append_br: bool = False,
+                 replace_nl_with_br: bool = True) -> None:
         # https://hg.python.org/cpython/file/3.5/Lib/logging/__init__.py
         super().__init__(
             fmt='%(message)s',
@@ -237,8 +248,9 @@ class HtmlColorFormatter(logging.Formatter):
             style='%'
         )
         self.append_br = append_br
+        self.replace_nl_with_br = replace_nl_with_br
 
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         # record is a LogRecord
         # https://docs.python.org/3.4/library/logging.html#logging.LogRecord
 
@@ -249,6 +261,10 @@ class HtmlColorFormatter(logging.Formatter):
         # false. Therefore:
         record.asctime = self.formatTime(record, self.datefmt)
         bg_col = self.log_background_colors[record.levelno]
+        msg = escape(record.getMessage())
+        # escape() won't replace \n but will replace & etc.
+        if self.replace_nl_with_br:
+            msg = msg.replace("\n", "<br>")
         html = (
             '<span style="color:#008B8B">{time}.{ms:03d} {name}:{lvname}: '
             '</span><span style="color:{color}{bg}">{msg}</font>{br}'.format(
@@ -257,7 +273,7 @@ class HtmlColorFormatter(logging.Formatter):
                 name=record.name,
                 lvname=record.levelname,
                 color=self.log_colors[record.levelno],
-                msg=escape(record.message),
+                msg=msg,
                 bg=";background-color:{}".format(bg_col) if bg_col else "",
                 br="<br>" if self.append_br else "",
             )
@@ -273,13 +289,14 @@ class HtmlColorFormatter(logging.Formatter):
 # =============================================================================
 
 class HtmlColorHandler(logging.StreamHandler):
-    def __init__(self, logfunction, level=logging.INFO):
+    def __init__(self, logfunction: Callable[[str], None],
+                 level: int = logging.INFO) -> None:
         super().__init__()
         self.logfunction = logfunction
         self.setFormatter(HtmlColorFormatter())
         self.setLevel(level)
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
         # noinspection PyBroadException
         try:
             html = self.format(record)

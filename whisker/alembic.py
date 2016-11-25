@@ -14,7 +14,7 @@ from alembic.operations import Operations, MigrateOperation
 # =============================================================================
 
 class ReplaceableObject(object):
-    def __init__(self, name, sqltext):
+    def __init__(self, name: str, sqltext: str) -> None:
         self.name = name
         self.sqltext = sqltext
 
@@ -28,15 +28,15 @@ class ReversibleOp(MigrateOperation):
         self.target = target
 
     @classmethod
-    def invoke_for_target(cls, operations, target):
+    def invoke_for_target(cls, operations: Operations, target):
         op = cls(target)
         return operations.invoke(op)
 
-    def reverse(self):
+    def reverse(self) -> None:
         raise NotImplementedError()
 
     @classmethod
-    def _get_object_from_version(cls, operations, ident):
+    def _get_object_from_version(cls, operations: Operations, ident):
         version, objname = ident.split(".")
 
         module = operations.get_context().script.get_revision(version).module
@@ -44,7 +44,8 @@ class ReversibleOp(MigrateOperation):
         return obj
 
     @classmethod
-    def replace(cls, operations, target, replaces=None, replace_with=None):
+    def replace(cls, operations: Operations,
+                target, replaces=None, replace_with=None) -> None:
 
         if replaces:
             old_obj = cls._get_object_from_version(operations, replaces)

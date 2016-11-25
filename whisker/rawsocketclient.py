@@ -21,6 +21,7 @@ import logging
 import re
 import socket
 import time
+from typing import Iterator, Union
 
 from whisker.socket import (
     get_port,
@@ -41,18 +42,19 @@ class Whisker(object):
     (Not sophisticated. Use WhiskerTask instead.)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.mainsock = None
         self.immsock = None
 
     @classmethod
-    def set_verbose_logging(cls, verbose):
+    def set_verbose_logging(cls, verbose: bool) -> None:
         if verbose:
             log.setLevel(logging.DEBUG)
         else:
             log.setLevel(logging.INFO)
 
-    def connect_both_ports(self, server, mainport):
+    def connect_both_ports(self, server: str,
+                           mainport: Union[str, int]) -> bool:
         """Connect the main and immediate ports to the server."""
         if not self.connect_main(server, mainport):  # Log in to the server.
             return False
@@ -72,7 +74,7 @@ class Whisker(object):
                 break
         return True
 
-    def connect_main(self, server, portstring):
+    def connect_main(self, server: str, portstring: Union[str, int]) -> bool:
         """Connect the main port to the server."""
         log.info("Connecting main port to server.")
         port = get_port(portstring)
@@ -96,7 +98,8 @@ class Whisker(object):
 
         return True
 
-    def connect_immediate(self, server, portstring, code):
+    def connect_immediate(self, server: str, portstring: Union[str, int],
+                          code: str) -> bool:
         port = get_port(portstring)
         proto = socket.getprotobyname("tcp")
         try:
@@ -129,7 +132,7 @@ class Whisker(object):
                  "correctly linked.")
         return True
 
-    def log_out(self):
+    def log_out(self) -> None:
         try:
             self.mainsock.close()
         except socket.error as x:
@@ -139,13 +142,13 @@ class Whisker(object):
         except socket.error as x:
             log.error("Error closing immediate socket: " + str(x))
 
-    def send(self, s):
+    def send(self, s: str) -> None:
         """Send something to the server on the main socket, with a trailing
         newline."""
         log.debug("Main socket command: " + s)
         socket_send(self.mainsock, s + "\n")
 
-    def send_immediate(self, s):
+    def send_immediate(self, s: str) -> str:
         """Send a command to the server on the immediate socket, and retrieve
         its reply."""
         log.debug("Immediate socket command: " + s)
@@ -154,7 +157,7 @@ class Whisker(object):
         log.debug("Immediate socket reply: " + reply)
         return reply
 
-    def getlines_immsock(self):
+    def getlines_immsock(self) -> Iterator[str]:
         """Yield a set of lines from the socket."""
         # http://stackoverflow.com/questions/822001/python-sockets-buffering
         buf = socket_receive(self.immsock)
@@ -168,11 +171,11 @@ class Whisker(object):
                 if not more:
                     done = True
                 else:
-                    buf = buf + more
+                    buf += more
         if buf:
             yield buf
 
-    def getlines_mainsock(self):
+    def getlines_mainsock(self) -> Iterator[str]:
         """Yield a set of lines from the socket."""
         buf = socket_receive(self.mainsock)
         done = False
@@ -185,6 +188,6 @@ class Whisker(object):
                 if not more:
                     done = True
                 else:
-                    buf = buf + more
+                    buf += more
         if buf:
             yield buf

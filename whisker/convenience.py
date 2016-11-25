@@ -8,12 +8,15 @@ from datetime import datetime
 from tkinter import filedialog, Tk
 import os
 import sys
+from typing import Any, Dict, Iterable, List, Union
 
+import arrow
 from attrdict import AttrDict
 import colorama
 from colorama import Fore, Style
 import dataset
-import yaml
+# noinspection PyPackageRequirements
+import yaml  # from pyyaml
 
 from whisker.constants import FILENAME_SAFE_ISOFORMAT
 
@@ -22,7 +25,9 @@ log.addHandler(logging.NullHandler())
 colorama.init()
 
 
-def load_config_or_die(mandatory=None, defaults=None, log_config=False):
+def load_config_or_die(mandatory: Iterable[Union[str, List[Any]]] = None,
+                       defaults: Dict[str, Any] = None,
+                       log_config: bool = False) -> AttrDict:
     """
     Offers a GUI file prompt; loads a YAML config from it; or exits.
 
@@ -36,8 +41,8 @@ def load_config_or_die(mandatory=None, defaults=None, log_config=False):
         log.critical(errmsg)
         sys.exit(1)
 
-    mandatory = mandatory or []
-    defaults = defaults or {}
+    mandatory = mandatory or []  # type: List[str]
+    defaults = defaults or {}  # type: Dict[str, Any]
     defaults = AttrDict(defaults)
     Tk().withdraw()  # we don't want a full GUI; remove root window
     config_filename = filedialog.askopenfilename(
@@ -69,8 +74,9 @@ def load_config_or_die(mandatory=None, defaults=None, log_config=False):
     return config
 
 
-def connect_to_db_using_attrdict(database_url, show_url=False,
-                                 engine_kwargs=None):
+def connect_to_db_using_attrdict(database_url: str,
+                                 show_url: bool = False,
+                                 engine_kwargs: Dict[str, Any] = None):
     """
     Connects to a dataset database, and uses AttrDict as the row type, so
     AttrDict objects come back out again.
@@ -84,8 +90,13 @@ def connect_to_db_using_attrdict(database_url, show_url=False,
 
 
 # noinspection PyShadowingBuiltins
-def ask_user(prompt, default=None, type=str, min=None, max=None,
-             options=None, allow_none=True):
+def ask_user(prompt: str,
+             default: Any = None,
+             type=str,
+             min: Any = None,
+             max: Any = None,
+             options: List[Any] = None,
+             allow_none: bool = True) -> Any:
     """
     Prompts the user, optionally with a default, range or set of options.
     Coerces the return type.
@@ -129,8 +140,11 @@ def ask_user(prompt, default=None, type=str, min=None, max=None,
             print("Bad input value; try again.")
 
 
-def save_data(tablename, results, taskname, timestamp=None,
-              output_format="csv"):
+def save_data(tablename: str,
+              results: List[Dict[str, Any]],
+              taskname: str,
+              timestamp: Union[arrow.Arrow, datetime] = None,
+              output_format: str = "csv"):
     """
     Saves a dataset result set to a suitable output file.
     output_format can be one of: csv, json, tabson
@@ -152,7 +166,9 @@ def save_data(tablename, results, taskname, timestamp=None,
             "save_data: file {} not created; empty results?".format(filename))
 
 
-def insert_and_set_id(table, obj, idfield='id'):
+def insert_and_set_id(table: dataset.Table,
+                      obj: Dict[str, Any],
+                      idfield: str = 'id') -> Any:  # but typically int
     """The dataset table's insert() command returns the primary key.
     However, it doesn't store that back, and we want users to do that
     consistently."""

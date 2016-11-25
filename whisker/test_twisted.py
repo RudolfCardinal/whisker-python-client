@@ -41,8 +41,15 @@ VIDEO = "_video"
 
 
 class MyWhiskerTask(WhiskerTask):
-    def __init__(self, display_num, audio_num, input_line, output_line,
-                 media_dir, bitmap, video, wav):
+    def __init__(self,
+                 display_num: int,
+                 audio_num: int,
+                 input_line: str,
+                 output_line: str,
+                 media_dir: str,
+                 bitmap: str,
+                 video: str,
+                 wav: str) -> None:
         super().__init__()  # call base class init
         self.display_num = display_num
         self.audio_num = audio_num
@@ -54,7 +61,7 @@ class MyWhiskerTask(WhiskerTask):
         self.wav = wav
         # ... anything extra here
 
-    def fully_connected(self):
+    def fully_connected(self) -> None:
         print("SENDING SOME TEST/DEMONSTRATION COMMANDS")
         self.whisker.get_network_latency_ms()
         self.whisker.report_name("Whisker Twisted client prototype")
@@ -160,7 +167,7 @@ class MyWhiskerTask(WhiskerTask):
         video_pos_ms = self.whisker.video_get_time_ms(DOC, VIDEO)
         log.info("video_pos_ms: {}".format(video_pos_ms))
 
-    def incoming_event(self, event, timestamp=None):
+    def incoming_event(self, event: str, timestamp: int = None) -> None:
         print("Event: {e} (timestamp {t})".format(e=event, t=timestamp))
         if event == "EndOfTask":
             # noinspection PyUnresolvedReferences
@@ -179,7 +186,7 @@ class MyWhiskerTask(WhiskerTask):
             self.whisker.video_seek_absolute(DOC, VIDEO, 0)
 
 
-def main():
+def main() -> None:
     logging.basicConfig()
     logging.getLogger("whisker").setLevel(logging.DEBUG)
     configure_logger_for_colour(logging.getLogger())  # configure root logger

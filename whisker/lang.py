@@ -11,6 +11,9 @@ import os
 import re
 import subprocess
 import sys
+import types
+from typing import (Any, Dict, Iterable, List, Match, Optional, Pattern,
+                    TextIO, Union)
 
 log = logging.getLogger(__name__)
 
@@ -20,11 +23,11 @@ log = logging.getLogger(__name__)
 # =============================================================================
 # http://stackoverflow.com/questions/5967500/how-to-correctly-sort-a-string-with-a-number-inside  # noqa
 
-def atoi(text):
+def atoi(text: str) -> Union[int, str]:
     return int(text) if text.isdigit() else text
 
 
-def natural_keys(text):
+def natural_keys(text) -> List[Union[int, str]]:
     return [atoi(c) for c in re.split('(\d+)', text)]
 
 
@@ -32,20 +35,20 @@ def natural_keys(text):
 # Dictionaries, lists
 # =============================================================================
 
-def reversedict(d):
+def reversedict(d: Dict[Any, Any]) -> Dict[Any, Any]:
     return {v: k for k, v in d.items()}
 
 
-def contains_duplicates(values):
+def contains_duplicates(values: Iterable[Any]) -> bool:
     return [k for k, v in Counter(values).items() if v > 1]
 
 
-def sort_list_by_index_list(x, indexes):
+def sort_list_by_index_list(x: List[Any], indexes: List[int]) -> None:
     """Re-orders x by the list of indexes of x, in place."""
     x[:] = [x[i] for i in indexes]
 
 
-def flatten_list(x):
+def flatten_list(x: List[Any]) -> List[Any]:
     return [item for sublist in x for item in sublist]
     # http://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python  # noqa
 
@@ -54,7 +57,7 @@ def flatten_list(x):
 # Number printing, e.g. for parity
 # =============================================================================
 
-def trunc_if_integer(n):
+def trunc_if_integer(n: Any) -> Any:
     if n == int(n):
         return int(n)
     return n
@@ -64,11 +67,11 @@ def trunc_if_integer(n):
 # File output
 # =============================================================================
 
-def writeline_nl(fileobj, line):
+def writeline_nl(fileobj: TextIO, line: str) -> None:
     fileobj.write(line + '\n')
 
 
-def writelines_nl(fileobj, lines):
+def writelines_nl(fileobj: TextIO, lines: Iterable[str]) -> None:
     # Since fileobj.writelines() doesn't add newlines...
     # http://stackoverflow.com/questions/13730107/writelines-writes-lines-without-newline-just-fills-the-file  # noqa
     fileobj.write('\n'.join(lines) + '\n')
@@ -80,18 +83,18 @@ def writelines_nl(fileobj, lines):
 # Based on http://stackoverflow.com/questions/597476/how-to-concisely-cascade-through-multiple-regex-statements-in-python  # noqa
 
 class CompiledRegexMemory(object):
-    def __init__(self):
+    def __init__(self) -> None:
         self.last_match = None
 
-    def match(self, compiled_regex, text):
+    def match(self, compiled_regex: Pattern, text: str) -> Match:
         self.last_match = compiled_regex.match(text)
         return self.last_match
 
-    def search(self, compiled_regex, text):
+    def search(self, compiled_regex: Pattern, text: str) -> Match:
         self.last_match = compiled_regex.search(text)
         return self.last_match
 
-    def group(self, n):
+    def group(self, n: int) -> Optional[str]:
         if not self.last_match:
             return None
         return self.last_match.group(n)
@@ -101,7 +104,7 @@ class CompiledRegexMemory(object):
 # Name of calling class/function, for status messages
 # =============================================================================
 
-def get_class_from_frame(fr):
+def get_class_from_frame(fr: types.FrameType) -> Optional[str]:
     # http://stackoverflow.com/questions/2203424/python-how-to-retrieve-class-information-from-a-frame-object  # noqa
     args, _, _, value_dict = inspect.getargvalues(fr)
     # we check the first parameter for the frame function is named 'self'
@@ -119,7 +122,7 @@ def get_class_from_frame(fr):
 
 
 # noinspection PyProtectedMember
-def get_caller_name(back=0):
+def get_caller_name(back: int = 0) -> str:
     """
     Return details about the CALLER OF THE CALLER (plus n calls further back)
     of this function.
@@ -184,7 +187,7 @@ class OrderedNamespace(object):
 # repr assistance function
 # =============================================================================
 
-def ordered_repr(obj, attrlist):
+def ordered_repr(obj: object, attrlist: Iterable[str]) -> str:
     """
     Shortcut to make repr() functions ordered.
     Define your repr like this:
@@ -199,7 +202,7 @@ def ordered_repr(obj, attrlist):
     )
 
 
-def simple_repr(obj):
+def simple_repr(obj: object) -> str:
     """Even simpler."""
     return "<{classname}({kvp})>".format(
         classname=type(obj).__name__,
@@ -212,7 +215,7 @@ def simple_repr(obj):
 # Launch external file using OS's launcher
 # =============================================================================
 
-def launch_external_file(filename):
+def launch_external_file(filename: str) -> None:
     if sys.platform.startswith('linux'):
         subprocess.call(["xdg-open", filename])
     else:
@@ -227,10 +230,10 @@ def launch_external_file(filename):
 @total_ordering
 class MinType(object):
     """Compares less than anything else."""
-    def __le__(self, other):
+    def __le__(self, other: Any) -> bool:
         return True
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         return self is other
 
 

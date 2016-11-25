@@ -304,3 +304,4 @@ Version history
 
 * 10 Feb 2016: moved to package format.
 * 25 Feb 2016: v0.2.0; "colourlog" renamed "logsupport".
+* 25 Nov 2016: v0.3.5; Python type hints.

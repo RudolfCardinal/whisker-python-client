@@ -5,11 +5,12 @@
 
 import re
 import socket
+from typing import Union
 
 from whisker.constants import BUFFERSIZE
 
 
-def get_port(x):
+def get_port(x: Union[str, int]) -> int:
     if type(x) is int:
         return x
     m = re.match(r"\D", x)  # search for \D = non-digit characters
@@ -24,16 +25,16 @@ def get_port(x):
 # to/from the socket. Translation occurs here:
 
 
-def socket_receive(sock, bufsize=BUFFERSIZE):
+def socket_receive(sock: socket.socket, bufsize: int = BUFFERSIZE) -> str:
     # return socket.recv(bufsize)  # Python 2
     return sock.recv(bufsize).decode('ascii')  # Python 3
 
 
-def socket_sendall(sock, data):
+def socket_sendall(sock: socket.socket, data: str) -> None:
     # return socket.sendall(data)  # Python 2
     return sock.sendall(data.encode('ascii'))  # Python 3
 
 
-def socket_send(sock, data):
+def socket_send(sock: socket.socket, data: str) -> int:
     # return socket.send(data)  # Python 2
     return sock.send(data.encode('ascii'))  # Python 3

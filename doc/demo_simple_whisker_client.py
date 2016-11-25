@@ -10,7 +10,7 @@ from attrdict import AttrDict
 from datetime import datetime
 from twisted.internet import reactor
 from whisker.logging import configure_logger_for_colour
-from whisker.constants import DEFAULT_PORT,
+from whisker.constants import DEFAULT_PORT
 from whisker.convenience import (load_config_or_die,
                                  connect_to_db_using_attrdict,
                                  insert_and_set_id,

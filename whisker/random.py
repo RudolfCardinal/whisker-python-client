@@ -3,6 +3,7 @@
 
 import operator
 import random
+from typing import Any, List
 
 from whisker.lang import flatten_list, sort_list_by_index_list
 
@@ -11,7 +12,8 @@ from whisker.lang import flatten_list, sort_list_by_index_list
 # Randomness
 # =============================================================================
 
-def shuffle_list_slice(x, start=None, end=None):
+def shuffle_list_slice(x: List[Any],
+                       start: int = None, end: int = None) -> None:
     """Shuffles a segment of a list (in place)."""
     # log.debug("x={}, start={}, end={}".format(x, start, end))
     copy = x[start:end]
@@ -19,7 +21,7 @@ def shuffle_list_slice(x, start=None, end=None):
     x[start:end] = copy
 
 
-def shuffle_list_within_chunks(x, chunksize):
+def shuffle_list_within_chunks(x: List[Any], chunksize: int) -> None:
     """
     Divides a list into chunks and shuffles WITHIN each chunk (in place).
     For example:
@@ -35,7 +37,7 @@ def shuffle_list_within_chunks(x, chunksize):
         shuffle_list_slice(x, start, end)
 
 
-def shuffle_list_chunks(x, chunksize):
+def shuffle_list_chunks(x: List[Any], chunksize: int) -> None:
     """
     Divides a list into chunks and shuffles the chunks themselves (in place).
     For example:
@@ -56,7 +58,7 @@ def shuffle_list_chunks(x, chunksize):
     sort_list_by_index_list(x, indexes)
 
 
-def shuffle_list_subset(x, indexes):
+def shuffle_list_subset(x: List[Any], indexes: List[int]) -> None:
     """Shuffles some elements of a list, specified by index."""
     elements = [x[i] for i in indexes]
     random.shuffle(elements)
@@ -64,12 +66,15 @@ def shuffle_list_subset(x, indexes):
         x[x_idx] = elements[element_idx]
 
 
-def last_index_of(x, value):
+def last_index_of(x: List[Any], value: Any) -> int:
     """Gets the index of the last occurrence of value in the list x."""
     return len(x) - 1 - x[::-1].index(value)
 
 
-def block_shuffle_by_item(x, indexorder, start=None, end=None):
+def block_shuffle_by_item(x: List[Any],
+                          indexorder: List[int],
+                          start: int = None,
+                          end: int = None) -> None:
     """
     Shuffles the list x hierarchically, in place.
     indexorder is a list of indexes of each item of x.
@@ -131,7 +136,10 @@ def block_shuffle_by_item(x, indexorder, start=None, end=None):
     x[start:end] = sublist
 
 
-def block_shuffle_by_attr(x, attrorder, start=None, end=None):
+def block_shuffle_by_attr(x: List[Any],
+                          attrorder: List[str],
+                          start: int = None,
+                          end: int = None) -> None:
     """
     Exactly as for block_shuffle_by_item, but by item attribute
     rather than item index number.
@@ -168,7 +176,7 @@ def block_shuffle_by_attr(x, attrorder, start=None, end=None):
     x[start:end] = sublist
 
 
-def shuffle_where_equal_by_attr(x, attrname):
+def shuffle_where_equal_by_attr(x: List[Any], attrname: str) -> None:
     """
     Shuffles a list x, in place, where list members are equal as judged by the
     attribute attrname.

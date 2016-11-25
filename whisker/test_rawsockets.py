@@ -19,7 +19,7 @@ from whisker.logging import configure_logger_for_colour
 from whisker.rawsocketclient import Whisker
 
 
-def test_whisker(server, port, verbose_network=True):
+def test_whisker(server: str, port: int, verbose_network: bool = True) -> None:
     w = Whisker()
     print("Connecting to {}:{}".format(server, port))
     if not w.connect_both_ports(server, port):
@@ -49,7 +49,7 @@ def test_whisker(server, port, verbose_network=True):
                 break  # Exit the for loop.
 
 
-def main():
+def main() -> None:
     logging.basicConfig()
     logging.getLogger("whisker").setLevel(logging.DEBUG)
     configure_logger_for_colour(logging.getLogger())  # configure root logger
