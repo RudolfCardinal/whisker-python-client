@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from enum import Enum, unique
 import logging
 import re
-from typing import Any, Callable, Iterator, List, Optional, Tuple
+from typing import Any, Callable, Generator, List, Optional, Tuple
 
 from whisker.callback import CallbackHandler
 from whisker.exceptions import WhiskerCommandFailed
@@ -654,7 +654,7 @@ class Brush(object):
 
     @property
     def whisker_option_string(self) -> str:
-        args = [BRUSH_STYLE_FLAGS[self.style]]
+        args = [BRUSH_STYLE_FLAGS[self.style]]  # type: List[Any]
         if self.style == BrushStyle.solid:
             args.extend(self.colour)
         elif self.style == BrushStyle.hatched:
@@ -901,7 +901,7 @@ class WhiskerApi(object):
         return self._immbool(CMD_SHUTDOWN)
 
     def authenticate_get_challenge(self, package: str,
-                                   client_name: str) -> str:
+                                   client_name: str) -> Optional[str]:
         reply = self._immresp(CMD_AUTHENTICATE, package, client_name)
         if not reply.startswith(MSG_AUTHENTICATE_CHALLENGE + " "):
             return None
@@ -1078,7 +1078,7 @@ class WhiskerApi(object):
     def line_set_state(self, line: str, on: bool) -> bool:
         return self._immbool(CMD_LINE_SET_STATE, line, _on_val(on))
 
-    def line_read_state(self, line: str) -> bool:
+    def line_read_state(self, line: str) -> Optional[bool]:
         """Returns a boolean representing the line state, or None upon
         failure."""
         reply = self._immresp(CMD_LINE_READ_STATE, line)
@@ -1166,7 +1166,8 @@ class WhiskerApi(object):
     def audio_silence_all_devices(self) -> bool:
         return self._immbool(CMD_AUDIO_SILENCE_ALL_DEVICES)
 
-    def audio_get_sound_duration_ms(self, device: str, sound: str) -> bool:
+    def audio_get_sound_duration_ms(self, device: str,
+                                    sound: str) -> Optional[int]:
         reply = self._immresp(CMD_AUDIO_GET_SOUND_LENGTH, device, sound)
         try:
             return int(reply)
@@ -1268,7 +1269,7 @@ class WhiskerApi(object):
         return self._immbool(CMD_DISPLAY_SHOW_CHANGES, doc)
 
     @contextmanager
-    def display_cache_wrapper(self, doc: str) -> Iterator[None]:
+    def display_cache_wrapper(self, doc: str) -> Generator[None, None, None]:
         """
         Use like:
             with something.display_cache_wrapper(doc):

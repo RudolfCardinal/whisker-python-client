@@ -5,6 +5,7 @@
 
 
 from functools import wraps
+import gc
 import logging
 import sys
 import threading
@@ -16,8 +17,9 @@ from PySide.QtCore import (
     QAbstractListModel,
     QAbstractTableModel,
     QModelIndex,
-    QObject,  # for type hints
+    QObject,
     Qt,
+    QTimer,
     # QVariant,  # non-existent in PySide?
     Signal,
     Slot,
@@ -273,8 +275,10 @@ class TextLogElement(object):
         font.setPointSize(font_size_pt)
 
         log_clear_button = QPushButton('Clear log')
+        # noinspection PyUnresolvedReferences
         log_clear_button.clicked.connect(self.log.clear)
         log_copy_button = QPushButton('Copy to clipboard')
+        # noinspection PyUnresolvedReferences
         log_copy_button.clicked.connect(self.copy_whole_log)
         log_layout_2.addWidget(log_clear_button)
         log_layout_2.addWidget(log_copy_button)
@@ -1168,6 +1172,62 @@ class RadioGroup(object):
 
 
 # =============================================================================
+# Garbage collector
+# =============================================================================
+# https://riverbankcomputing.com/pipermail/pyqt/2011-August/030378.html
+# http://pydev.blogspot.co.uk/2014/03/should-python-garbage-collector-be.html
+# https://bugreports.qt.io/browse/PYSIDE-79
+
+class GarbageCollector(QObject):
+    """
+    Disable automatic garbage collection and instead collect manually
+    every INTERVAL milliseconds.
+
+    This is done to ensure that garbage collection only happens in the GUI
+    thread, as otherwise Qt can crash.
+    """
+
+    def __init__(self, parent: QObject, debug: bool = False,
+                 interval_ms=10000) -> None:
+        QObject.__init__(self, parent)
+        self.debug = debug
+        self.interval_ms = interval_ms
+
+        self.timer = QTimer(self)
+        # noinspection PyUnresolvedReferences
+        self.timer.timeout.connect(self.check)
+
+        self.threshold = gc.get_threshold()
+        gc.disable()
+        self.timer.start(self.interval_ms)
+
+    def check(self) -> None:
+        # return self.debug_cycles()  # uncomment to just debug cycles
+        l0, l1, l2 = gc.get_count()
+        if self.debug:
+            print('gc_check called:', l0, l1, l2)
+        if l0 > self.threshold[0]:
+            num = gc.collect(0)
+            if self.debug:
+                print('collecting gen 0, found:', num, 'unreachable')
+            if l1 > self.threshold[1]:
+                num = gc.collect(1)
+                if self.debug:
+                    print('collecting gen 1, found:', num, 'unreachable')
+                if l2 > self.threshold[2]:
+                    num = gc.collect(2)
+                    if self.debug:
+                        print('collecting gen 2, found:', num, 'unreachable')
+
+    @staticmethod
+    def debug_cycles() -> None:
+        gc.set_debug(gc.DEBUG_SAVEALL)
+        gc.collect()
+        for obj in gc.garbage:
+            print(obj, repr(obj), type(obj))
+
+
+# =============================================================================
 # Decorator to stop whole program on exceptions (use for threaded slots)
 # =============================================================================
 # http://stackoverflow.com/questions/18740884
@@ -1180,15 +1240,16 @@ def exit_on_exception(func):
         try:
             return func(*args, **kwargs)
         except:
-            print("=" * 79)
-            print("Uncaught exception in slot, within thread: {}".format(
-                threading.current_thread().name))
-            print("-" * 79)
-            traceback.print_exc()
-            print("-" * 79)
-            print("args: {}".format(", ".join(repr(a) for a in args)))
-            print("kwargs: {}".format(kwargs))
-            print("=" * 79)
+            log.critical("=" * 79)
+            log.critical(
+                "Uncaught exception in slot, within thread: {}".format(
+                    threading.current_thread().name))
+            log.critical("-" * 79)
+            log.critical(traceback.format_exc())
+            log.critical("-" * 79)
+            log.critical("args: {}".format(", ".join(repr(a) for a in args)))
+            log.critical("kwargs: {}".format(kwargs))
+            log.critical("=" * 79)
             sys.exit(1)
     return with_exit_on_exception
 

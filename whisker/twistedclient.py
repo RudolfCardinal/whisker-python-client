@@ -14,7 +14,7 @@ Last update: 10 Feb 2016
 import logging
 import re
 import socket
-from typing import Iterator, Optional, Union
+from typing import Generator, Optional, Union
 
 from twisted.internet import reactor
 # from twisted.internet.stdio import StandardIO
@@ -269,7 +269,7 @@ class WhiskerMainPortFactory(ClientFactory):
         log.error("connection failed: " + str(reason))
         reactor.stop()
 
-    def buildProtocol(self, addr: str) -> 'WhiskerMainPortProtocol':
+    def buildProtocol(self, addr: str) -> Optional['WhiskerMainPortProtocol']:
         log.debug("WhiskerMainPortFactory: buildProtocol({})".format(addr))
         if self.task.mainsocket:
             log.error("mainsocket already connected")
@@ -345,7 +345,7 @@ class WhiskerImmSocket(object):
         self.immsock.setblocking(True)
         log.debug("Immediate port: set to blocking mode")
 
-    def getlines_immsock(self) -> Iterator[str]:
+    def getlines_immsock(self) -> Generator[str, None, None]:
         """Yield a set of lines from the socket."""
         # log.debug("WhiskerImmSocket: getlines_immsock")
         # http://stackoverflow.com/questions/822001/python-sockets-buffering

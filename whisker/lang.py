@@ -40,7 +40,10 @@ def reversedict(d: Dict[Any, Any]) -> Dict[Any, Any]:
 
 
 def contains_duplicates(values: Iterable[Any]) -> bool:
-    return [k for k, v in Counter(values).items() if v > 1]
+    for v in Counter(values).values():
+        if v > 1:
+            return True
+    return False
 
 
 def sort_list_by_index_list(x: List[Any], indexes: List[int]) -> None:

@@ -35,6 +35,7 @@ Attempted solution:
 
 import logging
 from enum import Enum
+from typing import Optional
 
 import arrow
 # noinspection PyPackageRequirements
@@ -126,6 +127,7 @@ class WhiskerOwner(QObject, StatusMixin):
     finished = Signal()
     message_received = Signal(str, arrow.Arrow, int)
     event_received = Signal(str, arrow.Arrow, int)
+    pingack_received = Signal(arrow.Arrow, int)
     # Inwards, to possessions:
     controller_finish_requested = Signal()
     mainsock_finish_requested = Signal()
@@ -134,7 +136,7 @@ class WhiskerOwner(QObject, StatusMixin):
 
     # noinspection PyUnresolvedReferences
     def __init__(self,
-                 task: WhiskerTask,
+                 task: 'WhiskerTask',  # forward reference for type hint
                  server: str,
                  main_port: int = DEFAULT_PORT,
                  parent: QObject = None,
@@ -200,6 +202,7 @@ class WhiskerOwner(QObject, StatusMixin):
         self.controller.message_received.connect(self.message_received)
         self.controller.event_received.connect(self.event_received)
         self.controller.event_received.connect(self.task.on_event)
+        self.controller.pingack_received.connect(self.pingack_received)
         self.controller.warning_received.connect(self.task.on_warning)
         self.controller.error_received.connect(self.task.on_error)
         self.controller.syntax_error_received.connect(
@@ -407,6 +410,7 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
     warning_received = Signal(str, arrow.Arrow, int)
     syntax_error_received = Signal(str, arrow.Arrow, int)
     error_received = Signal(str, arrow.Arrow, int)
+    pingack_received = Signal(arrow.Arrow, int)
 
     def __init__(self,
                  server: str,
@@ -480,6 +484,8 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
             self.syntax_error_received.emit(msg, timestamp, whisker_timestamp)
         elif ERROR_REGEX.match(msg):
             self.error_received.emit(msg, timestamp, whisker_timestamp)
+        elif msg == PING_ACK:
+            self.pingack_received.emit(timestamp, whisker_timestamp)
 
     @exit_on_exception
     def task_finished(self) -> None:
@@ -512,7 +518,7 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         self.debug("Reply from server (IMM): {}".format(line))
         return line
 
-    def get_immsock_response(self, *args) -> str:
+    def get_immsock_response(self, *args) -> Optional[str]:
         if not self.is_connected():
             self.error("Not connected")
             return None
@@ -527,6 +533,13 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
     def close_immsocket(self) -> None:
         if is_socket_connected(self.immsocket):
             self.immsocket.close()
+
+    def ping(self) -> None:
+        # override WhiskerApi.ping() so we can emit a signal on success
+        reply, whisker_timestamp = self._immresp_with_timestamp(PING)
+        if reply == PING_ACK:
+            timestamp = arrow.now()
+            self.pingack_received.emit(timestamp, whisker_timestamp)
 
 
 # =============================================================================

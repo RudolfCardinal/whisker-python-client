@@ -21,7 +21,7 @@ import logging
 import re
 import socket
 import time
-from typing import Iterator, Union
+from typing import Generator, Union
 
 from whisker.socket import (
     get_port,
@@ -157,7 +157,7 @@ class Whisker(object):
         log.debug("Immediate socket reply: " + reply)
         return reply
 
-    def getlines_immsock(self) -> Iterator[str]:
+    def getlines_immsock(self) -> Generator[str, None, None]:
         """Yield a set of lines from the socket."""
         # http://stackoverflow.com/questions/822001/python-sockets-buffering
         buf = socket_receive(self.immsock)
@@ -175,7 +175,7 @@ class Whisker(object):
         if buf:
             yield buf
 
-    def getlines_mainsock(self) -> Iterator[str]:
+    def getlines_mainsock(self) -> Generator[str, None, None]:
         """Yield a set of lines from the socket."""
         buf = socket_receive(self.mainsock)
         done = False

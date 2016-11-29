@@ -11,7 +11,7 @@ import decimal
 import logging
 import os
 import sys
-from typing import (Any, Callable, Dict, Iterator, Optional, TextIO, Tuple,
+from typing import (Any, Callable, Dict, Generator, Optional, TextIO, Tuple,
                     Union)
 
 from alembic.config import Config
@@ -216,7 +216,7 @@ def get_database_session_thread_unaware(settings: Dict[str, Any]) -> Session:
 
 @contextmanager
 def session_scope_thread_unaware(
-        settings: Dict[str, Any]) -> Iterator[Session]:
+        settings: Dict[str, Any]) -> Generator[Session, None, None]:
     log.warning("session_scope_thread_unaware() called")
     # http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#session-faq-whentocreate  # noqa
     session = get_database_session_thread_unaware(settings)
@@ -266,7 +266,7 @@ def get_database_session_thread_scope(*args, **kwargs) -> Session:
 @contextmanager
 def session_thread_scope(
         settings: Dict[str, Any],
-        readonly: bool = False) -> Iterator[Session]:
+        readonly: bool = False) -> Generator[Session, None, None]:
     session = get_database_session_thread_scope(settings, readonly)
     try:
         yield session
@@ -349,7 +349,7 @@ def database_is_mysql(dbsettings: Dict[str, str]) -> bool:
 # https://groups.google.com/forum/#!topic/sqlalchemy/wb2M_oYkQdY
 # https://groups.google.com/forum/#!searchin/sqlalchemy/cascade%7Csort:date/sqlalchemy/eIOkkXwJ-Ms/JLnpI2wJAAAJ  # noqa
 
-def walk(obj) -> Iterator[object]:
+def walk(obj) -> Generator[object, None, None]:
     """
     Starting with a SQLAlchemy ORM object, this function walks a
     relationship tree, yielding each of the objects once.
@@ -388,7 +388,7 @@ def copy_sqla_object(obj: object, omit_fk: bool = True) -> object:
     prohibited = pk_keys | rel_keys
     if omit_fk:
         fk_keys = set([c.key for c in mapper.columns if c.foreign_keys])
-        prohibited = prohibited | fk_keys
+        prohibited |= fk_keys
     log.debug("copy_sqla_object: skipping: {}".format(prohibited))
     for k in [p.key for p in mapper.iterate_properties
               if p.key not in prohibited]:
@@ -536,7 +536,8 @@ def quick_mapper(table: Table) -> object:
 class StringLiteral(String):
     """Teach SA how to literalize various things."""
     # http://stackoverflow.com/questions/5631078/sqlalchemy-print-the-actual-query  # noqa
-    def literal_processor(self, dialect: DefaultDialect) -> Callable[Any, str]:
+    def literal_processor(self,
+                          dialect: DefaultDialect) -> Callable[[Any], str]:
         super_processor = super().literal_processor(dialect)
 
         def process(value: Any) -> str:
@@ -553,7 +554,7 @@ class StringLiteral(String):
 
 
 # noinspection PyPep8Naming
-def make_literal_query_fn(dialect: DefaultDialect) -> Callable[str, str]:
+def make_literal_query_fn(dialect: DefaultDialect) -> Callable[[str], str]:
     DialectClass = dialect.__class__
 
     # noinspection PyClassHasNoInit,PyAbstractClass

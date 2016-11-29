@@ -6,7 +6,7 @@
 from html import escape
 import json
 import logging
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Optional
 
 from colorlog import ColoredFormatter
 
@@ -170,7 +170,7 @@ def copy_all_logs_to_file(filename: str,
 
 
 # noinspection PyProtectedMember
-def get_formatter_report(f: logging.Formatter) -> Dict[str, str]:
+def get_formatter_report(f: logging.Formatter) -> Optional[Dict[str, str]]:
     """Returns information on a log formatter, as a dictionary.
     For debugging."""
     if f is None:

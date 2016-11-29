@@ -304,4 +304,15 @@ Version history
 
 * 10 Feb 2016: moved to package format.
 * 25 Feb 2016: v0.2.0; "colourlog" renamed "logsupport".
-* 25 Nov 2016: v0.3.5; Python type hints.
+* 25 Nov 2016: v0.3.5
+    - Python type hints.
+    - Write "exit_on_exception" exceptions to log, not via print().
+    - WhiskerOwner offers new pingack_received signal.
+
+Known problems
+===============================================================================
+
+* 2016-11-25: Syntax check fails because PyCharm 2016.3 type hints go wrong for
+  generators:
+  https://youtrack.jetbrains.com/issue/PY-20657#tab=Linked%20Issues
+  https://youtrack.jetbrains.com/issue/PY-20709
