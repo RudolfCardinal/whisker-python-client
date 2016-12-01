@@ -13,7 +13,7 @@ import traceback
 from typing import Any, Iterable, List, Optional, Tuple
 
 # noinspection PyPackageRequirements
-from PySide.QtCore import (
+from PyQt5.QtCore import (
     QAbstractListModel,
     QAbstractTableModel,
     QModelIndex,
@@ -21,20 +21,27 @@ from PySide.QtCore import (
     Qt,
     QTimer,
     # QVariant,  # non-existent in PySide?
-    Signal,
-    Slot,
+    pyqtSignal,
+    pyqtSlot,
 )
 # noinspection PyPackageRequirements
-from PySide.QtGui import (
+from PyQt5.QtCore import (
+    QItemSelection,
+    QItemSelectionModel,
+)
+# noinspection PyPackageRequirements
+from PyQt5.QtGui import (
+    QCloseEvent,  # for type hints
+    QTextCursor,
+)
+# noinspection PyPackageRequirements
+from PyQt5.QtWidgets import (
     QAbstractItemView,
     QButtonGroup,
-    QCloseEvent,  # for type hints
     QDialog,
     QDialogButtonBox,
     QGroupBox,
     QHBoxLayout,
-    QItemSelection,
-    QItemSelectionModel,
     QLayout,  # for type hints
     QListView,
     QMainWindow,
@@ -43,7 +50,6 @@ from PySide.QtGui import (
     QPushButton,
     QRadioButton,
     QTableView,
-    QTextCursor,
     # QTextEdit,
     QVBoxLayout,
     QWidget,
@@ -108,8 +114,8 @@ QGroupBox::title {
 
 
 class StyledQGroupBox(QGroupBox):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args) -> None:
+        super().__init__(*args)
         self.setStyleSheet(GROUPBOX_STYLESHEET)
 
 
@@ -129,9 +135,8 @@ QPlainTextEdit {
 
 
 class LogWindow(QMainWindow):
-    emit_msg = Signal(str)
+    emit_msg = pyqtSignal(str)
 
-    # noinspection PyUnresolvedReferences
     def __init__(self,
                  level: int = logging.INFO,
                  window_title: str = "Python log",
@@ -228,7 +233,7 @@ class LogWindow(QMainWindow):
         # Jump threads via a signal
         self.emit_msg.emit(html)
 
-    @Slot(str)
+    @pyqtSlot(str)
     def log_internal(self, html: str) -> None:
         # self.log.moveCursor(QTextCursor.End)
         # self.log.insertHtml(html)
@@ -237,7 +242,7 @@ class LogWindow(QMainWindow):
         # ... unnecessary; if you're at the end, it scrolls, and if you're at
         # the top, it doesn't bug you.
 
-    @Slot()
+    @pyqtSlot()
     def exit(self) -> None:
         # log.debug("LogWindow: exit")
         self.may_close = True
@@ -245,7 +250,7 @@ class LogWindow(QMainWindow):
         # log.debug("closed: {}".format(closed))
         QMainWindow.close(self)
 
-    @Slot()
+    @pyqtSlot()
     def may_exit(self) -> None:
         # log.debug("LogWindow: may_exit")
         self.set_may_close(True)
@@ -275,10 +280,8 @@ class TextLogElement(object):
         font.setPointSize(font_size_pt)
 
         log_clear_button = QPushButton('Clear log')
-        # noinspection PyUnresolvedReferences
         log_clear_button.clicked.connect(self.log.clear)
         log_copy_button = QPushButton('Copy to clipboard')
-        # noinspection PyUnresolvedReferences
         log_copy_button.clicked.connect(self.copy_whole_log)
         log_layout_2.addWidget(log_clear_button)
         log_layout_2.addWidget(log_copy_button)
@@ -323,15 +326,17 @@ class StatusMixin(object):
 
     Uses the same function names as Python logging, for predictability.
     """
-    status_sent = Signal(str, str)
-    error_sent = Signal(str, str)
+    status_sent = pyqtSignal(str, str)
+    error_sent = pyqtSignal(str, str)
 
     def __init__(self,
                  name: str,
                  logger: logging.Logger,
                  thread_info: bool = True,
-                 caller_info: bool = True) -> None:
+                 caller_info: bool = True,
+                 **kwargs) -> None:
         # Somewhat verbose names to make conflict with a user class unlikely.
+        super().__init__(**kwargs)
         self._statusmixin_name = name
         self._statusmixin_log = logger
         self._statusmixin_debug_thread_info = thread_info
@@ -355,26 +360,32 @@ class StatusMixin(object):
         return "{}:{} {}{}".format(self._statusmixin_name, callerinfo, msg,
                                    threadinfo)
 
+    @pyqtSlot(str)
     def debug(self, msg: str) -> None:
         self._statusmixin_log.debug(self._process_status_message(msg))
 
+    @pyqtSlot(str)
     def critical(self, msg: str) -> None:
         self._statusmixin_log.critical(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
+    @pyqtSlot(str)
     def error(self, msg: str) -> None:
         self._statusmixin_log.error(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
+    @pyqtSlot(str)
     def warning(self, msg: str) -> None:
         # warn() is deprecated; use warning()
         self._statusmixin_log.warning(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
+    @pyqtSlot(str)
     def info(self, msg: str) -> None:
         self._statusmixin_log.info(self._process_status_message(msg))
         self.status_sent.emit(msg, self._statusmixin_name)
 
+    @pyqtSlot(str)
     def status(self, msg: str) -> None:
         # Don't just call info, because of the stack-counting thing
         # in _process_status_message
@@ -391,12 +402,16 @@ class TransactionalEditDialogMixin(object):
     Mixin for a config-editing dialogue.
     Wraps the editing in a SAVEPOINT transaction.
     The caller must still commit() afterwards, but any rollbacks are automatic.
-    """
-    ok = Signal()
 
-    # noinspection PyUnresolvedReferences
+    See also http://pyqt.sourceforge.net/Docs/PyQt5/multiinheritance.html
+    for the super().__init__(..., **kwargs) chain.
+    """
+    ok = pyqtSignal()
+
     def __init__(self, session: Session, obj: object, layout: QLayout,
-                 readonly: bool = False) -> None:
+                 readonly: bool = False, **kwargs) -> None:
+        super().__init__(**kwargs)
+
         # Store variables
         self.obj = obj
         self.session = session
@@ -422,17 +437,12 @@ class TransactionalEditDialogMixin(object):
         main_layout.addLayout(layout)
         main_layout.addWidget(ok_cancel_buttons)
 
-        # Pass in data
-        self.object_to_dialog(self.obj)
-
-    @Slot()
+    @pyqtSlot()
     def ok_clicked(self) -> None:
         try:
             self.dialog_to_object(self.obj)
-            # noinspection PyUnresolvedReferences
             self.accept()
         except Exception as e:
-            # noinspection PyCallByClass,PyTypeChecker
             QMessageBox.about(self, "Invalid data", str(e))
             # ... str(e) will be a simple message for ValidationError
 
@@ -524,11 +534,9 @@ class TransactionalEditDialogMixin(object):
         # back on an exception.
         result = None
         if self.readonly:
-            # noinspection PyUnresolvedReferences
             return self.exec_()  # enforces modal
         try:
             with self.session.begin_nested():
-                # noinspection PyUnresolvedReferences
                 result = self.exec_()  # enforces modal
                 if result == QDialog.Accepted:
                     return result
@@ -560,12 +568,12 @@ class TransactionalDialog(QDialog):
     """
 
     def __init__(self, session: Session, readonly: bool = False,
-                 parent: QObject = None) -> None:
-        super().__init__(parent=parent)
+                 parent: QObject = None, **kwargs) -> None:
+        super().__init__(parent=parent, **kwargs)
         self.session = session
         self.readonly = readonly
 
-    @Slot()
+    @pyqtSlot()
     def exec_(self, *args, **kwargs):
         if self.readonly:
             return super().exec_(*args, **kwargs)  # enforces modal
@@ -589,7 +597,8 @@ class TransactionalDialog(QDialog):
 # =============================================================================
 
 class DatabaseModelMixin(object):
-    def __init__(self, session: Session, listdata) -> None:
+    def __init__(self, session: Session, listdata, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.session = session
         self.listdata = listdata
         log.debug("DatabaseModelMixin: session={}".format(repr(session)))
@@ -612,10 +621,8 @@ class DatabaseModelMixin(object):
         if delete_from_session:
             obj = self.listdata[row_index]
             self.session.delete(obj)
-        # noinspection PyUnresolvedReferences
         self.beginRemoveRows(QModelIndex(), row_index, row_index)
         del self.listdata[row_index]
-        # noinspection PyUnresolvedReferences
         self.endRemoveRows()
 
     def insert_at_index(self, obj: object, index: int = None,
@@ -630,10 +637,8 @@ class DatabaseModelMixin(object):
             if flush:
                 self.session.flush()
         # http://stackoverflow.com/questions/4702972
-        # noinspection PyUnresolvedReferences
         self.beginInsertRows(QModelIndex(), 0, 0)
         self.listdata.insert(index, obj)
-        # noinspection PyUnresolvedReferences
         self.endInsertRows()
 
     def move_up(self, index: int) -> None:
@@ -643,7 +648,6 @@ class DatabaseModelMixin(object):
             return
         x = self.listdata  # shorter name!
         x[index - 1], x[index] = x[index], x[index - 1]
-        # noinspection PyUnresolvedReferences
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def move_down(self, index: int) -> None:
@@ -653,14 +657,13 @@ class DatabaseModelMixin(object):
             return
         x = self.listdata  # shorter name!
         x[index + 1], x[index] = x[index], x[index + 1]
-        # noinspection PyUnresolvedReferences
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
 
 class ViewAssistMixin(object):
-    selection_changed = Signal(QItemSelection, QItemSelection)
+    selection_changed = pyqtSignal(QItemSelection, QItemSelection)
     # ... selected (set), deselected (set)
-    selected_maydelete = Signal(bool, bool)
+    selected_maydelete = pyqtSignal(bool, bool)
     # ... selected
 
     # -------------------------------------------------------------------------
@@ -669,7 +672,9 @@ class ViewAssistMixin(object):
 
     def __init__(self, session: Session,
                  modal_dialog_class,
-                 readonly: bool = False) -> None:
+                 readonly: bool = False,
+                 **kwargs) -> None:
+        super().__init__(**kwargs)
         self.session = session
         self.modal_dialog_class = modal_dialog_class
         self.readonly = readonly
@@ -677,13 +682,10 @@ class ViewAssistMixin(object):
 
     def set_model_common(self, model, list_base_class) -> None:
         if self.selection_model:
-            # noinspection PyUnresolvedReferences
             self.selection_model.selectionChanged.disconnect()
         list_base_class.setModel(self, model)
         self.selection_model = QItemSelectionModel(model)
-        # noinspection PyUnresolvedReferences
         self.selection_model.selectionChanged.connect(self._selection_changed)
-        # noinspection PyUnresolvedReferences
         self.setSelectionModel(self.selection_model)
 
     # -------------------------------------------------------------------------
@@ -711,7 +713,6 @@ class ViewAssistMixin(object):
         index = self.get_selected_row_index()
         if index is None:
             return None
-        # noinspection PyUnresolvedReferences
         model = self.model()
         if model is None:
             return None
@@ -721,7 +722,6 @@ class ViewAssistMixin(object):
         raise NotImplementedError()
 
     def go_to(self, row: Optional[int]) -> None:
-        # noinspection PyUnresolvedReferences
         model = self.model()
         if row is None:
             # Go to the end.
@@ -730,7 +730,6 @@ class ViewAssistMixin(object):
                 return
             row = nrows - 1
         modelindex = model.index(row, 0)  # second parameter is column
-        # noinspection PyUnresolvedReferences
         self.setCurrentIndex(modelindex)
 
     def _selection_changed(self, selected, deselected) -> None:
@@ -738,14 +737,12 @@ class ViewAssistMixin(object):
         selected_model_indexes = selected.indexes()
         selected_row_indexes = [mi.row() for mi in selected_model_indexes]
         is_selected = bool(selected_row_indexes)
-        # noinspection PyUnresolvedReferences
         model = self.model()
         may_delete = is_selected and all(
             [model.item_deletable(ri) for ri in selected_row_indexes])
         self.selected_maydelete.emit(is_selected, may_delete)
 
     def get_n_rows(self) -> int:
-        # noinspection PyUnresolvedReferences
         model = self.model()
         return model.rowCount()
 
@@ -757,7 +754,6 @@ class ViewAssistMixin(object):
                         add_to_session: bool = True,
                         flush: bool = True) -> None:
         # index: None for end, 0 for start
-        # noinspection PyUnresolvedReferences
         model = self.model()
         model.insert_at_index(obj, index,
                               add_to_session=add_to_session, flush=flush)
@@ -809,7 +805,6 @@ class ViewAssistMixin(object):
                         delete_from_session: bool = True) -> None:
         if row_index is None:
             return
-        # noinspection PyUnresolvedReferences
         model = self.model()
         model.delete_item(row_index, delete_from_session=delete_from_session)
 
@@ -821,7 +816,6 @@ class ViewAssistMixin(object):
         row_index = self.get_selected_row_index()
         if row_index is None or row_index == 0:
             return
-        # noinspection PyUnresolvedReferences
         model = self.model()
         model.move_up(row_index)
         self.go_to(row_index - 1)
@@ -830,7 +824,6 @@ class ViewAssistMixin(object):
         row_index = self.get_selected_row_index()
         if row_index is None or row_index == self.get_n_rows() - 1:
             return
-        # noinspection PyUnresolvedReferences
         model = self.model()
         model.move_down(row_index)
         self.go_to(row_index + 1)
@@ -852,7 +845,6 @@ class ViewAssistMixin(object):
             return
         if readonly is None:
             readonly = self.readonly
-        # noinspection PyUnresolvedReferences
         model = self.model()
         item = model.listdata[index.row()]
         win = self.modal_dialog_class(self.session, item, readonly=readonly)
@@ -899,17 +891,19 @@ class GenericListModel(QAbstractListModel, DatabaseModelMixin):
     Takes a list and provides a view on it using str().
     Note that it MODIFIES THE LIST PASSED TO IT.
     """
-    def __init__(self, data, session: Session, parent: QObject = None) -> None:
-        # noinspection PyArgumentList
-        super().__init__(parent)  # QAbstractListModel
-        DatabaseModelMixin.__init__(self, session=session, listdata=data)
+    def __init__(self, data, session: Session, parent: QObject = None,
+                 **kwargs) -> None:
+        super().__init__(session=session, listdata=data, parent=parent,
+                         **kwargs)
 
     # noinspection PyUnusedLocal, PyPep8Naming
-    def rowCount(self, parent=QModelIndex()) -> int:
+    def rowCount(self, parent: QModelIndex = QModelIndex(),
+                 *args, **kwargs) -> int:
         """Qt override."""
         return len(self.listdata)
 
-    def data(self, index: QModelIndex, role) -> Optional[str]:
+    def data(self, index: QModelIndex,
+             role: int = Qt.DisplayRole) -> Optional[str]:
         """Qt override."""
         if index.isValid() and role == Qt.DisplayRole:
             return str(self.listdata[index.row()])
@@ -924,11 +918,11 @@ class ModalEditListView(QListView, ViewAssistMixin):
 
     def __init__(self, session: Session, modal_dialog_class,
                  *args, **kwargs) -> None:
-        super().__init__(*args)  # QListView
         self.readonly = kwargs.pop('readonly', False)
-        ViewAssistMixin.__init__(self, session=session,
-                                 modal_dialog_class=modal_dialog_class,
-                                 readonly=self.readonly)
+        super().__init__(session=session,
+                         modal_dialog_class=modal_dialog_class,
+                         readonly=self.readonly,
+                         *args, **kwargs)
         # self.setEditTriggers(QAbstractItemView.DoubleClicked)
         # ... probably only relevant if we do NOT override edit().
         # Being able to select a single row is the default.
@@ -977,13 +971,15 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
                  default_sort_column_name: str = None,
                  default_sort_order=Qt.AscendingOrder,
                  deletable: bool = True,
-                 parent: QObject = None) -> None:
+                 parent: QObject = None,
+                 **kwargs) -> None:
         """
         header: list of colname, attr/func tuples
         """
-        # noinspection PyArgumentList
-        super().__init__(parent)  # QAbstractTableModel
-        DatabaseModelMixin.__init__(self, session=session, listdata=data)
+        super().__init__(session=session,
+                         listdata=data,
+                         parent=parent,
+                         **kwargs)
         self.header_display = [x[0] for x in header]
         self.header_attr = [x[1] for x in header]
         self.deletable = deletable
@@ -999,16 +995,19 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
         return self.default_sort_column_num, self.default_sort_order
 
     # noinspection PyUnusedLocal, PyPep8Naming
-    def rowCount(self, parent: QModelIndex = QModelIndex()):
+    def rowCount(self, parent: QModelIndex = QModelIndex(),
+                 *args, **kwargs):
         """Qt override."""
         return len(self.listdata)
 
     # noinspection PyUnusedLocal, PyPep8Naming
-    def columnCount(self, parent: QModelIndex = QModelIndex()):
+    def columnCount(self, parent: QModelIndex = QModelIndex(),
+                    *args, **kwargs):
         """Qt override."""
         return len(self.header_attr)
 
-    def data(self, index: QModelIndex, role) -> Optional[str]:
+    def data(self, index: QModelIndex,
+             role: int = Qt.DisplayRole) -> Optional[str]:
         """Qt override."""
         if index.isValid() and role == Qt.DisplayRole:
             obj = self.listdata[index.row()]
@@ -1021,17 +1020,17 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
         return None
 
     # noinspection PyPep8Naming
-    def headerData(self, col: int, orientation, role) -> Optional[str]:
+    def headerData(self, col: int, orientation: int,
+                   role: int = Qt.DisplayRole) -> Optional[str]:
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self.header_display[col]
         return None
 
-    def sort(self, col: int, order) -> None:
+    def sort(self, col: int, order: int = Qt.AscendingOrder) -> None:
         """Sort table by column number col."""
         # log.debug("GenericAttrTableModel.sort")
         if not self.listdata:
             return
-        # noinspection PyUnresolvedReferences
         self.layoutAboutToBeChanged.emit()
         colname = self.header_attr[col]
         isfunc = callable(getattr(self.listdata[0], colname))
@@ -1044,12 +1043,11 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
                                    key=attrgetter_nonesort(colname))
         if order == Qt.DescendingOrder:
             self.listdata.reverse()
-        # noinspection PyUnresolvedReferences
         self.layoutChanged.emit()
 
 
 class GenericAttrTableView(QTableView, ViewAssistMixin):
-    selection_changed = Signal(QItemSelection, QItemSelection)
+    selection_changed = pyqtSignal(QItemSelection, QItemSelection)
 
     # -------------------------------------------------------------------------
     # Initialization and setting data (model)
@@ -1061,13 +1059,13 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
                  parent: QObject = None,
                  sortable: bool = True,
                  stretch_last_section: bool = True,
-                 readonly: bool = False) -> None:
-        # noinspection PyArgumentList,PyArgumentList
-        super().__init__(parent=parent)  # QTableView
-        ViewAssistMixin.__init__(self,
-                                 session=session,
-                                 modal_dialog_class=modal_dialog_class,
-                                 readonly=readonly)
+                 readonly: bool = False,
+                 **kwargs) -> None:
+        super().__init__(session=session,
+                         modal_dialog_class=modal_dialog_class,
+                         readonly=readonly,
+                         parent=parent,
+                         **kwargs)
         self.sortable = sortable
         self.sizing_done = False
         self.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -1189,12 +1187,11 @@ class GarbageCollector(QObject):
 
     def __init__(self, parent: QObject, debug: bool = False,
                  interval_ms=10000) -> None:
-        QObject.__init__(self, parent)
+        super().__init__(parent)
         self.debug = debug
         self.interval_ms = interval_ms
 
         self.timer = QTimer(self)
-        # noinspection PyUnresolvedReferences
         self.timer.timeout.connect(self.check)
 
         self.threshold = gc.get_threshold()
@@ -1247,6 +1244,7 @@ def exit_on_exception(func):
             log.critical("-" * 79)
             log.critical(traceback.format_exc())
             log.critical("-" * 79)
+            log.critical("For function {},".format(func.__name__))
             log.critical("args: {}".format(", ".join(repr(a) for a in args)))
             log.critical("kwargs: {}".format(kwargs))
             log.critical("=" * 79)

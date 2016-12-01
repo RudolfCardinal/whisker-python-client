@@ -39,20 +39,23 @@ from typing import Optional
 
 import arrow
 # noinspection PyPackageRequirements
-from PySide.QtCore import (
+from PyQt5.QtCore import (
+    QByteArray,
     QObject,
     Qt,
     QThread,
-    Signal,
+    pyqtSignal,
+    pyqtSlot,
 )
 # noinspection PyPackageRequirements
-from PySide.QtNetwork import (
+from PyQt5.QtNetwork import (
     QAbstractSocket,
     QTcpSocket,
 )
 
 from whisker.api import (
     CODE_REGEX,
+    ENCODING,
     EOL,
     EOL_LEN,
     ERROR_REGEX,
@@ -110,31 +113,30 @@ def quote(msg: str) -> str:
 # Object to supervise all Whisker functions
 # =============================================================================
 
-class WhiskerOwner(QObject, StatusMixin):
+class WhiskerOwner(QObject, StatusMixin):  # GUI thread
     """
     This object is owned by the GUI thread.
     It devolves work to two other threads:
-        (a) main socket listener (WhiskerMainSocketListener)
-        (b) task (WhiskerTask)
+        (A) main socket listener (WhiskerMainSocketListener)
+        (B) task (WhiskerTask)
             + immediate socket (blocking) handler (WhiskerController)
 
     The use of 'main' here just refers to the main socket (as opposed to the
     immediate socket), not the thread that's doing most of the processing.
     """
     # Outwards, to world/task:
-    connected = Signal()
-    disconnected = Signal()
-    finished = Signal()
-    message_received = Signal(str, arrow.Arrow, int)
-    event_received = Signal(str, arrow.Arrow, int)
-    pingack_received = Signal(arrow.Arrow, int)
+    connected = pyqtSignal()
+    disconnected = pyqtSignal()
+    finished = pyqtSignal()
+    message_received = pyqtSignal(str, arrow.Arrow, int)
+    event_received = pyqtSignal(str, arrow.Arrow, int)
+    pingack_received = pyqtSignal(arrow.Arrow, int)
     # Inwards, to possessions:
-    controller_finish_requested = Signal()
-    mainsock_finish_requested = Signal()
-    ping_requested = Signal()
+    controller_finish_requested = pyqtSignal()
+    mainsock_finish_requested = pyqtSignal()
+    ping_requested = pyqtSignal()
     # And don't forget the signals inherited from StatusMixin.
 
-    # noinspection PyUnresolvedReferences
     def __init__(self,
                  task: 'WhiskerTask',  # forward reference for type hint
                  server: str,
@@ -143,10 +145,9 @@ class WhiskerOwner(QObject, StatusMixin):
                  connect_timeout_ms: int = 5000,
                  read_timeout_ms: int = 500,
                  name: str = "whisker_owner",
-                 sysevent_prefix: str = 'sys_') -> None:
-        # noinspection PyArgumentList
-        super().__init__(parent)
-        StatusMixin.__init__(self, name, log)
+                 sysevent_prefix: str = 'sys_',
+                 **kwargs) -> None:
+        super().__init__(parent=parent, name=name, logger=log, **kwargs)
         self.state = ThreadOwnerState.stopped
         self.is_connected = False
 
@@ -179,7 +180,7 @@ class WhiskerOwner(QObject, StatusMixin):
         self.mainsockthread.started.connect(self.mainsock.start)
         # ... stop
         self.mainsock_finish_requested.connect(self.mainsock.stop,
-                                               Qt.DirectConnection)  # NB!
+                                               type=Qt.DirectConnection)  # NB!
         self.mainsock.finished.connect(self.mainsockthread.quit)
         self.mainsockthread.finished.connect(self.mainsockthread_finished)
         self.controller_finish_requested.connect(self.task.stop)
@@ -199,14 +200,14 @@ class WhiskerOwner(QObject, StatusMixin):
         self.mainsock.line_received.connect(self.controller.main_received)
         self.controller.connected.connect(self.on_connect)
         self.controller.connected.connect(self.task.on_connect)
-        self.controller.message_received.connect(self.message_received)
-        self.controller.event_received.connect(self.event_received)
-        self.controller.event_received.connect(self.task.on_event)
-        self.controller.pingack_received.connect(self.pingack_received)
-        self.controller.warning_received.connect(self.task.on_warning)
-        self.controller.error_received.connect(self.task.on_error)
+        self.controller.message_received.connect(self.message_received)  # different thread  # noqa
+        self.controller.event_received.connect(self.event_received)  # different thread  # noqa
+        self.controller.event_received.connect(self.task.on_event)  # same thread  # noqa
+        self.controller.pingack_received.connect(self.pingack_received)  # different thread  # noqa
+        self.controller.warning_received.connect(self.task.on_warning)  # same thread  # noqa
+        self.controller.error_received.connect(self.task.on_error)  # same thread  # noqa
         self.controller.syntax_error_received.connect(
-            self.task.on_syntax_error)
+            self.task.on_syntax_error)  # same thread  # noqa
 
         # Abort events
         self.mainsock.disconnected.connect(self.on_disconnect)
@@ -250,6 +251,7 @@ class WhiskerOwner(QObject, StatusMixin):
     # Stopping
     # -------------------------------------------------------------------------
 
+    @pyqtSlot()
     @exit_on_exception
     def on_disconnect(self) -> None:
         self.debug("WhiskerOwner: on_disconnect")
@@ -269,11 +271,13 @@ class WhiskerOwner(QObject, StatusMixin):
         self.controller_finish_requested.emit()
         self.mainsock_finish_requested.emit()
 
-    @exit_on_exception  # @Slot()
+    @pyqtSlot()
+    @exit_on_exception
     def mainsockthread_finished(self) -> None:
         self.debug("stop: main socket thread stopped")
         self.check_everything_finished()
 
+    @pyqtSlot()
     @exit_on_exception
     def taskthread_finished(self) -> None:
         self.debug("stop: task thread stopped")
@@ -289,6 +293,7 @@ class WhiskerOwner(QObject, StatusMixin):
     # Other
     # -------------------------------------------------------------------------
 
+    @pyqtSlot()
     @exit_on_exception
     def on_connect(self) -> None:
         self.status("Fully connected to Whisker server")
@@ -306,10 +311,10 @@ class WhiskerOwner(QObject, StatusMixin):
 # Main socket listener
 # =============================================================================
 
-class WhiskerMainSocketListener(QObject, StatusMixin):
-    finished = Signal()
-    disconnected = Signal()
-    line_received = Signal(str, arrow.Arrow)
+class WhiskerMainSocketListener(QObject, StatusMixin):  # Whisker thread A
+    finished = pyqtSignal()
+    disconnected = pyqtSignal()
+    line_received = pyqtSignal(str, arrow.Arrow)
 
     def __init__(self,
                  server: str,
@@ -317,10 +322,9 @@ class WhiskerMainSocketListener(QObject, StatusMixin):
                  parent: QObject = None,
                  connect_timeout_ms: int = 5000,
                  read_timeout_ms: int = 100,
-                 name: str = "whisker_mainsocket") -> None:
-        # noinspection PyArgumentList
-        super().__init__(parent)
-        StatusMixin.__init__(self, name, log)
+                 name: str = "whisker_mainsocket",
+                 **kwargs) -> None:
+        super().__init__(parent=parent, name=name, logger=log, **kwargs)
         self.server = server
         self.port = port
         self.connect_timeout_ms = connect_timeout_ms
@@ -332,6 +336,7 @@ class WhiskerMainSocketListener(QObject, StatusMixin):
         # Don't create the socket immediately; we're going to be moved to
         # another thread.
 
+    @pyqtSlot()
     def start(self) -> None:
         # Must be separate from __init__, or signals won't be connected yet.
         self.finish_requested = False
@@ -353,12 +358,24 @@ class WhiskerMainSocketListener(QObject, StatusMixin):
             # self.debug("ping")
             if self.socket.waitForReadyRead(self.read_timeout_ms):
                 # data is now ready
-                data = self.socket.readAll()
-                # readAll() returns a QByteArray; bytes() fails; str() is OK
-                data = str(data)
-                self.process_data(data)
+                data = self.socket.readAll()  # type: QByteArray
+                # log.critical(repr(data))
+                # log.critical(repr(type(data)))  # <class 'PyQt5.QtCore.QByteArray'> under PyQt5  # noqa
+
+                # for PySide:
+                # - readAll() returns a QByteArray; bytes() fails; str() is OK
+                # strdata = str(data)
+
+                # for PyQt5:
+                # - readAll() returns a QByteArray again;
+                # - however, str(data) looks like "b'Info: ...\\n'"
+                strdata = data.data().decode(ENCODING)  # this works
+
+                # log.critical(repr(strdata))
+                self.process_data(strdata)
         self.finish()
 
+    @pyqtSlot()
     @exit_on_exception
     def stop(self) -> None:
         self.debug("WhiskerMainSocketListener: stop")
@@ -369,7 +386,9 @@ class WhiskerMainSocketListener(QObject, StatusMixin):
             self.error("Can't send through a closed socket")
             return
         self.debug("Sending to server (MAIN): {}".format(msg))
-        self.socket.write(msg + EOL)
+        final_str = msg + EOL
+        data_bytes = final_str.encode(ENCODING)
+        self.socket.write(data_bytes)
         self.socket.flush()
 
     def finish(self) -> None:
@@ -382,7 +401,7 @@ class WhiskerMainSocketListener(QObject, StatusMixin):
         Adds the incoming data to any stored residual, splits it into lines,
         and sends each line on to the receiver.
         """
-        # self.debug("incoming: {}".format(repr(data)))
+        self.debug("incoming: {}".format(repr(data)))
         timestamp = arrow.now()
         data = self.residual + data
         fragments = data.split(EOL)
@@ -401,16 +420,16 @@ class WhiskerMainSocketListener(QObject, StatusMixin):
 # Object to talk to task and to immediate socket
 # =============================================================================
 
-class WhiskerController(QObject, StatusMixin, WhiskerApi):
-    finished = Signal()
-    connected = Signal()
-    disconnected = Signal()
-    message_received = Signal(str, arrow.Arrow, int)
-    event_received = Signal(str, arrow.Arrow, int)
-    warning_received = Signal(str, arrow.Arrow, int)
-    syntax_error_received = Signal(str, arrow.Arrow, int)
-    error_received = Signal(str, arrow.Arrow, int)
-    pingack_received = Signal(arrow.Arrow, int)
+class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
+    finished = pyqtSignal()
+    connected = pyqtSignal()
+    disconnected = pyqtSignal()
+    message_received = pyqtSignal(str, arrow.Arrow, int)
+    event_received = pyqtSignal(str, arrow.Arrow, int)
+    warning_received = pyqtSignal(str, arrow.Arrow, int)
+    syntax_error_received = pyqtSignal(str, arrow.Arrow, int)
+    error_received = pyqtSignal(str, arrow.Arrow, int)
+    pingack_received = pyqtSignal(arrow.Arrow, int)
 
     def __init__(self,
                  server: str,
@@ -418,13 +437,20 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
                  connect_timeout_ms: int = 5000,
                  read_timeout_ms: int = 500,
                  name: str = "whisker_controller",
-                 sysevent_prefix: str = "sys_") -> None:
-        super().__init__(parent)
-        StatusMixin.__init__(self, name, log)
-        WhiskerApi.__init__(
-            self,
+                 sysevent_prefix: str = "sys_",
+                 **kwargs) -> None:
+        super().__init__(
+            # QObject
+            parent=parent,
+            # StatusMixin
+            name=name,
+            logger=log,
+            # WhiskerApi
             whisker_immsend_get_reply_fn=self.get_immsock_response,
-            sysevent_prefix=sysevent_prefix)
+            sysevent_prefix=sysevent_prefix,
+            # Anyone else?
+            **kwargs
+        )
         self.server = server
         self.connect_timeout_ms = connect_timeout_ms
         self.read_timeout_ms = read_timeout_ms
@@ -434,6 +460,7 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         self.immsocket = None
         self.residual = ''
 
+    @pyqtSlot(str, arrow.Arrow)
     @exit_on_exception
     def main_received(self, msg: str, timestamp: arrow.Arrow) -> None:
         gre = CompiledRegexMemory()
@@ -487,6 +514,7 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         elif msg == PING_ACK:
             self.pingack_received.emit(timestamp, whisker_timestamp)
 
+    @pyqtSlot()
     @exit_on_exception
     def task_finished(self) -> None:
         self.debug("Task reports that it is finished")
@@ -496,7 +524,9 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
     def sendline_immsock(self, *args) -> None:
         msg = msg_from_args(*args)
         self.debug("Sending to server (IMM): {}".format(msg))
-        self.immsocket.write(msg + EOL)
+        final_str = msg + EOL
+        data_bytes = final_str.encode(ENCODING)
+        self.immsocket.write(data_bytes)
         self.immsocket.waitForBytesWritten(INFINITE_WAIT)
         # http://doc.qt.io/qt-4.8/qabstractsocket.html
         self.immsocket.flush()
@@ -509,7 +539,9 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
             # get more data from socket
             self.immsocket.waitForReadyRead(INFINITE_WAIT)
             # self.debug("DATA READY. READING IT.")
-            data += str(self.immsocket.readAll())
+            newdata_bytearray = self.immsocket.readAll()  # type: QByteArray
+            newdata_str = newdata_bytearray.data().decode(ENCODING)
+            data += newdata_str
             # self.debug("OK; HAVE READ DATA.")
             # self.debug("DATA: {}".format(repr(data)))
         eol_index = data.index(EOL)
@@ -546,14 +578,12 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
 # Object from which Whisker tasks should be subclassed
 # =============================================================================
 
-class WhiskerTask(QObject, StatusMixin):
-    finished = Signal()  # emit from stop() function when all done
+class WhiskerTask(QObject, StatusMixin):  # Whisker thread B
+    finished = pyqtSignal()  # emit from stop() function when all done
 
     def __init__(self, parent: QObject = None,
-                 name: str ="whisker_task") -> None:
-        # noinspection PyArgumentList
-        super().__init__(parent)
-        StatusMixin.__init__(self, name, log)
+                 name: str ="whisker_task", **kwargs) -> None:
+        super().__init__(name=name, logger=log, parent=parent, **kwargs)
         self.whisker = None
 
     def set_controller(self, controller: WhiskerController) -> None:
@@ -563,6 +593,7 @@ class WhiskerTask(QObject, StatusMixin):
         self.whisker = controller
 
     # noinspection PyMethodMayBeStatic
+    @pyqtSlot()
     def thread_started(self) -> None:
         """
         Slot called from WhiskerOwner.taskthread.started signal, which is
@@ -572,6 +603,7 @@ class WhiskerTask(QObject, StatusMixin):
         """
         pass
 
+    @pyqtSlot()
     def stop(self) -> None:
         """
         Called by the WhiskerOwner when we should stop.
@@ -590,7 +622,8 @@ class WhiskerTask(QObject, StatusMixin):
         self.warning("on_connect: YOU SHOULD OVERRIDE THIS")
 
     # noinspection PyUnusedLocal,PyUnusedLocal
-    @exit_on_exception  # @Slot(str, arrow.Arrow, int)
+    @pyqtSlot(str, arrow.Arrow, int)
+    @exit_on_exception
     def on_event(self, event: str, timestamp: arrow.Arrow,
                  whisker_timestamp_ms: int) -> None:
         """The WhiskerController event_received signal comes here."""
@@ -599,19 +632,22 @@ class WhiskerTask(QObject, StatusMixin):
         self.status(msg)
 
     # noinspection PyUnusedLocal
-    @exit_on_exception  # @Slot(str, arrow.Arrow, int)
+    @pyqtSlot(str, arrow.Arrow, int)
+    @exit_on_exception
     def on_warning(self, msg: str, timestamp: arrow.Arrow,
                    whisker_timestamp_ms: int) -> None:
         self.warning(msg)
 
     # noinspection PyUnusedLocal
-    @exit_on_exception  # @Slot(str, arrow.Arrow, int)
+    @pyqtSlot(str, arrow.Arrow, int)
+    @exit_on_exception
     def on_error(self, msg: str, timestamp: arrow.Arrow,
                  whisker_timestamp_ms: int) -> None:
         self.error(msg)
 
     # noinspection PyUnusedLocal
-    @exit_on_exception  # @Slot(str, arrow.Arrow, int)
+    @pyqtSlot(str, arrow.Arrow, int)
+    @exit_on_exception
     def on_syntax_error(self, msg: str, timestamp: arrow.Arrow,
                         whisker_timestamp_ms: int) -> None:
         self.error(msg)

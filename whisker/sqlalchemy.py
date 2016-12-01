@@ -290,6 +290,10 @@ def session_thread_scope(
 class SqlAlchemyAttrDictMixin(object):
     # See http://stackoverflow.com/questions/2537471
     # but more: http://stackoverflow.com/questions/2441796
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def get_attrdict(self) -> OrderedNamespace:
         """
         Returns what looks like a plain object with the values of the

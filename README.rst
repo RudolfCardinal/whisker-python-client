@@ -308,6 +308,8 @@ Version history
     - Python type hints.
     - Write "exit_on_exception" exceptions to log, not via print().
     - WhiskerOwner offers new pingack_received signal.
+* 1 Dec 2016: v0.3.6
+    - Changed from PySide to PyQt5 (fewer bugs).
 
 Known problems
 ===============================================================================

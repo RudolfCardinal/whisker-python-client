@@ -25,6 +25,8 @@ EOL = '\n'
 # str (not bytes) domain; see below re readAll().
 EOL_LEN = len(EOL)
 
+ENCODING = 'ascii'
+
 # -----------------------------------------------------------------------------
 # Server -> client
 # -----------------------------------------------------------------------------
@@ -678,13 +680,15 @@ class Brush(object):
 class WhiskerApi(object):
     def __init__(self,
                  whisker_immsend_get_reply_fn: Callable[..., str],
-                 sysevent_prefix: str = "sys_") -> None:
+                 sysevent_prefix: str = "sys_",
+                 **kwargs) -> None:
         """
         The function whisker_immsend_get_reply_fn must take arguments *args,
         join stringified versions of them using a space as the separator, and
         send them to the Whisker server via the immediate socket, returning the
         string that the server sent back.
         """
+        super().__init__(**kwargs)
         self._immsend_get_reply = whisker_immsend_get_reply_fn
         self.sysevent_prefix = sysevent_prefix
         self.sysevent_counter = 0

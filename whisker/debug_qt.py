@@ -9,7 +9,7 @@ import logging
 import threading
 
 # noinspection PyPackageRequirements
-from PySide.QtCore import QObject, QThread
+from PyQt5.QtCore import QObject, QThread
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def _wrap_disconnect(callable_object):
 
 
 def enable_signal_debugging(**kwargs) -> None:
-    """Call this to enable Qt Signal debugging. This will trap all
+    """Call this to enable PySide/Qt Signal debugging. This will trap all
     connect, and disconnect calls."""
 
     # noinspection PyUnusedLocal
