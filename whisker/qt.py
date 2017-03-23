@@ -1072,7 +1072,8 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSortingEnabled(sortable)
         hh = self.horizontalHeader()
-        hh.setClickable(sortable)
+        # hh.setClickable(sortable)  # old, removed in favour of:
+        hh.setSectionsClickable(sortable)  # Qt 5
         hh.sectionClicked.connect(self.clear_selection)
         # ... clear selection when we sort
         hh.setSortIndicatorShown(sortable)

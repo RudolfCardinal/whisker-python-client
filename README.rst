@@ -310,6 +310,13 @@ Version history
     - WhiskerOwner offers new pingack_received signal.
 * 1 Dec 2016: v0.3.6
     - Changed from PySide to PyQt5 (fewer bugs).
+* 23 Mar 2017: v0.3.6
+    - Removed annotations from alembic.py; alembic uses inspect.getargspec(),
+      which chokes with "ValueError: Function has keyword-only arguments or
+      annotations...".
+    - Support PyQt 5.8, including removing calls to QHeaderView.setClickable,
+      which has gone: https://doc.qt.io/qt-5/qheaderview.html
+
 
 Known problems
 ===============================================================================
