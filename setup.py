@@ -94,7 +94,7 @@ setup(
         'colorlog',  # colourful logs
         'dataset',  # databases for lazy people (used by demo)
         # 'PySide==1.2.4',  # Python interface to Qt
-        'Twisted',  # TCP/IP communications
+        # NOT MANDATORY # 'Twisted',  # TCP/IP communications
         'typing==3.5.2.2',  # part of stdlib in Python 3.5, but not 3.4
         'pyyaml',  # Yet Another Markup Language
 

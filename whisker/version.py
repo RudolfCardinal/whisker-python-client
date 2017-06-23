@@ -4,5 +4,5 @@
 # See LICENSE for details.
 
 
-VERSION = '0.3.7'
+VERSION = '0.3.10'
 # Use semantic versioning: http://semver.org/

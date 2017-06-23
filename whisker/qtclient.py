@@ -263,13 +263,14 @@ class WhiskerOwner(QObject, StatusMixin):  # GUI thread
 
     def stop(self) -> None:
         """Called by the GUI when we want to stop."""
-        self.info("Stop requested")
+        self.info("Stop requested [previous state: {}]").format(
+            self.state.name)
         if self.state == ThreadOwnerState.stopped:
-            self.error("Can't stop: state is: {}".format(self.state.name))
+            self.error("Can't stop: was already stopped")
             return
         self.set_state(ThreadOwnerState.stopping)
-        self.controller_finish_requested.emit()
-        self.mainsock_finish_requested.emit()
+        self.controller_finish_requested.emit()  # -> self.task.stop
+        self.mainsock_finish_requested.emit()  # -> self.mainsock.stop
 
     @pyqtSlot()
     @exit_on_exception
@@ -333,6 +334,7 @@ class WhiskerMainSocketListener(QObject, StatusMixin):  # Whisker thread A
         self.finish_requested = False
         self.residual = ''
         self.socket = None
+        self.running = False
         # Don't create the socket immediately; we're going to be moved to
         # another thread.
 
@@ -351,9 +353,10 @@ class WhiskerMainSocketListener(QObject, StatusMixin):  # Whisker thread A
             self.error(errmsg)
             self.finish()
             return
-        self.debug("Connected to {}:{}".format(self.server, self.port))
+        self.info("Connected to {}:{}".format(self.server, self.port))
         disable_nagle(self.socket)
         # Main blocking loop
+        self.running = True
         while not self.finish_requested:
             # self.debug("ping")
             if self.socket.waitForReadyRead(self.read_timeout_ms):
@@ -373,12 +376,17 @@ class WhiskerMainSocketListener(QObject, StatusMixin):  # Whisker thread A
 
                 # log.critical(repr(strdata))
                 self.process_data(strdata)
+        self.running = False
+        self.info("WhiskerMainSocketListener: main event loop complete")
         self.finish()
 
     @pyqtSlot()
     @exit_on_exception
     def stop(self) -> None:
         self.debug("WhiskerMainSocketListener: stop")
+        if self.running:
+            self.error("WhiskerMainSocketListener: stop requested, but not "
+                       "running")
         self.finish_requested = True
 
     def sendline_mainsock(self, msg: str) -> None:
@@ -394,6 +402,7 @@ class WhiskerMainSocketListener(QObject, StatusMixin):  # Whisker thread A
     def finish(self) -> None:
         if is_socket_connected(self.socket):
             self.socket.close()
+        self.info("WhiskerMainSocketListener: finished")
         self.finished.emit()
 
     def process_data(self, data: str) -> None:
@@ -610,7 +619,7 @@ class WhiskerTask(QObject, StatusMixin):  # Whisker thread B
         When we've done what we need to, emit finished.
         No need to override in simple situations.
         """
-        self.debug("WhiskerTask: stopping")
+        self.info("WhiskerTask: stopping")
         self.finished.emit()
 
     @exit_on_exception
