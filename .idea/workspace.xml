@@ -6,10 +6,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="29d1c391-bbe6-48cd-bfe9-b2c03621e147" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/qtclient.py" afterPath="$PROJECT_DIR$/whisker/qtclient.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/version.py" afterPath="$PROJECT_DIR$/whisker/version.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/lang.py" afterPath="$PROJECT_DIR$/whisker/lang.py" />
     </list>
     <ignored path="whisker.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -33,8 +30,8 @@
       <file leaf-file-name="qt.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/qt.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4264">
-              <caret line="328" column="15" lean-forward="false" selection-start-line="328" selection-start-column="4" selection-end-line="328" selection-end-column="15" />
+            <state relative-caret-position="728">
+              <caret line="317" column="79" lean-forward="true" selection-start-line="317" selection-start-column="79" selection-end-line="317" selection-end-column="79" />
               <folding>
                 <marker date="1490305943713" expanded="true" signature="1835:1946" ph="..." />
                 <marker date="1490305943713" expanded="true" signature="1867:1871" ph="..." />
@@ -173,11 +170,21 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="lang.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/whisker/lang.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="508">
+              <caret line="231" column="0" lean-forward="false" selection-start-line="231" selection-start-column="0" selection-end-line="231" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="setup.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/setup.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="808">
-              <caret line="70" column="38" lean-forward="true" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
+              <caret line="70" column="38" lean-forward="false" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -213,25 +220,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="984">
-              <caret line="379" column="0" lean-forward="false" selection-start-line="379" selection-start-column="0" selection-end-line="379" selection-end-column="0" />
+            <state relative-caret-position="581">
+              <caret line="348" column="59" lean-forward="true" selection-start-line="348" selection-start-column="59" selection-end-line="348" selection-end-column="59" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="alembic.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisker/alembic.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1625">
-              <caret line="125" column="0" lean-forward="false" selection-start-line="125" selection-start-column="0" selection-end-line="125" selection-end-column="0" />
-              <folding>
-                <marker date="1490289336339" expanded="true" signature="3310:3328" ph="CREATE VIEW missing_value... " />
-                <marker date="1490289336339" expanded="true" signature="3514:3524" ph="DROP VIEW mi... " />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -249,8 +243,8 @@
       <file leaf-file-name="api.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8983">
-              <caret line="691" column="13" lean-forward="false" selection-start-line="691" selection-start-column="13" selection-end-line="691" selection-end-column="13" />
+            <state relative-caret-position="789">
+              <caret line="892" column="12" lean-forward="true" selection-start-line="892" selection-start-column="12" selection-end-line="892" selection-end-column="12" />
               <folding>
                 <marker date="1480586818715" expanded="true" signature="13440:13445" ph="..." />
                 <marker date="1480586818715" expanded="true" signature="13518:13522" ph="..." />
@@ -579,36 +573,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>self._stat</find>
-      <find>status_sent</find>
-      <find>re</find>
-      <find>requ</find>
-      <find>reques</find>
-      <find>request</find>
-      <find>requeste</find>
-      <find>requested</find>
-      <find>requested&quot;</find>
-      <find>controller_finish_requested</find>
-      <find>mainsock_finish_requested</find>
-      <find>self.task =</find>
-      <find>c</find>
-      <find>clas</find>
-      <find>class w</find>
-      <find>class whis</find>
-      <find>class whisker</find>
-      <find>class whiskert</find>
-      <find>sel</find>
       <find>self.t</find>
       <find>self.task.</find>
       <find>stop req</find>
       <find>self.task.st</find>
-      <find>de</find>
       <find>def stop</find>
       <find>-</find>
       <find>-&gt;</find>
       <find>-&gt; se</find>
       <find>-&gt; sel</find>
       <find>-&gt; self</find>
+      <find>def broad</find>
+      <find>no</find>
+      <find>no lit</find>
+      <find>no li</find>
+      <find>no list</find>
+      <find>no liste</find>
+      <find>no listeni</find>
+      <find>no listening</find>
+      <find>debug(</find>
+      <find>clas</find>
+      <find>class</find>
+      <find>class te</find>
+      <find>class text</find>
+      <find>class textl</find>
+      <find>de</find>
+      <find>def launch</find>
+      <find>def launch_</find>
+      <find>log =</find>
+      <find>launchin</find>
+      <find>traceback</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -626,7 +620,6 @@
         <option value="$PROJECT_DIR$/whisker/test_twisted.py" />
         <option value="$PROJECT_DIR$/whisker/callback.py" />
         <option value="$PROJECT_DIR$/whisker/convenience.py" />
-        <option value="$PROJECT_DIR$/whisker/lang.py" />
         <option value="$PROJECT_DIR$/whisker/logging.py" />
         <option value="$PROJECT_DIR$/whisker/rawsocketclient.py" />
         <option value="$PROJECT_DIR$/whisker/twistedclient.py" />
@@ -640,6 +633,7 @@
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/whisker/version.py" />
         <option value="$PROJECT_DIR$/whisker/qtclient.py" />
+        <option value="$PROJECT_DIR$/whisker/lang.py" />
       </list>
     </option>
   </component>
@@ -1061,13 +1055,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/lang.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="46" column="0" lean-forward="true" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.4/site-packages/typing.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="23959">
@@ -1201,10 +1188,84 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/alembic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1625">
+          <caret line="125" column="0" lean-forward="false" selection-start-line="125" selection-start-column="0" selection-end-line="125" selection-end-column="0" />
+          <folding>
+            <marker date="1490289336339" expanded="true" signature="3310:3328" ph="CREATE VIEW missing_value... " />
+            <marker date="1490289336339" expanded="true" signature="3514:3524" ph="DROP VIEW mi... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QTableView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="819">
+          <caret line="63" column="8" lean-forward="false" selection-start-line="63" selection-start-column="8" selection-end-line="63" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QHeaderView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QAbstractItemView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6955">
+          <caret line="535" column="4" lean-forward="false" selection-start-line="535" selection-start-column="4" selection-end-line="535" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3367">
+          <caret line="259" column="16" lean-forward="false" selection-start-line="259" selection-start-column="16" selection-end-line="259" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python3.5/logging/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="724">
+          <caret line="1277" column="35" lean-forward="true" selection-start-line="1277" selection-start-column="35" selection-end-line="1277" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="808">
+          <caret line="70" column="38" lean-forward="false" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/version.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="78">
+          <caret line="6" column="17" lean-forward="false" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="581">
+          <caret line="348" column="59" lean-forward="true" selection-start-line="348" selection-start-column="59" selection-end-line="348" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/whisker/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8983">
-          <caret line="691" column="13" lean-forward="false" selection-start-line="691" selection-start-column="13" selection-end-line="691" selection-end-column="13" />
+        <state relative-caret-position="789">
+          <caret line="892" column="12" lean-forward="true" selection-start-line="892" selection-start-column="12" selection-end-line="892" selection-end-column="12" />
           <folding>
             <marker date="1480586818715" expanded="true" signature="13440:13445" ph="..." />
             <marker date="1480586818715" expanded="true" signature="13518:13522" ph="..." />
@@ -1518,60 +1579,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/alembic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1625">
-          <caret line="125" column="0" lean-forward="false" selection-start-line="125" selection-start-column="0" selection-end-line="125" selection-end-column="0" />
-          <folding>
-            <marker date="1490289336339" expanded="true" signature="3310:3328" ph="CREATE VIEW missing_value... " />
-            <marker date="1490289336339" expanded="true" signature="3514:3524" ph="DROP VIEW mi... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QTableView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="819">
-          <caret line="63" column="8" lean-forward="false" selection-start-line="63" selection-start-column="8" selection-end-line="63" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QHeaderView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QAbstractItemView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6955">
-          <caret line="535" column="4" lean-forward="false" selection-start-line="535" selection-start-column="4" selection-end-line="535" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.rst">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3367">
-          <caret line="259" column="16" lean-forward="false" selection-start-line="259" selection-start-column="16" selection-end-line="259" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python3.5/logging/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="724">
-          <caret line="1277" column="35" lean-forward="true" selection-start-line="1277" selection-start-column="35" selection-end-line="1277" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/whisker/qt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4264">
-          <caret line="328" column="15" lean-forward="false" selection-start-line="328" selection-start-column="4" selection-end-line="328" selection-end-column="15" />
+        <state relative-caret-position="728">
+          <caret line="317" column="79" lean-forward="true" selection-start-line="317" selection-start-column="79" selection-end-line="317" selection-end-column="79" />
           <folding>
             <marker date="1490305943713" expanded="true" signature="1835:1946" ph="..." />
             <marker date="1490305943713" expanded="true" signature="1867:1871" ph="..." />
@@ -1709,26 +1720,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/setup.py">
+    <entry file="file://$PROJECT_DIR$/whisker/lang.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="808">
-          <caret line="70" column="38" lean-forward="true" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/version.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="78">
-          <caret line="6" column="17" lean-forward="false" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="984">
-          <caret line="379" column="0" lean-forward="false" selection-start-line="379" selection-start-column="0" selection-end-line="379" selection-end-column="0" />
+        <state relative-caret-position="508">
+          <caret line="231" column="0" lean-forward="false" selection-start-line="231" selection-start-column="0" selection-end-line="231" selection-end-column="0" />
           <folding />
         </state>
       </provider>

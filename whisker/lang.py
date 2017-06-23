@@ -11,6 +11,7 @@ import os
 import re
 import subprocess
 import sys
+import traceback
 import types
 from typing import (Any, Dict, Iterable, List, Match, Optional, Pattern,
                     TextIO, Union)
@@ -219,11 +220,16 @@ def simple_repr(obj: object) -> str:
 # =============================================================================
 
 def launch_external_file(filename: str) -> None:
-    if sys.platform.startswith('linux'):
-        subprocess.call(["xdg-open", filename])
-    else:
-        # noinspection PyUnresolvedReferences
-        os.startfile(filename)
+    log.info("Launching external file: " + repr(filename))
+    try:
+        if sys.platform.startswith('linux'):
+            subprocess.call(["xdg-open", filename])
+        else:
+            # noinspection PyUnresolvedReferences
+            os.startfile(filename)
+    except Exception as e:
+        log.critical("Error launching {}: error was {}.\n\n{}".format(
+            repr(filename), str(e), traceback.format_exc()))
 
 
 # =============================================================================
