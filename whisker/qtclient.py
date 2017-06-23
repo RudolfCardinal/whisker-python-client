@@ -541,9 +541,13 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
         self.immsocket.flush()
 
     def getline_immsock(self) -> str:
-        """Get one line from the socket. Blocking."""
+        """
+        Get one line from the socket. Blocking.
+        We must also respond to the possibility that the socket has been
+        forcibly closed.
+        """
         data = self.residual
-        while EOL not in data:
+        while EOL not in data and is_socket_connected(self.immsocket):
             self.debug("WAITING FOR DATA")
             # get more data from socket
             self.immsocket.waitForReadyRead(INFINITE_WAIT)
@@ -554,9 +558,13 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
             # self.debug("OK; HAVE READ DATA.")
             self.debug("DATA: {}".format(repr(data)))
         self.debug("DATA COMPLETE")
-        eol_index = data.index(EOL)
-        line = data[:eol_index]
-        self.residual = data[eol_index + EOL_LEN:]
+        if EOL in data:
+            eol_index = data.index(EOL)
+            line = data[:eol_index]
+            self.residual = data[eol_index + EOL_LEN:]
+        else:
+            line = ''  # socket is closed
+            self.residual = data  # probably blank!
         self.debug("Reply from server (IMM): {}".format(line))
         return line
 
