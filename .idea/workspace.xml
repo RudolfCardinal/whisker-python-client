@@ -6,7 +6,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="29d1c391-bbe6-48cd-bfe9-b2c03621e147" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/qtclient.py" afterPath="$PROJECT_DIR$/whisker/qtclient.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/sqlalchemy.py" afterPath="$PROJECT_DIR$/whisker/sqlalchemy.py" />
     </list>
     <ignored path="whisker.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -180,21 +180,41 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="setup.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/setup.py">
+      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="808">
-              <caret line="70" column="38" lean-forward="false" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
+            <state relative-caret-position="443">
+              <caret line="604" column="0" lean-forward="true" selection-start-line="604" selection-start-column="0" selection-end-line="604" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
+      <file leaf-file-name="sqlalchemy.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="521">
-              <caret line="551" column="0" lean-forward="false" selection-start-line="551" selection-start-column="0" selection-end-line="551" selection-end-column="0" />
+            <state relative-caret-position="599">
+              <caret line="247" column="31" lean-forward="true" selection-start-line="247" selection-start-column="31" selection-end-line="247" selection-end-column="31" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="scoping.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/scoping.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="819">
+              <caret line="63" column="14" lean-forward="true" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="session.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/session.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="702">
+              <caret line="1839" column="0" lean-forward="true" selection-start-line="1839" selection-start-column="0" selection-end-line="1839" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -204,7 +224,7 @@
         <entry file="file://$USER_HOME$/.PyCharm2017.1/system/python_stubs/530020088/PyQt5/QtCore/QIODevice.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="364">
-              <caret line="28" column="0" lean-forward="true" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+              <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -225,16 +245,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="497">
               <caret line="46" column="13" lean-forward="false" selection-start-line="46" selection-start-column="13" selection-end-line="46" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="version.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisker/version.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="78">
-              <caret line="6" column="17" lean-forward="false" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -559,41 +569,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.rst" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.rst">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3367">
-              <caret line="259" column="16" lean-forward="false" selection-start-line="259" selection-start-column="16" selection-end-line="259" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>but not runnin</find>
-      <find>but not running</find>
-      <find>not</find>
-      <find>not run</find>
-      <find>not runni</find>
-      <find>not runnin</find>
-      <find>not running</find>
-      <find>r</find>
-      <find>run</find>
-      <find>self.running</find>
-      <find>running</find>
-      <find>im</find>
-      <find>immso</find>
-      <find>immsock</find>
-      <find>se</find>
-      <find>self.</find>
-      <find>self.im</find>
-      <find>self.immpo</find>
-      <find>self.immport</find>
-      <find>self.immport =</find>
-      <find>t</find>
       <find>tas</find>
       <find>task.</find>
       <find>task.st</find>
@@ -603,6 +582,27 @@
       <find>def broad</find>
       <find>whiskerapi)</find>
       <find>connectedsta</find>
+      <find>def se</find>
+      <find>def ses</find>
+      <find>def sess</find>
+      <find>noflush_</find>
+      <find>def session</find>
+      <find>t</find>
+      <find>thre</find>
+      <find>thread</find>
+      <find>thread_</find>
+      <find>thread_st</find>
+      <find>thread_star</find>
+      <find>thread_start</find>
+      <find>thread_starte</find>
+      <find>getl</find>
+      <find>thread_started</find>
+      <find>def</find>
+      <find>def @</find>
+      <find>def @st</find>
+      <find>de</find>
+      <find>def</find>
+      <find>def stop</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -625,7 +625,6 @@
         <option value="$PROJECT_DIR$/whisker/twistedclient.py" />
         <option value="$PROJECT_DIR$/doc/demo_simple_whisker_client.py" />
         <option value="$PROJECT_DIR$/whisker/debug_qt.py" />
-        <option value="$PROJECT_DIR$/whisker/sqlalchemy.py" />
         <option value="$PROJECT_DIR$/whisker/api.py" />
         <option value="$PROJECT_DIR$/whisker/alembic.py" />
         <option value="$PROJECT_DIR$/README.rst" />
@@ -634,6 +633,7 @@
         <option value="$PROJECT_DIR$/whisker/version.py" />
         <option value="$PROJECT_DIR$/whisker/lang.py" />
         <option value="$PROJECT_DIR$/whisker/qtclient.py" />
+        <option value="$PROJECT_DIR$/whisker/sqlalchemy.py" />
       </list>
     </option>
   </component>
@@ -993,8 +993,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.5/site-packages/alembic/runtime/migration.py" />
-    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.5/site-packages/sqlalchemy/engine/__init__.py" />
     <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.5/site-packages/sqlalchemy/dialects/__init__.py" />
     <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.5/site-packages/sqlalchemy/dialects/mysql/__init__.py" />
     <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.5/site-packages/sqlalchemy/dialects/mysql/mysqldb.py" />
@@ -1155,13 +1153,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="962">
           <caret line="74" column="8" lean-forward="false" selection-start-line="74" selection-start-column="8" selection-end-line="74" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4394">
-          <caret line="338" column="0" lean-forward="false" selection-start-line="338" selection-start-column="0" selection-end-line="338" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1730,15 +1721,39 @@
     <entry file="file://$USER_HOME$/.PyCharm2017.1/system/python_stubs/530020088/PyQt5/QtCore/QIODevice.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="364">
-          <caret line="28" column="0" lean-forward="true" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/session.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="702">
+          <caret line="1839" column="0" lean-forward="true" selection-start-line="1839" selection-start-column="0" selection-end-line="1839" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/scoping.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="819">
+          <caret line="63" column="14" lean-forward="true" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="599">
+          <caret line="247" column="31" lean-forward="true" selection-start-line="247" selection-start-column="31" selection-end-line="247" selection-end-column="31" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="521">
-          <caret line="551" column="0" lean-forward="false" selection-start-line="551" selection-start-column="0" selection-end-line="551" selection-end-column="0" />
+        <state relative-caret-position="443">
+          <caret line="604" column="0" lean-forward="true" selection-start-line="604" selection-start-column="0" selection-end-line="604" selection-end-column="0" />
           <folding />
         </state>
       </provider>

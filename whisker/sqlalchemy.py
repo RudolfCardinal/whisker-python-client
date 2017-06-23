@@ -247,6 +247,8 @@ def get_database_engine_session_thread_scope(
         settings: Dict[str, Any],
         readonly: bool = False,
         autoflush: bool = True) -> Tuple[Engine, Session]:
+    # The default for a Session is: autoflush=True, autocommit=False
+    # http://docs.sqlalchemy.org/en/latest/orm/session_api.html#sqlalchemy.orm.session.Session  # noqa
     if readonly:
         autoflush = False
     engine = get_database_engine(settings)
