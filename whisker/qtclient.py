@@ -263,8 +263,8 @@ class WhiskerOwner(QObject, StatusMixin):  # GUI thread
 
     def stop(self) -> None:
         """Called by the GUI when we want to stop."""
-        self.info("Stop requested [previous state: {}]").format(
-            self.state.name)
+        self.info("Stop requested [previous state: {}]".format(
+            self.state.name))
         if self.state == ThreadOwnerState.stopped:
             self.error("Can't stop: was already stopped")
             return
@@ -384,9 +384,9 @@ class WhiskerMainSocketListener(QObject, StatusMixin):  # Whisker thread A
     @exit_on_exception
     def stop(self) -> None:
         self.debug("WhiskerMainSocketListener: stop")
-        if self.running:
-            self.error("WhiskerMainSocketListener: stop requested, but not "
-                       "running")
+        if not self.running:
+            self.error(
+                "WhiskerMainSocketListener: stop requested, but not running")
         self.finish_requested = True
 
     def sendline_mainsock(self, msg: str) -> None:

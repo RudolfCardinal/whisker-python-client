@@ -6,7 +6,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="29d1c391-bbe6-48cd-bfe9-b2c03621e147" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/lang.py" afterPath="$PROJECT_DIR$/whisker/lang.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/qtclient.py" afterPath="$PROJECT_DIR$/whisker/qtclient.py" />
     </list>
     <ignored path="whisker.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -31,7 +31,7 @@
         <entry file="file://$PROJECT_DIR$/whisker/qt.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="728">
-              <caret line="317" column="79" lean-forward="true" selection-start-line="317" selection-start-column="79" selection-end-line="317" selection-end-column="79" />
+              <caret line="317" column="79" lean-forward="false" selection-start-line="317" selection-start-column="79" selection-end-line="317" selection-end-column="79" />
               <folding>
                 <marker date="1490305943713" expanded="true" signature="1835:1946" ph="..." />
                 <marker date="1490305943713" expanded="true" signature="1867:1871" ph="..." />
@@ -170,11 +170,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="lang.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="lang.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/lang.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="508">
-              <caret line="231" column="0" lean-forward="false" selection-start-line="231" selection-start-column="0" selection-end-line="231" selection-end-column="0" />
+            <state relative-caret-position="703">
+              <caret line="246" column="0" lean-forward="false" selection-start-line="246" selection-start-column="0" selection-end-line="246" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -220,11 +220,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="581">
-              <caret line="348" column="59" lean-forward="true" selection-start-line="348" selection-start-column="59" selection-end-line="348" selection-end-column="59" />
+            <state relative-caret-position="1127">
+              <caret line="503" column="0" lean-forward="true" selection-start-line="503" selection-start-column="0" selection-end-line="503" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -244,7 +244,7 @@
         <entry file="file://$PROJECT_DIR$/whisker/api.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="789">
-              <caret line="892" column="12" lean-forward="true" selection-start-line="892" selection-start-column="12" selection-end-line="892" selection-end-column="12" />
+              <caret line="892" column="12" lean-forward="false" selection-start-line="892" selection-start-column="12" selection-end-line="892" selection-end-column="12" />
               <folding>
                 <marker date="1480586818715" expanded="true" signature="13440:13445" ph="..." />
                 <marker date="1480586818715" expanded="true" signature="13518:13522" ph="..." />
@@ -573,36 +573,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>self.t</find>
-      <find>self.task.</find>
-      <find>stop req</find>
-      <find>self.task.st</find>
-      <find>def stop</find>
-      <find>-</find>
-      <find>-&gt;</find>
-      <find>-&gt; se</find>
-      <find>-&gt; sel</find>
-      <find>-&gt; self</find>
-      <find>def broad</find>
-      <find>no</find>
-      <find>no lit</find>
-      <find>no li</find>
-      <find>no list</find>
-      <find>no liste</find>
-      <find>no listeni</find>
-      <find>no listening</find>
-      <find>debug(</find>
-      <find>clas</find>
-      <find>class</find>
       <find>class te</find>
       <find>class text</find>
       <find>class textl</find>
       <find>de</find>
       <find>def launch</find>
-      <find>def launch_</find>
       <find>log =</find>
       <find>launchin</find>
       <find>traceback</find>
+      <find>def launch_</find>
+      <find>pre</find>
+      <find>previous</find>
+      <find>previous st</find>
+      <find>previous stat</find>
+      <find>previous state</find>
+      <find>previous state:</find>
+      <find>but</find>
+      <find>but not</find>
+      <find>but not</find>
+      <find>but not run</find>
+      <find>but not runni</find>
+      <find>but not runnin</find>
+      <find>but not running</find>
+      <find>not</find>
+      <find>not run</find>
+      <find>not runni</find>
+      <find>not runnin</find>
+      <find>not running</find>
+      <find>r</find>
+      <find>run</find>
+      <find>running</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -632,8 +632,8 @@
         <option value="$PROJECT_DIR$/whisker/qt.py" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/whisker/version.py" />
-        <option value="$PROJECT_DIR$/whisker/qtclient.py" />
         <option value="$PROJECT_DIR$/whisker/lang.py" />
+        <option value="$PROJECT_DIR$/whisker/qtclient.py" />
       </list>
     </option>
   </component>
@@ -1254,18 +1254,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="581">
-          <caret line="348" column="59" lean-forward="true" selection-start-line="348" selection-start-column="59" selection-end-line="348" selection-end-column="59" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/whisker/api.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="789">
-          <caret line="892" column="12" lean-forward="true" selection-start-line="892" selection-start-column="12" selection-end-line="892" selection-end-column="12" />
+          <caret line="892" column="12" lean-forward="false" selection-start-line="892" selection-start-column="12" selection-end-line="892" selection-end-column="12" />
           <folding>
             <marker date="1480586818715" expanded="true" signature="13440:13445" ph="..." />
             <marker date="1480586818715" expanded="true" signature="13518:13522" ph="..." />
@@ -1582,7 +1574,7 @@
     <entry file="file://$PROJECT_DIR$/whisker/qt.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="728">
-          <caret line="317" column="79" lean-forward="true" selection-start-line="317" selection-start-column="79" selection-end-line="317" selection-end-column="79" />
+          <caret line="317" column="79" lean-forward="false" selection-start-line="317" selection-start-column="79" selection-end-line="317" selection-end-column="79" />
           <folding>
             <marker date="1490305943713" expanded="true" signature="1835:1946" ph="..." />
             <marker date="1490305943713" expanded="true" signature="1867:1871" ph="..." />
@@ -1722,8 +1714,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/whisker/lang.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="508">
-          <caret line="231" column="0" lean-forward="false" selection-start-line="231" selection-start-column="0" selection-end-line="231" selection-end-column="0" />
+        <state relative-caret-position="703">
+          <caret line="246" column="0" lean-forward="false" selection-start-line="246" selection-start-column="0" selection-end-line="246" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1127">
+          <caret line="503" column="0" lean-forward="true" selection-start-line="503" selection-start-column="0" selection-end-line="503" selection-end-column="0" />
           <folding />
         </state>
       </provider>
