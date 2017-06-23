@@ -548,16 +548,15 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
         """
         data = self.residual
         while EOL not in data and is_socket_connected(self.immsocket):
-            self.debug("WAITING FOR DATA")
             # get more data from socket
+            # self.debug("WAITING FOR DATA")
             self.immsocket.waitForReadyRead(INFINITE_WAIT)
             # self.debug("DATA READY. READING IT.")
             newdata_bytearray = self.immsocket.readAll()  # type: QByteArray
             newdata_str = newdata_bytearray.data().decode(ENCODING)
             data += newdata_str
-            # self.debug("OK; HAVE READ DATA.")
-            self.debug("DATA: {}".format(repr(data)))
-        self.debug("DATA COMPLETE")
+            # self.debug("DATA: {}".format(repr(data)))
+        # self.debug("DATA COMPLETE")
         if EOL in data:
             eol_index = data.index(EOL)
             line = data[:eol_index]
