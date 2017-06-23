@@ -168,7 +168,8 @@ def upgrade_database(alembic_config_filename: str,
 # =============================================================================
 
 def get_database_engine(settings: Dict[str, Any],
-                        unbreak_sqlite_transactions: bool = True) -> Engine:
+                        unbreak_sqlite_transactions: bool = True,
+                        pool_pre_ping: bool = True) -> Engine:
     """
     The 'settings' object used here is a dictionary with the following keys:
         url  # str
@@ -178,7 +179,8 @@ def get_database_engine(settings: Dict[str, Any],
     database_url = settings['url']
     engine = create_engine(database_url,
                            echo=settings['echo'],
-                           connect_args=settings['connect_args'])
+                           connect_args=settings['connect_args'],
+                           pool_pre_ping=pool_pre_ping)
     sqlite = database_url.startswith("sqlite:")
     if not sqlite or not unbreak_sqlite_transactions:
         return engine

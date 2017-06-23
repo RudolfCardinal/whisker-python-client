@@ -180,21 +180,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="443">
-              <caret line="604" column="0" lean-forward="true" selection-start-line="604" selection-start-column="0" selection-end-line="604" selection-end-column="0" />
+            <state relative-caret-position="404">
+              <caret line="601" column="62" lean-forward="false" selection-start-line="601" selection-start-column="62" selection-end-line="601" selection-end-column="62" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sqlalchemy.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="sqlalchemy.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="599">
-              <caret line="247" column="31" lean-forward="true" selection-start-line="247" selection-start-column="31" selection-end-line="247" selection-end-column="31" />
+            <state relative-caret-position="464">
+              <caret line="167" column="79" lean-forward="true" selection-start-line="167" selection-start-column="79" selection-end-line="167" selection-end-column="79" />
               <folding />
             </state>
           </provider>
@@ -204,7 +204,7 @@
         <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/scoping.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="819">
-              <caret line="63" column="14" lean-forward="true" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
+              <caret line="63" column="14" lean-forward="false" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -214,7 +214,7 @@
         <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/session.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="702">
-              <caret line="1839" column="0" lean-forward="true" selection-start-line="1839" selection-start-column="0" selection-end-line="1839" selection-end-column="0" />
+              <caret line="1839" column="0" lean-forward="false" selection-start-line="1839" selection-start-column="0" selection-end-line="1839" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -595,7 +595,6 @@
       <find>thread_star</find>
       <find>thread_start</find>
       <find>thread_starte</find>
-      <find>getl</find>
       <find>thread_started</find>
       <find>def</find>
       <find>def @</find>
@@ -603,6 +602,7 @@
       <find>de</find>
       <find>def</find>
       <find>def stop</find>
+      <find>getl</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -1729,7 +1729,7 @@
     <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/session.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="702">
-          <caret line="1839" column="0" lean-forward="true" selection-start-line="1839" selection-start-column="0" selection-end-line="1839" selection-end-column="0" />
+          <caret line="1839" column="0" lean-forward="false" selection-start-line="1839" selection-start-column="0" selection-end-line="1839" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1737,23 +1737,23 @@
     <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/scoping.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="819">
-          <caret line="63" column="14" lean-forward="true" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="599">
-          <caret line="247" column="31" lean-forward="true" selection-start-line="247" selection-start-column="31" selection-end-line="247" selection-end-column="31" />
+          <caret line="63" column="14" lean-forward="false" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="443">
-          <caret line="604" column="0" lean-forward="true" selection-start-line="604" selection-start-column="0" selection-end-line="604" selection-end-column="0" />
+        <state relative-caret-position="404">
+          <caret line="601" column="62" lean-forward="false" selection-start-line="601" selection-start-column="62" selection-end-line="601" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="464">
+          <caret line="167" column="79" lean-forward="true" selection-start-line="167" selection-start-column="79" selection-end-line="167" selection-end-column="79" />
           <folding />
         </state>
       </provider>
