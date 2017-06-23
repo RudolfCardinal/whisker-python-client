@@ -464,9 +464,9 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
         self.connect_timeout_ms = connect_timeout_ms
         self.read_timeout_ms = read_timeout_ms
 
-        self.immport = None
-        self.code = None
-        self.immsocket = None
+        self.immport = None  # type: int
+        self.code = None  # type: str
+        self.immsocket = None  # type: QTcpSocket
         self.residual = ''
 
     @pyqtSlot(str, arrow.Arrow)
@@ -544,7 +544,7 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
         """Get one line from the socket. Blocking."""
         data = self.residual
         while EOL not in data:
-            # self.debug("WAITING FOR DATA")
+            self.debug("WAITING FOR DATA")
             # get more data from socket
             self.immsocket.waitForReadyRead(INFINITE_WAIT)
             # self.debug("DATA READY. READING IT.")
@@ -552,7 +552,7 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
             newdata_str = newdata_bytearray.data().decode(ENCODING)
             data += newdata_str
             # self.debug("OK; HAVE READ DATA.")
-            # self.debug("DATA: {}".format(repr(data)))
+        self.debug("DATA: {}".format(repr(data)))
         eol_index = data.index(EOL)
         line = data[:eol_index]
         self.residual = data[eol_index + EOL_LEN:]
@@ -618,6 +618,11 @@ class WhiskerTask(QObject, StatusMixin):  # Whisker thread B
         Called by the WhiskerOwner when we should stop.
         When we've done what we need to, emit finished.
         No need to override in simple situations.
+
+        NOTE: if you think this function is not being called, the likely reason
+        is not a Qt signal/slot failure, but that the thread is BUSY, e.g.
+        with its immediate socket. (It'll be busy via the derived class, not
+        via the code here, which does no waiting!)
         """
         self.info("WhiskerTask: stopping")
         self.finished.emit()
