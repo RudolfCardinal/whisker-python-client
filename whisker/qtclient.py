@@ -552,7 +552,8 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
             newdata_str = newdata_bytearray.data().decode(ENCODING)
             data += newdata_str
             # self.debug("OK; HAVE READ DATA.")
-        self.debug("DATA: {}".format(repr(data)))
+            self.debug("DATA: {}".format(repr(data)))
+        self.debug("DATA COMPLETE")
         eol_index = data.index(EOL)
         line = data[:eol_index]
         self.residual = data[eol_index + EOL_LEN:]
