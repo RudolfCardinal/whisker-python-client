@@ -42,7 +42,7 @@ PING_ACK = "PingAcknowledged"
 
 EVENT_REGEX = re.compile(r"^Event: (.*)$")
 KEY_EVENT_REGEX = re.compile(r"^KeyEvent: (.*)$")
-CLIENT_MESSAGE_REGEX = re.compile(r"^ClientMessage: (.*)$")
+CLIENT_MESSAGE_REGEX = re.compile(r"^ClientMessage: (\d+) (.*)$")
 INFO_REGEX = re.compile(r"^Info: (.*)$")
 WARNING_REGEX = re.compile(r"Warning: (.*)$")
 SYNTAX_ERROR_REGEX = re.compile(r"^SyntaxError: (.*)$")

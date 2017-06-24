@@ -440,7 +440,7 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
     message_received = pyqtSignal(str, arrow.Arrow, int)
     event_received = pyqtSignal(str, arrow.Arrow, int)
     key_event_received = pyqtSignal(str, arrow.Arrow, int)
-    client_message_received = pyqtSignal(str, arrow.Arrow, int)
+    client_message_received = pyqtSignal(int, str, arrow.Arrow, int)
     warning_received = pyqtSignal(str, arrow.Arrow, int)
     syntax_error_received = pyqtSignal(str, arrow.Arrow, int)
     error_received = pyqtSignal(str, arrow.Arrow, int)
@@ -524,9 +524,10 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
             key = gre.group(1)
             self.key_event_received.emit(key, timestamp, whisker_timestamp)
         elif gre.search(CLIENT_MESSAGE_REGEX, msg):
-            client_msg = gre.group(1)
-            self.client_message_received.emit(client_msg, timestamp,
-                                              whisker_timestamp)
+            source_client_num = int(gre.group(1))
+            client_msg = gre.group(2)
+            self.client_message_received.emit(source_client_num, client_msg,
+                                              timestamp, whisker_timestamp)
         elif WARNING_REGEX.match(msg):
             self.warning_received.emit(msg, timestamp, whisker_timestamp)
         elif SYNTAX_ERROR_REGEX.match(msg):
@@ -675,11 +676,15 @@ class WhiskerTask(QObject, StatusMixin):  # Whisker thread B
         self.status(msg)
 
     # noinspection PyUnusedLocal
-    @pyqtSlot(str, arrow.Arrow, int)
+    @pyqtSlot(int, str, arrow.Arrow, int)
     @exit_on_exception
-    def on_client_message(self, client_msg: str, timestamp: arrow.Arrow,
+    def on_client_message(self,
+                          source_client_num: int,
+                          client_msg: str,
+                          timestamp: arrow.Arrow,
                           whisker_timestamp_ms: int) -> None:
-        msg = "SHOULD BE OVERRIDDEN. CLIENT MESSAGE: {}".format(client_msg)
+        msg = "SHOULD BE OVERRIDDEN. CLIENT MESSAGE FROM CLIENT {}: {}".format(
+            source_client_num, repr(client_msg))
         self.status(msg)
 
     # noinspection PyUnusedLocal
