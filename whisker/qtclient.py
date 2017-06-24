@@ -54,6 +54,7 @@ from PyQt5.QtNetwork import (
 )
 
 from whisker.api import (
+    CLIENT_MESSAGE_REGEX,
     CODE_REGEX,
     ENCODING,
     EOL,
@@ -61,6 +62,7 @@ from whisker.api import (
     ERROR_REGEX,
     EVENT_REGEX,
     IMMPORT_REGEX,
+    KEY_EVENT_REGEX,
     msg_from_args,
     PING,
     PING_ACK,
@@ -203,6 +205,8 @@ class WhiskerOwner(QObject, StatusMixin):  # GUI thread
         self.controller.message_received.connect(self.message_received)  # different thread  # noqa
         self.controller.event_received.connect(self.event_received)  # different thread  # noqa
         self.controller.event_received.connect(self.task.on_event)  # same thread  # noqa
+        self.controller.key_event_received.connect(self.task.on_key_event)  # same thread  # noqa
+        self.controller.client_message_received.connect(self.task.on_client_message)  # same thread  # noqa
         self.controller.pingack_received.connect(self.pingack_received)  # different thread  # noqa
         self.controller.warning_received.connect(self.task.on_warning)  # same thread  # noqa
         self.controller.error_received.connect(self.task.on_error)  # same thread  # noqa
@@ -435,6 +439,8 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
     disconnected = pyqtSignal()
     message_received = pyqtSignal(str, arrow.Arrow, int)
     event_received = pyqtSignal(str, arrow.Arrow, int)
+    key_event_received = pyqtSignal(str, arrow.Arrow, int)
+    client_message_received = pyqtSignal(str, arrow.Arrow, int)
     warning_received = pyqtSignal(str, arrow.Arrow, int)
     syntax_error_received = pyqtSignal(str, arrow.Arrow, int)
     error_received = pyqtSignal(str, arrow.Arrow, int)
@@ -514,6 +520,13 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):  # Whisker thread B
             if self.process_backend_event(event):
                 return
             self.event_received.emit(event, timestamp, whisker_timestamp)
+        elif gre.search(KEY_EVENT_REGEX, msg):
+            key = gre.group(1)
+            self.key_event_received.emit(key, timestamp, whisker_timestamp)
+        elif gre.search(CLIENT_MESSAGE_REGEX, msg):
+            client_msg = gre.group(1)
+            self.client_message_received.emit(client_msg, timestamp,
+                                              whisker_timestamp)
         elif WARNING_REGEX.match(msg):
             self.warning_received.emit(msg, timestamp, whisker_timestamp)
         elif SYNTAX_ERROR_REGEX.match(msg):
@@ -643,7 +656,7 @@ class WhiskerTask(QObject, StatusMixin):  # Whisker thread B
         """
         self.warning("on_connect: YOU SHOULD OVERRIDE THIS")
 
-    # noinspection PyUnusedLocal,PyUnusedLocal
+    # noinspection PyUnusedLocal
     @pyqtSlot(str, arrow.Arrow, int)
     @exit_on_exception
     def on_event(self, event: str, timestamp: arrow.Arrow,
@@ -651,6 +664,22 @@ class WhiskerTask(QObject, StatusMixin):  # Whisker thread B
         """The WhiskerController event_received signal comes here."""
         # You should override this
         msg = "SHOULD BE OVERRIDDEN. EVENT: {}".format(event)
+        self.status(msg)
+
+    # noinspection PyUnusedLocal
+    @pyqtSlot(str, arrow.Arrow, int)
+    @exit_on_exception
+    def on_key_event(self, key_event: str, timestamp: arrow.Arrow,
+                     whisker_timestamp_ms: int) -> None:
+        msg = "SHOULD BE OVERRIDDEN. KEY EVENT: {}".format(key_event)
+        self.status(msg)
+
+    # noinspection PyUnusedLocal
+    @pyqtSlot(str, arrow.Arrow, int)
+    @exit_on_exception
+    def on_client_message(self, client_msg: str, timestamp: arrow.Arrow,
+                          whisker_timestamp_ms: int) -> None:
+        msg = "SHOULD BE OVERRIDDEN. CLIENT MESSAGE: {}".format(client_msg)
         self.status(msg)
 
     # noinspection PyUnusedLocal

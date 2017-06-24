@@ -316,6 +316,11 @@ Version history
       annotations...".
     - Support PyQt 5.8, including removing calls to QHeaderView.setClickable,
       which has gone: https://doc.qt.io/qt-5/qheaderview.html
+* 22 Jun 2016: v0.1.10
+    - Updates for Starfeeder.
+* 23 Jun 2016: v0.1.11
+    - Further updates for Starfeeder; supporting structured handling of
+      ClientMessage.
 
 
 Known problems
