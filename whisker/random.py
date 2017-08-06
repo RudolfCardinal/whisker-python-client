@@ -5,7 +5,7 @@ import operator
 import random
 from typing import Any, List
 
-from whisker.lang import flatten_list, sort_list_by_index_list
+from cardinal_pythonlib.lists import flatten_list, sort_list_by_index_list
 
 
 # =============================================================================

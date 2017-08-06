@@ -38,6 +38,7 @@ from enum import Enum
 from typing import Optional
 
 import arrow
+from cardinal_pythonlib.regexfunc import CompiledRegexMemory
 # noinspection PyPackageRequirements
 from PyQt5.QtCore import (
     QByteArray,
@@ -72,9 +73,6 @@ from whisker.api import (
     WhiskerApi,
 )
 from whisker.constants import DEFAULT_PORT
-
-# from whisker.debug_qt import debug_object, debug_thread
-from whisker.lang import CompiledRegexMemory
 from whisker.qt import exit_on_exception, StatusMixin
 
 log = logging.getLogger(__name__)

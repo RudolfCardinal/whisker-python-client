@@ -12,6 +12,10 @@ import threading
 import traceback
 from typing import Any, Iterable, List, Optional, Tuple
 
+from cardinal_pythonlib.debugging import get_caller_name
+from cardinal_pythonlib.lists import contains_duplicates
+from cardinal_pythonlib.logs import HtmlColorHandler
+from cardinal_pythonlib.sort import attrgetter_nonesort, methodcaller_nonesort
 # noinspection PyPackageRequirements
 from PyQt5.QtCore import (
     QAbstractListModel,
@@ -55,14 +59,6 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 from sqlalchemy.orm import Session  # for type hints
-
-from whisker.lang import (
-    attrgetter_nonesort,
-    contains_duplicates,
-    get_caller_name,
-    methodcaller_nonesort,
-)
-from whisker.logging import HtmlColorHandler
 
 log = logging.getLogger(__name__)
 
