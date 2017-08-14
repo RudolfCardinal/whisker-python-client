@@ -10,7 +10,7 @@ from typing import Any, Dict, Generator, Tuple
 
 # noinspection PyUnresolvedReferences
 from alembic.migration import MigrationContext
-from sqlalchemy import create_engine, event,
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine  # for type hints
 from sqlalchemy.orm import scoped_session, Session,  sessionmaker
 

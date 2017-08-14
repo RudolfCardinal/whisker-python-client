@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="8" />
     <option name="CUSTOM_SCOPE_NAME" value="whisker" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="29d1c391-bbe6-48cd-bfe9-b2c03621e147" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/whisker/alembic.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/whisker/lang.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/whisker/logging.py" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/whisker.iml" afterPath="$PROJECT_DIR$/.idea/whisker.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/qt.py" afterPath="$PROJECT_DIR$/whisker/qt.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/qtclient.py" afterPath="$PROJECT_DIR$/whisker/qtclient.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/random.py" afterPath="$PROJECT_DIR$/whisker/random.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/sqlalchemy.py" afterPath="$PROJECT_DIR$/whisker/sqlalchemy.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/version.py" afterPath="$PROJECT_DIR$/whisker/version.py" />
     </list>
@@ -37,28 +33,30 @@
       <file leaf-file-name="qt.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/qt.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="533">
-              <caret line="41" column="29" lean-forward="false" selection-start-line="41" selection-start-column="29" selection-end-line="41" selection-end-column="29" />
-              <folding />
+            <state relative-caret-position="16905">
+              <caret line="1181" column="34" lean-forward="false" selection-start-line="1181" selection-start-column="34" selection-end-line="1181" selection-end-column="34" />
+              <folding>
+                <element signature="e#119#146#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="version.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="version.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/whisker/version.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="104">
-              <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+            <state relative-caret-position="90">
+              <caret line="6" column="16" lean-forward="false" selection-start-line="6" selection-start-column="16" selection-end-line="6" selection-end-column="16" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+            <state relative-caret-position="675">
+              <caret line="45" column="7" lean-forward="false" selection-start-line="45" selection-start-column="7" selection-end-line="45" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -67,8 +65,8 @@
       <file leaf-file-name="setup.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/setup.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="624">
-              <caret line="48" column="0" lean-forward="false" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+            <state relative-caret-position="1320">
+              <caret line="92" column="0" lean-forward="false" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -77,7 +75,7 @@
       <file leaf-file-name="socket.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/socket.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="520">
+            <state relative-caret-position="540">
               <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
               <folding />
             </state>
@@ -87,8 +85,8 @@
       <file leaf-file-name="sqlalchemy.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="325">
-              <caret line="25" column="24" lean-forward="false" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
+            <state relative-caret-position="180">
+              <caret line="12" column="43" lean-forward="false" selection-start-line="12" selection-start-column="43" selection-end-line="12" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -97,7 +95,7 @@
       <file leaf-file-name="api.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8970">
+            <state relative-caret-position="559">
               <caret line="690" column="25" lean-forward="false" selection-start-line="690" selection-start-column="25" selection-end-line="690" selection-end-column="25" />
               <folding />
             </state>
@@ -107,7 +105,7 @@
       <file leaf-file-name="random.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/random.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="91">
+            <state relative-caret-position="105">
               <caret line="7" column="54" lean-forward="false" selection-start-line="7" selection-start-column="54" selection-end-line="7" selection-end-column="54" />
               <folding />
             </state>
@@ -117,7 +115,7 @@
       <file leaf-file-name="lists.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../cardinal_pythonlib/cardinal_pythonlib/lists.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
+            <state relative-caret-position="555">
               <caret line="38" column="4" lean-forward="false" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
               <folding />
             </state>
@@ -128,11 +126,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>message_received</find>
-      <find>EVENT_REGEX</find>
-      <find>KEY_EVENT_REGEX</find>
-      <find>key_event_rec</find>
-      <find>warning_received</find>
       <find>def on_event</find>
       <find>gre =</find>
       <find>client_message_received</find>
@@ -153,11 +146,16 @@
       <find>textio</find>
       <find>arrow</find>
       <find>escape</find>
-      <find>cardinal_py</find>
       <find>from whisker.lang</find>
       <find>exei</find>
       <find>exit_on</find>
       <find>pythonlib.logging import</find>
+      <find>.error</find>
+      <find>locking at</find>
+      <find>garb</find>
+      <find>class G</find>
+      <find>print(</find>
+      <find>cardinal_py</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -180,15 +178,15 @@
         <option value="$PROJECT_DIR$/doc/demo_simple_whisker_client.py" />
         <option value="$PROJECT_DIR$/whisker/debug_qt.py" />
         <option value="$PROJECT_DIR$/whisker/alembic.py" />
-        <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/README.rst" />
         <option value="$PROJECT_DIR$/whisker/api.py" />
         <option value="$PROJECT_DIR$/whisker/lang.py" />
-        <option value="$PROJECT_DIR$/whisker/sqlalchemy.py" />
-        <option value="$PROJECT_DIR$/whisker/version.py" />
         <option value="$PROJECT_DIR$/whisker/random.py" />
-        <option value="$PROJECT_DIR$/whisker/qt.py" />
         <option value="$PROJECT_DIR$/whisker/qtclient.py" />
+        <option value="$PROJECT_DIR$/whisker/qt.py" />
+        <option value="$PROJECT_DIR$/setup.py" />
+        <option value="$PROJECT_DIR$/whisker/version.py" />
+        <option value="$PROJECT_DIR$/whisker/sqlalchemy.py" />
       </list>
     </option>
   </component>
@@ -237,8 +235,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -258,7 +256,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/dev/venvs/whisker/bin/python" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
@@ -483,31 +481,31 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1197" y="0" width="1206" height="1603" extended-state="6" />
+    <frame x="-1" y="25" width="1922" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24479167" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298573" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.245" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="R Packages" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="LuaJ" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="R Graphics" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32699868" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39904174" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32926002" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="R Packages" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="LuaJ" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="R Graphics" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32845187" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32699868" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -549,69 +547,15 @@
     <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.5/site-packages/sqlalchemy/orm/query.py" />
     <entry file="file://$USER_HOME$/.PyCharm2016.2/system/python_stubs/-357382359/PySide/QtGui/QPushButton.py" />
     <entry file="file://$USER_HOME$/.PyCharm2016.2/system/python_stubs/-357382359/PySide/QtGui/QAbstractButton.py" />
-    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.4/collections/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="611">
-          <caret line="463" column="79" lean-forward="true" selection-start-line="463" selection-start-column="79" selection-end-line="463" selection-end-column="79" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.4/site-packages/typing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23959">
-          <caret line="1843" column="0" lean-forward="false" selection-start-line="1843" selection-start-column="0" selection-end-line="1843" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QAbstractListModel.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="12" column="34" lean-forward="false" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/Qt.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="228" column="4" lean-forward="false" selection-start-line="228" selection-start-column="4" selection-end-line="228" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QGroupBox.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="836">
-          <caret line="110" column="14" lean-forward="false" selection-start-line="110" selection-start-column="8" selection-end-line="110" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QMainWindow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="13" column="6" lean-forward="false" selection-start-line="13" selection-start-column="6" selection-end-line="13" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QBoxLayout.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="39" column="53" lean-forward="true" selection-start-line="39" selection-start-column="53" selection-end-line="39" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QAbstractItemModel.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="273" column="12" lean-forward="false" selection-start-line="273" selection-start-column="4" selection-end-line="273" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/pyqtSignal.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="12" column="6" lean-forward="false" selection-start-line="12" selection-start-column="6" selection-end-line="12" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.4/collections/__init__.py" />
+    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.4/site-packages/typing.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QAbstractListModel.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/Qt.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QGroupBox.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QMainWindow.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QBoxLayout.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QAbstractItemModel.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/pyqtSignal.py" />
     <entry file="file://$PROJECT_DIR$/doc/demo_simple_whisker_client.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="611">
@@ -619,48 +563,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QThread.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="962">
-          <caret line="74" column="8" lean-forward="false" selection-start-line="74" selection-start-column="8" selection-end-line="74" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QObject.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2574">
-          <caret line="198" column="8" lean-forward="false" selection-start-line="198" selection-start-column="8" selection-end-line="198" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QByteArray.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="130">
-          <caret line="10" column="6" lean-forward="false" selection-start-line="10" selection-start-column="6" selection-end-line="10" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QTableView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="819">
-          <caret line="63" column="8" lean-forward="false" selection-start-line="63" selection-start-column="8" selection-end-line="63" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QHeaderView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QAbstractItemView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6955">
-          <caret line="535" column="4" lean-forward="false" selection-start-line="535" selection-start-column="4" selection-end-line="535" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QThread.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QObject.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QByteArray.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QTableView.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QHeaderView.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QAbstractItemView.py" />
     <entry file="file:///usr/lib/python3.5/logging/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="724">
@@ -723,7 +631,7 @@
     <entry file="file://$PROJECT_DIR$/whisker/lang.py" />
     <entry file="file://$PROJECT_DIR$/whisker/socket.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
+        <state relative-caret-position="540">
           <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
           <folding />
         </state>
@@ -785,50 +693,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/api.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8970">
-          <caret line="690" column="25" lean-forward="false" selection-start-line="690" selection-start-column="25" selection-end-line="690" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/whisker/logging.py" />
-    <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="325">
-          <caret line="25" column="24" lean-forward="false" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="624">
-          <caret line="48" column="0" lean-forward="false" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/version.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="104">
-          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/whisker/random.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="91">
+        <state relative-caret-position="105">
           <caret line="7" column="54" lean-forward="false" selection-start-line="7" selection-start-column="54" selection-end-line="7" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="675">
+          <caret line="45" column="7" lean-forward="false" selection-start-line="45" selection-start-column="7" selection-end-line="45" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../cardinal_pythonlib/cardinal_pythonlib/lists.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
+        <state relative-caret-position="555">
           <caret line="38" column="4" lean-forward="false" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
           <folding />
         </state>
@@ -836,16 +720,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/whisker/qt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="533">
-          <caret line="41" column="29" lean-forward="false" selection-start-line="41" selection-start-column="29" selection-end-line="41" selection-end-column="29" />
+        <state relative-caret-position="16905">
+          <caret line="1181" column="34" lean-forward="false" selection-start-line="1181" selection-start-column="34" selection-end-line="1181" selection-end-column="34" />
+          <folding>
+            <element signature="e#119#146#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1320">
+          <caret line="92" column="0" lean-forward="false" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
+    <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+        <state relative-caret-position="180">
+          <caret line="12" column="43" lean-forward="false" selection-start-line="12" selection-start-column="43" selection-end-line="12" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/api.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="559">
+          <caret line="690" column="25" lean-forward="false" selection-start-line="690" selection-start-column="25" selection-end-line="690" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/version.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="16" lean-forward="false" selection-start-line="6" selection-start-column="16" selection-end-line="6" selection-end-column="16" />
           <folding />
         </state>
       </provider>

@@ -1169,9 +1169,6 @@ class RadioGroup(object):
 # =============================================================================
 # Garbage collector
 # =============================================================================
-# https://riverbankcomputing.com/pipermail/pyqt/2011-August/030378.html
-# http://pydev.blogspot.co.uk/2014/03/should-python-garbage-collector-be.html
-# https://bugreports.qt.io/browse/PYSIDE-79
 
 class GarbageCollector(QObject):
     """
@@ -1180,7 +1177,13 @@ class GarbageCollector(QObject):
 
     This is done to ensure that garbage collection only happens in the GUI
     thread, as otherwise Qt can crash.
-    """
+
+    See:
+    - https://riverbankcomputing.com/pipermail/pyqt/2011-August/030378.html
+    - http://pydev.blogspot.co.uk/2014/03/should-python-garbage-collector-be.html
+    - https://bugreports.qt.io/browse/PYSIDE-79
+    
+    """  # noqa
 
     def __init__(self, parent: QObject, debug: bool = False,
                  interval_ms=10000) -> None:
@@ -1199,19 +1202,23 @@ class GarbageCollector(QObject):
         # return self.debug_cycles()  # uncomment to just debug cycles
         l0, l1, l2 = gc.get_count()
         if self.debug:
-            print('gc_check called:', l0, l1, l2)
+            log.debug('GarbageCollector.check called: '
+                      'l0={}, l1={}, l2={}'.format(l0, l1, l2))
         if l0 > self.threshold[0]:
-            num = gc.collect(0)
+            num = gc.collect(generation=0)
             if self.debug:
-                print('collecting gen 0, found:', num, 'unreachable')
+                log.debug('collecting generation 0; found '
+                          '{} unreachable'.format(num))
             if l1 > self.threshold[1]:
-                num = gc.collect(1)
+                num = gc.collect(generation=1)
                 if self.debug:
-                    print('collecting gen 1, found:', num, 'unreachable')
+                    log.debug('collecting generation 1; found '
+                              '{} unreachable'.format(num))
                 if l2 > self.threshold[2]:
-                    num = gc.collect(2)
+                    num = gc.collect(generation=2)
                     if self.debug:
-                        print('collecting gen 2, found:', num, 'unreachable')
+                        log.debug('collecting generation 2; found '
+                                  '{} unreachable'.format(num))
 
     @staticmethod
     def debug_cycles() -> None:

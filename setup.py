@@ -90,6 +90,7 @@ setup(
     install_requires=[
         'arrow',  # better datetime
         'attrdict',  # dictionaries with attribute-style access
+        'cardinal_pythonlib>=1.0.1',
         'colorama',  # colour at the command line
         'colorlog',  # colourful logs
         'dataset',  # databases for lazy people (used by demo)
