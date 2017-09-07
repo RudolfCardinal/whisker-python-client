@@ -321,7 +321,10 @@ Version history
 * 23 Jun 2016: v0.1.11
     - Further updates for Starfeeder; supporting structured handling of
       ClientMessage.
-
+* 2017: v1.0
+    - Update for new cardinal_pythonlib.
+* 7 Sep 2017: v1.0.3
+    - use SQLAlchemy 1.2 pool_pre_ping feature
 
 Known problems
 ===============================================================================

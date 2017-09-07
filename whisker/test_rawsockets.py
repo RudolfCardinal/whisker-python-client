@@ -6,6 +6,7 @@
 import argparse
 import logging
 
+from cardinal_pythonlib.logs import configure_logger_for_colour
 from whisker.api import (
     EVENT_PREFIX,
     PING_ACK,
@@ -15,7 +16,6 @@ from whisker.api import (
     CMD_WHISKER_STATUS,
 )
 from whisker.constants import DEFAULT_PORT
-from whisker.logging import configure_logger_for_colour
 from whisker.rawsocketclient import Whisker
 
 

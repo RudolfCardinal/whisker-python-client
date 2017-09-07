@@ -8,6 +8,7 @@ import logging
 
 from twisted.internet import reactor
 
+from cardinal_pythonlib.logs import configure_logger_for_colour
 from whisker.api import (
     Pen,
     PenStyle,
@@ -17,10 +18,6 @@ from whisker.api import (
     Rectangle,
 )
 from whisker.constants import DEFAULT_PORT
-from whisker.logging import (
-    configure_logger_for_colour,
-    # print_report_on_all_logs,
-)
 from whisker.twistedclient import WhiskerTask
 
 log = logging.getLogger(__name__)

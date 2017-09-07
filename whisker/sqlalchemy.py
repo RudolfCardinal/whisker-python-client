@@ -34,8 +34,8 @@ def get_database_engine(settings: Dict[str, Any],
     engine = create_engine(
         database_url,
         echo=settings['echo'],
-        connect_args=settings['connect_args']
-        # pool_pre_ping=pool_pre_ping  # FOR WHEN SQLAlchemy 1.2 RELEASED! ***
+        connect_args=settings['connect_args'],
+        pool_pre_ping=pool_pre_ping  # requires SQLAlchemy 1.2
     )
     sqlite = database_url.startswith("sqlite:")
     if not sqlite or not unbreak_sqlite_transactions:
