@@ -1,30 +1,33 @@
-#!/usr/bin/env python
-# whisker/version.py
+..  docs/source/tl_dr.rst
 
-"""
-===============================================================================
-
-    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
-
-    This file is part of the Whisker Python client library.
-
+..  Copyright © 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+    .
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-
+    .
         http://www.apache.org/licenses/LICENSE-2.0
-
+    .
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
 
-===============================================================================
+TL;DR
+-----
 
-**Library version constants.**
+- :code:`pip install whisker`
 
-"""
+- Fire up your Whisker server.
 
-VERSION = '1.0.4'
-# Use semantic versioning: http://semver.org/
+- Test with:
+
+  .. code-block:: bash
+
+    whisker_test_twisted --server localhost
+
+    whisker_test_rawsockets --server localhost
+
+- Copy/paste the demo config file and demo task (see :ref:`A complete simple
+  task <complete_task>`) and run it.

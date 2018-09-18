@@ -1,7 +1,27 @@
 #!/usr/bin/env python
 # whisker/rawsocketclient.py
-# Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
-# See LICENSE for details.
+
+"""
+===============================================================================
+
+    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+
+    This file is part of the Whisker Python client library.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+===============================================================================
+"""
 
 """
 Framework for Whisker Python clients using raw sockets.
@@ -38,8 +58,12 @@ log = logging.getLogger(__name__)
 # =============================================================================
 
 class Whisker(object):
-    """Basic Whisker class, in which clients do all the work.
-    (Not sophisticated. Use WhiskerTask instead.)
+    """
+    Basic Whisker class, in which clients do all the work via raw network
+    sockets.
+
+    (Not sophisticated. Use :class:`whisker.twistedclient.WhiskerTask`
+    instead.)
     """
 
     def __init__(self) -> None:
@@ -48,6 +72,9 @@ class Whisker(object):
 
     @classmethod
     def set_verbose_logging(cls, verbose: bool) -> None:
+        """
+        Set the Python log level.
+        """
         if verbose:
             log.setLevel(logging.DEBUG)
         else:
@@ -55,7 +82,9 @@ class Whisker(object):
 
     def connect_both_ports(self, server: str,
                            mainport: Union[str, int]) -> bool:
-        """Connect the main and immediate ports to the server."""
+        """
+        Connect the main and immediate ports to the server.
+        """
         if not self.connect_main(server, mainport):  # Log in to the server.
             return False
         # Listen to the server until we can connect the immediate socket.
@@ -75,7 +104,9 @@ class Whisker(object):
         return True
 
     def connect_main(self, server: str, portstring: Union[str, int]) -> bool:
-        """Connect the main port to the server."""
+        """
+        Connect the main port to the server.
+        """
         log.info("Connecting main port to server.")
         port = get_port(portstring)
         proto = socket.getprotobyname("tcp")
@@ -100,6 +131,9 @@ class Whisker(object):
 
     def connect_immediate(self, server: str, portstring: Union[str, int],
                           code: str) -> bool:
+        """
+        Connect the immediate port to the server.
+        """
         port = get_port(portstring)
         proto = socket.getprotobyname("tcp")
         try:
@@ -133,6 +167,9 @@ class Whisker(object):
         return True
 
     def log_out(self) -> None:
+        """
+        Shut down the connection to Whisker.
+        """
         try:
             self.mainsock.close()
         except socket.error as x:
@@ -143,14 +180,18 @@ class Whisker(object):
             log.error("Error closing immediate socket: " + str(x))
 
     def send(self, s: str) -> None:
-        """Send something to the server on the main socket, with a trailing
-        newline."""
+        """
+        Send something to the server on the main socket, with a trailing
+        newline.
+        """
         log.debug("Main socket command: " + s)
         socket_send(self.mainsock, s + "\n")
 
     def send_immediate(self, s: str) -> str:
-        """Send a command to the server on the immediate socket, and retrieve
-        its reply."""
+        """
+        Send a command to the server on the immediate socket, and retrieve
+        its reply.
+        """
         log.debug("Immediate socket command: " + s)
         socket_sendall(self.immsock, s + "\n")
         reply = next(self.getlines_immsock())
@@ -158,7 +199,9 @@ class Whisker(object):
         return reply
 
     def getlines_immsock(self) -> Generator[str, None, None]:
-        """Yield a set of lines from the socket."""
+        """
+        Yield a set of lines from the immediate socket.
+        """
         # http://stackoverflow.com/questions/822001/python-sockets-buffering
         buf = socket_receive(self.immsock)
         done = False
@@ -176,7 +219,9 @@ class Whisker(object):
             yield buf
 
     def getlines_mainsock(self) -> Generator[str, None, None]:
-        """Yield a set of lines from the socket."""
+        """
+        Yield a set of lines from the main socket.
+        """
         buf = socket_receive(self.mainsock)
         done = False
         while not done:

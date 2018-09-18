@@ -1,14 +1,37 @@
 #!/usr/bin/env python
 # whisker/convenience.py
-# Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
-# See LICENSE for details.
+
+"""
+===============================================================================
+
+    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+
+    This file is part of the Whisker Python client library.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+===============================================================================
+
+**Convenience functions for simple Whisker clients.**
+
+"""
 
 import logging
 from datetime import datetime
 from tkinter import filedialog, Tk
 import os
 import sys
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any, Dict, Iterable, List, Type, Union
 
 import arrow
 from attrdict import AttrDict
@@ -31,10 +54,16 @@ def load_config_or_die(mandatory: Iterable[Union[str, List[Any]]] = None,
     """
     Offers a GUI file prompt; loads a YAML config from it; or exits.
 
-    mandatory: list of mandatory items
-        ... if one of these is itself a list, that list is used as a hierarchy
+    Args:
+        mandatory: list of mandatory items;
+            if one of these is itself a list, that list is used as a hierarchy
             of attributes
-    defaults: a dict-like object of defaults
+        defaults: a dict-like object of defaults
+        log_config: report the config to the Python log?
+
+    Returns:
+        an class:`AttrDict` containing the config
+
     """
     def _fail_mandatory(attrname_):
         errmsg = "Setting '{}' missing from config file".format(attrname_)
@@ -78,8 +107,8 @@ def connect_to_db_using_attrdict(database_url: str,
                                  show_url: bool = False,
                                  engine_kwargs: Dict[str, Any] = None):
     """
-    Connects to a dataset database, and uses AttrDict as the row type, so
-    AttrDict objects come back out again.
+    Connects to a ``dataset`` database, and uses :class:`AttrDict` as the row
+    type, so :class:`AttrDict` objects come back out again.
     """
     if show_url:
         log.info("Connecting to database: {}".format(database_url))
@@ -92,14 +121,29 @@ def connect_to_db_using_attrdict(database_url: str,
 # noinspection PyShadowingBuiltins
 def ask_user(prompt: str,
              default: Any = None,
-             type=str,
+             type: Type[Any] = str,
              min: Any = None,
              max: Any = None,
              options: List[Any] = None,
              allow_none: bool = True) -> Any:
     """
-    Prompts the user, optionally with a default, range or set of options.
-    Coerces the return type.
+    Prompts the user via the command line, optionally with a default, range or
+    set of options. Asks for user input. Coerces the return type.
+
+    Args:
+        prompt: prompt to display
+        default: default value if the user just presses Enter
+        type: type to coerce return value to (default ``str``)
+        min: if not ``None``, enforce this minimum value
+        max: if not ``None``, enforce this maximum value
+        options: permitted options (if this is truthy and the user enters an
+            option that's not among then, raise :exc:`ValueError`)
+        allow_none: permit the return of ``None`` values (otherwise, if a
+            ``None`` value would be returned, raise :exc:`ValueError`)
+
+    Returns:
+        user-supplied value
+
     """
     options = options or []
     defstr = ""
@@ -144,11 +188,19 @@ def save_data(tablename: str,
               results: List[Dict[str, Any]],
               taskname: str,
               timestamp: Union[arrow.Arrow, datetime] = None,
-              output_format: str = "csv"):
+              output_format: str = "csv") -> None:
     """
-    Saves a dataset result set to a suitable output file.
-    output_format can be one of: csv, json, tabson
-        (see https://dataset.readthedocs.org/en/latest/api.html#dataset.freeze)
+    Saves a ``dataset`` result set to a suitable output file.
+
+    Args:
+        tablename: table name, used only for creating the filename
+        results: results to save
+        taskname: task name, used only for creating the filename
+        timestamp: timestamp, used only for creating the filename; if ``None``,
+            the current date/time is used
+        output_format: one of: ``"csv"``, ``"json"``, ``"tabson"``
+            (see
+            https://dataset.readthedocs.org/en/latest/api.html#dataset.freeze)
     """
     if timestamp is None:
         timestamp = datetime.utcnow()
@@ -169,9 +221,14 @@ def save_data(tablename: str,
 def insert_and_set_id(table: dataset.Table,
                       obj: Dict[str, Any],
                       idfield: str = 'id') -> Any:  # but typically int
-    """The dataset table's insert() command returns the primary key.
+    """
+    Inserts an object into a :class:`dataset.Table` and ensures that the
+    primary key (PK) is written back to the object, in its ``idfield``.
+
+    (The :func:`dataset.Table.insert` command returns the primary key.
     However, it doesn't store that back, and we want users to do that
-    consistently."""
+    consistently.)
+    """
     pk = table.insert(obj)
     obj[idfield] = pk
     return pk

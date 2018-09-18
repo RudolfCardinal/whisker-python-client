@@ -1,7 +1,27 @@
 #!/usr/bin/env python
 # whisker/qtclient.py
-# Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
-# See LICENSE for details.
+
+"""
+===============================================================================
+
+    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+
+    This file is part of the Whisker Python client library.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+===============================================================================
+"""
 
 """
 Multithreaded framework for Whisker Python clients using Qt.
@@ -117,9 +137,10 @@ class WhiskerOwner(QObject, StatusMixin):  # GUI thread
     """
     This object is owned by the GUI thread.
     It devolves work to two other threads:
-        (A) main socket listener (WhiskerMainSocketListener)
-        (B) task (WhiskerTask)
-            + immediate socket (blocking) handler (WhiskerController)
+
+    (A) main socket listener (WhiskerMainSocketListener)
+    (B) task (WhiskerTask)
+        + immediate socket (blocking) handler (WhiskerController)
 
     The use of 'main' here just refers to the main socket (as opposed to the
     immediate socket), not the thread that's doing most of the processing.

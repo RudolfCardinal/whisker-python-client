@@ -1,30 +1,28 @@
-#!/usr/bin/env python
-# whisker/version.py
+..  docs/source/complete_task.rst
 
-"""
-===============================================================================
-
-    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
-
-    This file is part of the Whisker Python client library.
-
+..  Copyright © 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+    .
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-
+    .
         http://www.apache.org/licenses/LICENSE-2.0
-
+    .
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
 
-===============================================================================
+.. _complete_task:
 
-**Library version constants.**
+A complete simple task
+======================
 
-"""
+Having done :code:`pip install whisker`, you should be able to do this:
 
-VERSION = '1.0.4'
-# Use semantic versioning: http://semver.org/
+.. include:: demo/demo_config.yaml
+    :code: python
+
+.. include:: demo/demo_simple_whisker_client.py
+    :code: python

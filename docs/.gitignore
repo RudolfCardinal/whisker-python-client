@@ -1,3 +1,5 @@
 demo_task_results.db
 *.csv
 
+build/
+

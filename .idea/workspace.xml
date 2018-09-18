@@ -6,17 +6,76 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="29d1c391-bbe6-48cd-bfe9-b2c03621e147" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.rst" afterPath="$PROJECT_DIR$/README.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/sqlalchemy.py" afterPath="$PROJECT_DIR$/whisker/sqlalchemy.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/test_rawsockets.py" afterPath="$PROJECT_DIR$/whisker/test_rawsockets.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/test_twisted.py" afterPath="$PROJECT_DIR$/whisker/test_twisted.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisker/version.py" afterPath="$PROJECT_DIR$/whisker/version.py" />
+      <change afterPath="$PROJECT_DIR$/docs/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/make.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/rebuild_docs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/_index.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/api.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/callback.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/constants.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/convenience.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/debug_qt.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/exceptions.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/qt.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/qtclient.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/random.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/rawsocketclient.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/socket.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/sqlalchemy.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/test_rawsockets.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/test_twisted.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/twistedclient.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/autodoc/version.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/changelog.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/complete_task.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/conf.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/demo/demo_config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/index.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/rationale.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/tl_dr.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/to_do.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/usage.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/whisker.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/whisker.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.rst" beforeDir="false" afterPath="$PROJECT_DIR$/README.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/docs/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/demo_config.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/demo_simple_whisker_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/demo/demo_simple_whisker_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/json_config_demo.json" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/demo/json_config_demo.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/json_config_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/demo/json_config_example.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/stylesheets/voidspace.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/symbols/isonum.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/include/include_isonum_symbols.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/whisker_client_snippet.pl" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/demo/whisker_client_snippet.pl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/yaml_config_demo.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/demo/yaml_config_demo.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/yaml_config_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/demo/yaml_config_example.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/docbuild.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/lint_check.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/callback.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/callback.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/convenience.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/convenience.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/debug_qt.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/debug_qt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/exceptions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/qt.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/qt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/qtclient.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/qtclient.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/random.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/random.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/rawsocketclient.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/rawsocketclient.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/socket.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/socket.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/sqlalchemy.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/sqlalchemy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/test_rawsockets.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/test_rawsockets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/test_twisted.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/test_twisted.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/twistedclient.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/twistedclient.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/whisker/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/whisker/version.py" afterDir="false" />
     </list>
     <ignored path="whisker.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,152 +84,192 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="-2053214685">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="8" />
+          <entry key="project.open.time.0" value="2" />
+          <entry key="project.open.time.1" value="1" />
+          <entry key="project.open.time.12" value="1" />
+          <entry key="project.open.time.2" value="1" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.open.time.7" value="1" />
+          <entry key="project.open.time.8" value="2" />
+          <entry key="project.opened" value="9" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="LICENSE" value="2" />
+          <entry key="css" value="1" />
+          <entry key="csv" value="1" />
+          <entry key="json" value="1" />
+          <entry key="py" value="70" />
+          <entry key="pyi" value="1" />
+          <entry key="rst" value="55" />
+          <entry key="txt" value="1" />
+          <entry key="yaml" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="CSS" value="1" />
+          <entry key="JSON" value="1" />
+          <entry key="PLAIN_TEXT" value="4" />
+          <entry key="Python" value="70" />
+          <entry key="PythonStub" value="1" />
+          <entry key="ReST" value="55" />
+          <entry key="YAML" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="LICENSE" value="1" />
+          <entry key="py" value="16301" />
+          <entry key="rst" value="1573" />
+          <entry key="yaml" value="3" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="PLAIN_TEXT" value="1" />
+          <entry key="Python" value="16301" />
+          <entry key="ReST" value="1573" />
+          <entry key="YAML" value="3" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
   <component name="FavoritesManager">
     <favorites_list name="whisker" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="qt.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisker/qt.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/docs/source/changelog.rst">
+          <provider selected="true" editor-type-id="restructured-text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/whisker/twistedclient.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17715">
-              <caret line="1181" column="34" lean-forward="false" selection-start-line="1181" selection-start-column="34" selection-end-line="1181" selection-end-column="34" />
-              <folding>
-                <element signature="e#119#146#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="923">
+              <caret line="71" selection-start-line="71" selection-end-line="71" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="version.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisker/version.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/whisker/convenience.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="16" lean-forward="false" selection-start-line="6" selection-start-column="16" selection-end-line="6" selection-end-column="16" />
-              <folding />
+            <state relative-caret-position="468">
+              <caret line="36" selection-start-line="36" selection-end-line="36" selection-end-column="29" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.rst" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.rst">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1287">
-              <caret line="327" column="0" lean-forward="true" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/whisker/random.py">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file leaf-file-name="qtclient.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="675">
-              <caret line="45" column="7" lean-forward="false" selection-start-line="45" selection-start-column="7" selection-end-line="45" selection-end-column="7" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="setup.py" pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/setup.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="870">
-              <caret line="116" column="0" lean-forward="true" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="1069">
+              <caret line="93" column="43" selection-start-line="93" selection-start-column="43" selection-end-line="93" selection-end-column="43" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sqlalchemy.py" pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/whisker/rawsocketclient.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="832">
+              <caret line="64" column="70" selection-start-line="64" selection-start-column="28" selection-end-line="64" selection-end-column="70" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/whisker/socket.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1222">
+              <caret line="94" column="53" selection-start-line="94" selection-start-column="53" selection-end-line="94" selection-end-column="53" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="555">
-              <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-              <folding>
-                <element signature="e#56#93#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="104">
+              <caret line="8" column="59" lean-forward="true" selection-start-line="8" selection-start-column="59" selection-end-line="8" selection-end-column="59" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_twisted.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisker/test_twisted.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/whisker/version.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="364">
+              <caret line="28" column="16" selection-start-line="28" selection-start-column="16" selection-end-line="28" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_rawsockets.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisker/test_rawsockets.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="48" column="40" lean-forward="true" selection-start-line="48" selection-start-column="40" selection-end-line="48" selection-end-column="40" />
-              <folding>
-                <element signature="e#131#146#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="api.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisker/api.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="10245">
-              <caret line="690" column="25" lean-forward="false" selection-start-line="690" selection-start-column="25" selection-end-line="690" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="lists.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../cardinal_pythonlib/cardinal_pythonlib/lists.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="555">
-              <caret line="38" column="4" lean-forward="false" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
-              <folding />
-            </state>
-          </provider>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/LICENSE">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>def on_event</find>
-      <find>gre =</find>
-      <find>client_message_received</find>
-      <find>on_client_message</find>
-      <find>source_cl</find>
-      <find>CLIENT_MESSAGE_REGEX</find>
-      <find>source_client_num</find>
-      <find>o</find>
-      <find>on</find>
-      <find>on_</find>
-      <find>on_c</find>
-      <find>on_cl</find>
-      <find>alembic</find>
-      <find>inspect(</find>
-      <find>class</find>
-      <find>datetime</find>
-      <find>metada</find>
-      <find>textio</find>
-      <find>arrow</find>
-      <find>escape</find>
-      <find>from whisker.lang</find>
-      <find>exei</find>
-      <find>exit_on</find>
-      <find>pythonlib.logging import</find>
-      <find>.error</find>
-      <find>locking at</find>
-      <find>garb</find>
-      <find>class G</find>
-      <find>print(</find>
-      <find>cardinal_py</find>
+      <find>connect</find>
+      <find>def em</find>
+      <find>.connect</find>
+      <find>signal</find>
+      <find>exampes</find>
+      <find>whiskerapi(</find>
+      <find>SafetyState</find>
+      <find>swallow_e</find>
+      <find>= str</find>
+      <find>allow_none</find>
+      <find>:exc</find>
+      <find>See Whisker help for details.</find>
+      <find>save_data(</find>
+      <find>taskname</find>
+      <find>timestamp</find>
+      <find>results</find>
+      <find>class whisker</find>
+      <find>:class:`</find>
+      <find>:class:</find>
+      <find>class WhiskerOwner</find>
+      <find>ClientMessage</find>
+      <find>class ClientMessage</find>
+      <find>attrd</find>
+      <find>attrdict</find>
+      <find>ordered</find>
+      <find>Trio</find>
+      <find>specified by</find>
+      <find>manual.</find>
+      <find>manual</find>
+      <find>build</find>
     </findStrings>
+    <replaceStrings>
+      <replace>See Whisker help (http://www.whiskercontrol.com) for details.</replace>
+      <replace>\nTrio</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -178,29 +277,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/doc/json_config_example.py" />
+        <option value="$PROJECT_DIR$/whisker/alembic.py" />
+        <option value="$PROJECT_DIR$/whisker/lang.py" />
         <option value="$PROJECT_DIR$/tools/docbuild.py" />
+        <option value="$PROJECT_DIR$/LICENSE" />
+        <option value="$PROJECT_DIR$/whisker/constants.py" />
+        <option value="$PROJECT_DIR$/whisker/__init__.py" />
+        <option value="$PROJECT_DIR$/whisker/sqlalchemy.py" />
+        <option value="$PROJECT_DIR$/whisker/twistedclient.py" />
+        <option value="$PROJECT_DIR$/docs/rebuild_docs.py" />
+        <option value="$PROJECT_DIR$/docs/source/to_do.rst" />
+        <option value="$PROJECT_DIR$/docs/source/conf.py" />
+        <option value="$PROJECT_DIR$/docs/demo_config.yaml" />
+        <option value="$PROJECT_DIR$/docs/source/demo/demo_config.yaml" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/api.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/_index.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/callback.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/constants.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/convenience.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/debug_qt.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/exceptions.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/qt.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/qtclient.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/random.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/rawsocketclient.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/socket.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/sqlalchemy.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/test_rawsockets.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/test_twisted.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/twistedclient.rst" />
+        <option value="$PROJECT_DIR$/docs/source/autodoc/version.rst" />
+        <option value="$PROJECT_DIR$/setup.py" />
+        <option value="$PROJECT_DIR$/README.rst" />
+        <option value="$PROJECT_DIR$/docs/source/index.rst" />
+        <option value="$PROJECT_DIR$/whisker/qt.py" />
+        <option value="$PROJECT_DIR$/whisker/qtclient.py" />
+        <option value="$PROJECT_DIR$/docs/source/complete_task.rst" />
+        <option value="$PROJECT_DIR$/docs/source/tl_dr.rst" />
+        <option value="$PROJECT_DIR$/docs/source/usage.rst" />
+        <option value="$PROJECT_DIR$/docs/source/rationale.rst" />
+        <option value="$PROJECT_DIR$/whisker/callback.py" />
+        <option value="$PROJECT_DIR$/whisker/api.py" />
+        <option value="$PROJECT_DIR$/whisker/convenience.py" />
+        <option value="$PROJECT_DIR$/whisker/debug_qt.py" />
         <option value="$PROJECT_DIR$/whisker/exceptions.py" />
         <option value="$PROJECT_DIR$/whisker/socket.py" />
-        <option value="$PROJECT_DIR$/whisker/callback.py" />
-        <option value="$PROJECT_DIR$/whisker/convenience.py" />
-        <option value="$PROJECT_DIR$/whisker/logging.py" />
-        <option value="$PROJECT_DIR$/whisker/rawsocketclient.py" />
-        <option value="$PROJECT_DIR$/whisker/twistedclient.py" />
-        <option value="$PROJECT_DIR$/doc/demo_simple_whisker_client.py" />
-        <option value="$PROJECT_DIR$/whisker/debug_qt.py" />
-        <option value="$PROJECT_DIR$/whisker/alembic.py" />
-        <option value="$PROJECT_DIR$/whisker/api.py" />
-        <option value="$PROJECT_DIR$/whisker/lang.py" />
-        <option value="$PROJECT_DIR$/whisker/random.py" />
-        <option value="$PROJECT_DIR$/whisker/qtclient.py" />
-        <option value="$PROJECT_DIR$/whisker/qt.py" />
-        <option value="$PROJECT_DIR$/setup.py" />
-        <option value="$PROJECT_DIR$/whisker/version.py" />
-        <option value="$PROJECT_DIR$/README.rst" />
-        <option value="$PROJECT_DIR$/whisker/sqlalchemy.py" />
-        <option value="$PROJECT_DIR$/whisker/test_twisted.py" />
         <option value="$PROJECT_DIR$/whisker/test_rawsockets.py" />
+        <option value="$PROJECT_DIR$/whisker/rawsocketclient.py" />
+        <option value="$PROJECT_DIR$/whisker/test_twisted.py" />
+        <option value="$PROJECT_DIR$/docs/source/changelog.rst" />
+        <option value="$PROJECT_DIR$/whisker/random.py" />
+        <option value="$PROJECT_DIR$/whisker/version.py" />
       </list>
     </option>
   </component>
@@ -235,17 +362,7 @@
     </entry>
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
-      <flattenPackages />
-      <showMembers />
-      <showModules />
-      <showLibraryContents />
-      <hideEmptyPackages />
-      <abbreviatePackageNames />
-      <autoscrollToSource />
-      <autoscrollFromSource />
-      <sortByType />
-      <manualOrder />
+    <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
@@ -259,6 +376,17 @@
             <path>
               <item name="whisker" type="b2602c69:ProjectViewProjectNode" />
               <item name="whisker" type="462c0819:PsiDirectoryNode" />
+              <item name="docs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="whisker" type="b2602c69:ProjectViewProjectNode" />
+              <item name="whisker" type="462c0819:PsiDirectoryNode" />
+              <item name="docs" type="462c0819:PsiDirectoryNode" />
+              <item name="source" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="whisker" type="b2602c69:ProjectViewProjectNode" />
+              <item name="whisker" type="462c0819:PsiDirectoryNode" />
               <item name="whisker" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -266,15 +394,20 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs/source/demo" />
+      <recent name="$PROJECT_DIR$/docs/source" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -289,174 +422,6 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <gulpfile />
-      <tasks />
-      <arguments />
-      <envs />
-    </configuration>
-    <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="whisker" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="TARGET" value="" />
-      <option name="SETTINGS_FILE" value="" />
-      <option name="CUSTOM_SETTINGS" value="false" />
-      <option name="USE_OPTIONS" value="false" />
-      <option name="OPTIONS" value="" />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
-      <method />
-    </configuration>
-    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="whisker" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="ADDITIONAL_ARGS" value="" />
-      <method />
-    </configuration>
-    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="whisker" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="ADDITIONAL_ARGS" value="" />
-      <method />
-    </configuration>
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="whisker" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <method />
-    </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <module name="whisker" />
-      <method />
-    </configuration>
-    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
-      <command value="run" />
-      <scripts />
-      <node-interpreter value="project" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="whisker" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Nosetests">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="whisker" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="_new_regexPattern" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;.&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Unittests">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="whisker" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;.&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="py.test">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="whisker" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;.&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method />
-    </configuration>
     <configuration default="true" type="tests" factoryName="Attests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -477,9 +442,62 @@
       <option name="USE_PATTERN" value="false" />
       <method />
     </configuration>
-  </component>
-  <component name="ShelveChangesManager" show_recycled="false">
-    <option name="remove_strategy" value="false" />
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <module name="whisker" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_regexPattern" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;.&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <module name="whisker" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;.&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <module name="whisker" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;.&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -498,29 +516,32 @@
     <frame x="1197" y="0" width="1206" height="1603" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298573" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24416667" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32821882" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32699868" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39904174" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="R Packages" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="LuaJ" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="R Graphics" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27633852" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32699868" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info active="true" anchor="bottom" id="Inspection" order="5" visible="true" weight="0.39904174" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Terminal" order="7" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.3298573" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="bottom" id="Inspection Results" order="11" visible="true" weight="0.32821882" />
+      <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="13" show_stripe_button="false" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="R Graphics" order="3" />
+      <window_info anchor="right" id="R Packages" order="4" />
+      <window_info anchor="right" id="LuaJ" order="5" />
+      <window_info anchor="right" id="Database" order="6" />
+      <window_info anchor="right" id="Data View" order="7" />
+      <window_info anchor="right" id="SciView" order="8" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -545,241 +566,265 @@
           <line>33</line>
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="1" />
     </breakpoint-manager>
-    <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.5/site-packages/dataset/__init__.py" />
-    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.5/site-packages/sqlalchemy/orm/query.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/python_stubs/-357382359/PySide/QtGui/QPushButton.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/python_stubs/-357382359/PySide/QtGui/QAbstractButton.py" />
-    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.4/collections/__init__.py" />
-    <entry file="file://$USER_HOME$/dev/venvs/whisker/lib/python3.4/site-packages/typing.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QAbstractListModel.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/Qt.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QGroupBox.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QMainWindow.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QBoxLayout.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QAbstractItemModel.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/pyqtSignal.py" />
-    <entry file="file://$PROJECT_DIR$/doc/demo_simple_whisker_client.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="611">
-          <caret line="47" column="25" lean-forward="false" selection-start-line="47" selection-start-column="25" selection-end-line="47" selection-end-column="25" />
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/callback.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/constants.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/convenience.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/debug_qt.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/exceptions.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/qt.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/qtclient.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/random.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/rawsocketclient.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/socket.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/sqlalchemy.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/test_rawsockets.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/test_twisted.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/twistedclient.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/stylesheets/voidspace.css" />
+    <entry file="file://$PROJECT_DIR$/docs/source/autodoc/version.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="4905">
+          <caret line="327" selection-start-line="327" selection-end-line="327" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QThread.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QObject.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtCore/QByteArray.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QTableView.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QHeaderView.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2016.3/system/python_stubs/530020088/PyQt5/QtWidgets/QAbstractItemView.py" />
-    <entry file="file:///usr/lib/python3.5/logging/__init__.py">
+    <entry file="file://$PROJECT_DIR$/tools/lint_check.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/530020088/PyQt5/QtCore/QObject.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="724">
-          <caret line="1277" column="35" lean-forward="true" selection-start-line="1277" selection-start-column="35" selection-end-line="1277" selection-end-column="35" />
+        <state relative-caret-position="499">
+          <caret line="57" column="9" selection-start-line="57" selection-start-column="9" selection-end-line="57" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2017.1/system/python_stubs/530020088/PyQt5/QtCore/QObject.py" />
-    <entry file="file://$USER_HOME$/.PyCharm2017.1/system/python_stubs/530020088/PyQt5/QtCore/QIODevice.py" />
-    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/session.py">
+    <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/530020088/PyQt5/QtWidgets/QDialogButtonBox.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23907">
-          <caret line="1839" column="0" lean-forward="false" selection-start-line="1839" selection-start-column="0" selection-end-line="1839" selection-end-column="0" />
+        <state relative-caret-position="91">
+          <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/scoping.py">
+    <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/530020088/PyQt5/QtCore/pyqtSignal.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="819">
-          <caret line="63" column="14" lean-forward="false" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
+        <state relative-caret-position="117">
+          <caret line="9" column="6" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/twistedclient.py">
+    <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/530020088/PyQt5/QtCore/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="16" column="45" lean-forward="false" selection-start-line="16" selection-start-column="45" selection-end-line="16" selection-end-column="45" />
+        <state relative-caret-position="499">
+          <caret line="328" column="33" selection-start-line="328" selection-start-column="33" selection-end-line="328" selection-end-column="33" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/alembic.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/530020088/PyQt5/QtCore/pyqtBoundSignal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="15" column="36" selection-start-line="15" selection-start-column="36" selection-end-line="15" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/complete_task.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/tl_dr.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/index.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/usage.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/rationale.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/whisker/callback.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="1340">
+          <caret line="190" selection-start-line="190" selection-end-line="190" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/whisker/constants.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="533">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/convenience.py">
+    <entry file="file:///usr/lib/python3.5/typing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16">
-          <caret line="72" column="52" lean-forward="true" selection-start-line="72" selection-start-column="52" selection-end-line="72" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/lang.py" />
-    <entry file="file://$PROJECT_DIR$/whisker/socket.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/inspection.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
-          <caret line="37" column="4" lean-forward="false" selection-start-line="37" selection-start-column="4" selection-end-line="37" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/orm/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
-          <caret line="403" column="4" lean-forward="false" selection-start-line="403" selection-start-column="4" selection-end-line="403" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/sql/type_api.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="52">
-          <caret line="4" column="20" lean-forward="false" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/exceptions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/debug_qt.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="11" column="25" lean-forward="false" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/rawsocketclient.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="598">
-          <caret line="46" column="13" lean-forward="false" selection-start-line="46" selection-start-column="13" selection-end-line="46" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/sqlalchemy/sql/schema.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="3446" column="0" lean-forward="true" selection-start-line="3446" selection-start-column="0" selection-end-line="3446" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/logging.py" />
-    <entry file="file://$PROJECT_DIR$/whisker/random.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="54" lean-forward="false" selection-start-line="7" selection-start-column="54" selection-end-line="7" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="675">
-          <caret line="45" column="7" lean-forward="false" selection-start-line="45" selection-start-column="7" selection-end-line="45" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../cardinal_pythonlib/cardinal_pythonlib/lists.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="555">
-          <caret line="38" column="4" lean-forward="false" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/qt.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17715">
-          <caret line="1181" column="34" lean-forward="false" selection-start-line="1181" selection-start-column="34" selection-end-line="1181" selection-end-column="34" />
-          <folding>
-            <element signature="e#119#146#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="620">
+          <caret line="2101" column="67" selection-start-line="2101" selection-start-column="67" selection-end-line="2101" selection-end-column="67" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/whisker/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10245">
-          <caret line="690" column="25" lean-forward="false" selection-start-line="690" selection-start-column="25" selection-end-line="690" selection-end-column="25" />
-          <folding />
+        <state relative-caret-position="454">
+          <caret line="602" column="27" selection-start-line="602" selection-start-column="27" selection-end-line="602" selection-end-column="27" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/version.py">
+    <entry file="file://$USER_HOME$/dev/venvs/starfeeder_pyqt/lib/python3.5/site-packages/dataset/freeze/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="16" lean-forward="false" selection-start-line="6" selection-start-column="16" selection-end-line="6" selection-end-column="16" />
-          <folding />
+        <state relative-caret-position="338">
+          <caret line="26" column="4" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.rst">
+    <entry file="file://$PROJECT_DIR$/whisker/debug_qt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1287">
-          <caret line="327" column="0" lean-forward="true" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="1340">
+          <caret line="168" selection-start-line="168" selection-end-line="168" />
+          <folding>
+            <marker date="1537311229759" expanded="true" signature="2938:3066" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/setup.py">
+    <entry file="file://$PROJECT_DIR$/whisker/exceptions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="870">
-          <caret line="116" column="0" lean-forward="true" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="611">
+          <caret line="47" selection-start-line="47" selection-end-line="47" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/test_twisted.py">
+    <entry file="file://$PROJECT_DIR$/whisker/qt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="472">
+          <caret line="441" column="37" selection-start-line="441" selection-start-column="37" selection-end-line="441" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/qtclient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="598">
+          <caret line="157" column="33" selection-start-line="157" selection-start-column="33" selection-end-line="157" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/typeshed/stdlib/2and3/socket.pyi">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="794">
+          <caret line="577" selection-start-line="577" selection-end-line="577" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/whisker/test_rawsockets.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="48" column="40" lean-forward="true" selection-start-line="48" selection-start-column="40" selection-end-line="48" selection-end-column="40" />
-          <folding>
-            <element signature="e#131#146#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1326">
+          <caret line="102" selection-start-line="102" selection-end-line="102" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
+    <entry file="file://$PROJECT_DIR$/whisker/test_twisted.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="555">
-          <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          <folding>
-            <element signature="e#56#93#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="819">
+          <caret line="63" selection-start-line="61" selection-end-line="63" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/twistedclient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="923">
+          <caret line="71" selection-start-line="71" selection-end-line="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/convenience.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="36" selection-start-line="36" selection-end-line="36" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/random.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/rawsocketclient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="832">
+          <caret line="64" column="70" selection-start-line="64" selection-start-column="28" selection-end-line="64" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/socket.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1222">
+          <caret line="94" column="53" selection-start-line="94" selection-start-column="53" selection-end-line="94" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1069">
+          <caret line="93" column="43" selection-start-line="93" selection-start-column="43" selection-end-line="93" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools/docbuild.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="403">
+          <caret line="31" column="39" selection-start-line="31" selection-start-column="39" selection-end-line="31" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LICENSE">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/sqlalchemy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="8" column="59" lean-forward="true" selection-start-line="8" selection-start-column="59" selection-end-line="8" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisker/version.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="28" column="16" selection-start-line="28" selection-start-column="16" selection-end-line="28" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/source/changelog.rst">
+      <provider selected="true" editor-type-id="restructured-text-editor" />
     </entry>
   </component>
   <component name="masterDetails">

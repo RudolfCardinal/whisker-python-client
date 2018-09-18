@@ -94,15 +94,15 @@ setup(
         'colorama',  # colour at the command line
         'colorlog',  # colourful logs
         'dataset',  # databases for lazy people (used by demo)
-        # 'PySide==1.2.4',  # Python interface to Qt
-        # NOT MANDATORY # 'Twisted',  # TCP/IP communications
+        'PyQt5',  # Qt for Python
+        'Twisted',  # TCP/IP communications
         'typing==3.5.2.2',  # part of stdlib in Python 3.5, but not 3.4
         'pyyaml',  # Yet Another Markup Language
 
         # ---------------------------------------------------------------------
         # For development only:
         # ---------------------------------------------------------------------
-        # docutils  # includes rst2html.py
+        # sphinx  # for documentation
         # twine  # for uploading to PyPI
     ],
 

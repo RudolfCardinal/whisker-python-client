@@ -1,7 +1,27 @@
 #!/usr/bin/env python
 # whisker/qt.py
-# Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
-# See LICENSE for details.
+
+"""
+===============================================================================
+
+    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+
+    This file is part of the Whisker Python client library.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+===============================================================================
+"""
 
 
 from functools import wraps
@@ -400,7 +420,7 @@ class TransactionalEditDialogMixin(object):
     The caller must still commit() afterwards, but any rollbacks are automatic.
 
     See also http://pyqt.sourceforge.net/Docs/PyQt5/multiinheritance.html
-    for the super().__init__(..., **kwargs) chain.
+    for the ``super().__init__(..., **kwargs)`` chain.
     """
     ok = pyqtSignal()
 
@@ -445,6 +465,7 @@ class TransactionalEditDialogMixin(object):
     def edit_in_nested_transaction(self) -> int:
         """
         Pops up the dialog, allowing editing.
+
         - Does so within a database transaction.
         - If the user clicks OK *and* the data validates, commits the
           transaction.

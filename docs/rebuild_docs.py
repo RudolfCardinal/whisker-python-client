@@ -1,5 +1,5 @@
-#!/usr/bin/env/python
-# whisker/__init__.py
+#!/usr/bin/env python
+# docs/rebuild_docs.py
 
 """
 ===============================================================================
@@ -23,9 +23,31 @@
 ===============================================================================
 """
 
-import logging
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
+import os
+import shutil
+import subprocess
+import sys
+if sys.version_info[0] < 3:
+    raise AssertionError("Need Python 3")
 
-# http://eric.themoritzfamily.com/learning-python-logging.html
-# http://stackoverflow.com/questions/12296214/python-logging-with-a-library-namespaced-packages  # noqa
+# Work out directories
+THIS_DIR = os.path.dirname(os.path.realpath(__file__))
+BUILD_HTML_DIR = os.path.join(THIS_DIR, "build", "html")
+
+DEST_DIRS = []
+
+if __name__ == '__main__':
+    # Remove anything old
+    for destdir in [BUILD_HTML_DIR] + DEST_DIRS:
+        print("Deleting directory {!r}".format(destdir))
+        shutil.rmtree(destdir, ignore_errors=True)
+
+    # Build docs
+    print("Making HTML version of documentation")
+    os.chdir(THIS_DIR)
+    subprocess.call(["make", "html"])
+
+    # Copy
+    for destdir in DEST_DIRS:
+        print("Copying {!r} -> {!r}".format(BUILD_HTML_DIR, destdir))
+        shutil.copytree(BUILD_HTML_DIR, destdir)

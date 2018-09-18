@@ -1,7 +1,27 @@
 #!/usr/bin/env python
 # whisker/test_twisted.py
-# Copyright (c) Rudolf Cardinal (rudolf@pobox.com).
-# See LICENSE for details.
+
+"""
+===============================================================================
+
+    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+
+    This file is part of the Whisker Python client library.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+===============================================================================
+"""
 
 import argparse
 import logging
@@ -38,6 +58,10 @@ VIDEO = "_video"
 
 
 class MyWhiskerTask(WhiskerTask):
+    """
+    Class deriving from :class:`whisker.twistedclient.WhiskerTask` to
+    demonstrate the Twisted Whisker client.
+    """
     def __init__(self,
                  display_num: int,
                  audio_num: int,
@@ -59,6 +83,9 @@ class MyWhiskerTask(WhiskerTask):
         # ... anything extra here
 
     def fully_connected(self) -> None:
+        """
+        Called when the server is fully connected. Set up the "task".
+        """
         print("SENDING SOME TEST/DEMONSTRATION COMMANDS")
         self.whisker.get_network_latency_ms()
         self.whisker.report_name("Whisker Twisted client prototype")
@@ -165,6 +192,9 @@ class MyWhiskerTask(WhiskerTask):
         log.info("video_pos_ms: {}".format(video_pos_ms))
 
     def incoming_event(self, event: str, timestamp: int = None) -> None:
+        """
+        Responds to incoming events from Whisker.
+        """
         print("Event: {e} (timestamp {t})".format(e=event, t=timestamp))
         if event == "EndOfTask":
             # noinspection PyUnresolvedReferences
@@ -184,6 +214,10 @@ class MyWhiskerTask(WhiskerTask):
 
 
 def main() -> None:
+    """
+    Command-line parser.
+    See ``--help`` for details.
+    """
     logging.basicConfig()
     logging.getLogger("whisker").setLevel(logging.DEBUG)
     configure_logger_for_colour(logging.getLogger())  # configure root logger
