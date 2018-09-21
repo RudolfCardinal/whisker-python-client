@@ -36,7 +36,7 @@ long_description = r"""
     See https://whiskerpythonclient.readthedocs.io/
 """
 
-# *** readthedocs
+# *** readthedocs: get this working!
 
 # -----------------------------------------------------------------------------
 # setup args
@@ -95,7 +95,7 @@ setup(
     install_requires=[
         'arrow',  # better datetime
         'attrdict',  # dictionaries with attribute-style access
-        'cardinal_pythonlib>=1.0.1',
+        'cardinal_pythonlib>=1.0.26',
         'colorama',  # colour at the command line
         'colorlog',  # colourful logs
         'dataset',  # databases for lazy people (used by demo)
