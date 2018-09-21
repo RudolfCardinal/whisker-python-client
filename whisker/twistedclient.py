@@ -70,7 +70,8 @@ class WhiskerTask(object):
     """
     Base class for Whisker clients using the Twisted socket system.
 
-    - Contains ``self.whisker``, an instance of :class:`WhiskerApi`.
+    - Contains ``self.whisker``, an instance of
+      :class:`whisker.api.WhiskerApi`.
     - Specimen usage: see ``test_twisted.py``.
     """
 
@@ -365,7 +366,7 @@ class WhiskerMainPortFactory(ClientFactory):
     def __init__(self, task: WhiskerTask) -> None:
         """
         Args:
-            task: instance of class:`WhiskerTask`
+            task: instance of :class:`WhiskerTask`
         """
         self.task = task
 
@@ -434,7 +435,7 @@ class WhiskerMainPortProtocol(LineReceiver):
     def lineReceived(self, data: bytes) -> None:
         """
         Called when data is received on the main port.
-        Sends it to :func:`self.task.incoming_message`.
+        Sends it to :func:`WhiskerTask.incoming_message` via ``self.task``.
 
         Args:
             data: bytes

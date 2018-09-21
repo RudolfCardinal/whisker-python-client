@@ -63,3 +63,7 @@ Change history
   - ``PyQt5`` and ``Twisted`` added as requirements
   - Sphinx docs
   - updated signal debugging for PyQt5 in ``debug_qt.py``
+  - general tidy
+  - ``ValidationError`` removed from ``whisker.qt``; is in
+    ``whisker.exceptions`` (previously duplicated)
+  - additional randomization functions

@@ -99,18 +99,6 @@ NOTHING_SELECTED = -1  # e.g. http://doc.qt.io/qt-4.8/qbuttongroup.html#id
 # Exceptions
 # =============================================================================
 
-class ValidationError(Exception):
-    """
-    Exception to represent failure to validate user input.
-    """
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
-        self.message = message
-
-    def __str__(self) -> str:
-        return self.message
-
-
 class EditCancelledException(Exception):
     """
     Exception to represent that the user cancelled editing.
@@ -1371,11 +1359,13 @@ class GenericListModel(QAbstractListModel, DatabaseModelMixin):
     a list of object ``[a, b, c]``, it displays a list view with items (rows)
     like this:
 
-        ------------
-        ``str(a)``
-        ``str(b)``
-        ``str(c)``
-        ------------
+        +-------------+
+        | ``str(a)``  |
+        +-------------+
+        | ``str(b)``  |
+        +-------------+
+        | ``str(c)``  |
+        +-------------+
 
     - Note that it MODIFIES THE LIST PASSED TO IT.
     """
@@ -1504,13 +1494,13 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
     ``[a, b, c]`` and a list of headers ``["h1", "h2", "h3"]``, it provides
     a table view like
 
-        --------------- --------------- -----------------
+        =============== =============== =================
         h1              h2              h3
-        --------------- --------------- -----------------
+        =============== =============== =================
         ``str(a.h1)``   ``str(a.h2)``   ``str(a.h3)``
         ``str(b.h1)``   ``str(b.h2)``   ``str(b.h3)``
         ``str(c.h1)``   ``str(c.h2)``   ``str(c.h3)``
-        --------------- --------------- -----------------
+        =============== =============== =================
 
     - Note that it MODIFIES THE LIST PASSED TO IT.
 
@@ -1538,14 +1528,14 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
                 that behaves like a list
             header: list of ``(colname, attr_or_func)`` tuples. The first part,
                 ``colname``, is displayed to the user. The second part,
-                ``attr_or_func`, is used to retrieve data. For each object
+                ``attr_or_func``, is used to retrieve data. For each object
                 ``obj``, the view will call ``thing = getattr(obj,
-                attr_or_func)``. If  ``thing`` is callable (i.e. is a member
-                function), the view will display ``str(thing())`; otherwise, it
-                will display ``str(thing)``.
+                attr_or_func)``. If ``thing`` is callable (i.e. is a member
+                function), the view will display ``str(thing())``; otherwise,
+                it will display ``str(thing)``.
             session: SQLAlchemy :class:`Session`
             default_sort_column_name: column to sort by to begin with, or
-                ``None`` to respect the original order of ``data
+                ``None`` to respect the original order of ``data``
             default_sort_order: default sort order (default is ascending
                 order)
             deletable: may the user delete objects from the collection?
@@ -1889,6 +1879,7 @@ class GarbageCollector(QObject):
     thread, as otherwise Qt can crash.
 
     See:
+    
     - https://riverbankcomputing.com/pipermail/pyqt/2011-August/030378.html
     - http://pydev.blogspot.co.uk/2014/03/should-python-garbage-collector-be.html
     - https://bugreports.qt.io/browse/PYSIDE-79

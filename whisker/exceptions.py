@@ -28,6 +28,9 @@
 
 
 class WhiskerCommandFailed(Exception):
+    """
+    Raised by :class:`WhiskerApi` if a Whisker immediate-socket command fails.
+    """
     pass
 
 
@@ -39,6 +42,9 @@ class ImproperlyConfigured(Exception):
 
 
 class ValidationError(Exception):
+    """
+    Exception to represent failure to validate user input.
+    """
     def __init__(self, message: str) -> None:
         super().__init__(message)
         self.message = message

@@ -106,7 +106,7 @@ def get_database_session_thread_unaware(settings: Dict[str, Any]) -> Session:
     """
     Returns an SQLAlchemy database session.
 
-    AVOID: this function is not thread-aware.
+    .. warning:: DEPRECATED: this function is not thread-aware.
 
     Args:
         settings: passed to :func:`get_database_engine`
@@ -128,7 +128,7 @@ def session_scope_thread_unaware(
     Context manager to provide an SQLAlchemy database session (which
     executes a ``COMMIT`` on success or a ``ROLLBACK`` on failure).
 
-    AVOID: this function is not thread-aware.
+    .. warning:: DEPRECATED: this function is not thread-aware.
 
     Args:
         settings: passed to :func:`get_database_session_thread_unaware`
@@ -175,7 +175,7 @@ def get_database_engine_session_thread_scope(
     Gets a thread-scoped SQLAlchemy :class:`Engine` and :class:`Session`.
 
     Args:
-        settings: passed to :func:`get_database_engine
+        settings: passed to :func:`get_database_engine`
         readonly: make the session read-only?
         autoflush: passed to :func:`sessionmaker`
 
