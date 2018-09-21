@@ -165,7 +165,7 @@ class CallbackHandler(object):
         """
         self.callbacks = []
 
-    def  process_event(self, event: str) -> Tuple[int, bool]:
+    def process_event(self, event: str) -> Tuple[int, bool]:
         """
         Calls any callbacks registered for the event. Returns the number of
         callbacks called.

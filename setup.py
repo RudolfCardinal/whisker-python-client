@@ -98,6 +98,7 @@ setup(
         'Twisted',  # TCP/IP communications
         'typing==3.5.2.2',  # part of stdlib in Python 3.5, but not 3.4
         'pyyaml',  # Yet Another Markup Language
+        'sqlalchemy',  # Databases
 
         # ---------------------------------------------------------------------
         # For development only:

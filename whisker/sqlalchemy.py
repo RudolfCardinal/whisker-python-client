@@ -21,14 +21,15 @@
     limitations under the License.
 
 ===============================================================================
+
+**SQLAlchemy helper functions for Whisker tasks.**
+
 """
 
 from contextlib import contextmanager
 import logging
 from typing import Any, Dict, Generator, Tuple
 
-# noinspection PyUnresolvedReferences
-from alembic.migration import MigrationContext
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine.base import Engine  # for type hints
 from sqlalchemy.orm import scoped_session, Session,  sessionmaker
@@ -44,10 +45,27 @@ def get_database_engine(settings: Dict[str, Any],
                         unbreak_sqlite_transactions: bool = True,
                         pool_pre_ping: bool = True) -> Engine:
     """
-    The 'settings' object used here is a dictionary with the following keys:
-        url  # str
-        echo  # bool
-        connect_args  # a dictionary
+    Get an SQLAlchemy database :class:`Engine` from a simple definition.
+
+    Args:
+        settings: a dictionary with the following keys:
+
+            - ``url``: a string
+            - ``echo``: a boolean
+            - ``connect_args``: a dictionary
+
+            All are passed to SQLAlchemy's :func:`create_engine` function.
+
+        unbreak_sqlite_transactions: hook in events to unbreak SQLite
+            transaction support? (Detailed in
+            ``sqlalchemy/dialects/sqlite/pysqlite.py``; see "Serializable
+            isolation / Savepoints / Transactional DDL".)
+
+        pool_pre_ping: boolean; requires SQLAlchemy 1.2
+
+    Returns:
+        an SQLAlchemy :class:`Engine`
+
     """
     database_url = settings['url']
     engine = create_engine(
@@ -85,6 +103,18 @@ def get_database_engine(settings: Dict[str, Any],
 
 # noinspection PyPep8Naming
 def get_database_session_thread_unaware(settings: Dict[str, Any]) -> Session:
+    """
+    Returns an SQLAlchemy database session.
+
+    AVOID: this function is not thread-aware.
+
+    Args:
+        settings: passed to :func:`get_database_engine`
+
+    Returns:
+        an SQLAlchemy :class:`Session`
+
+    """
     log.warning("get_database_session_thread_unaware() called")
     engine = get_database_engine(settings)
     SessionClass = sessionmaker(bind=engine)
@@ -94,9 +124,23 @@ def get_database_session_thread_unaware(settings: Dict[str, Any]) -> Session:
 @contextmanager
 def session_scope_thread_unaware(
         settings: Dict[str, Any]) -> Generator[Session, None, None]:
+    """
+    Context manager to provide an SQLAlchemy database session (which
+    executes a ``COMMIT`` on success or a ``ROLLBACK`` on failure).
+
+    AVOID: this function is not thread-aware.
+
+    Args:
+        settings: passed to :func:`get_database_session_thread_unaware`
+
+    Yields:
+        an SQLAlchemy :class:`Session`
+
+    """
     log.warning("session_scope_thread_unaware() called")
     # http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#session-faq-whentocreate  # noqa
     session = get_database_session_thread_unaware(settings)
+    # noinspection PyPep8
     try:
         yield session
         session.commit()
@@ -116,6 +160,9 @@ def session_scope_thread_unaware(
 
 # noinspection PyUnusedLocal
 def noflush_readonly(*args, **kwargs) -> None:
+    """
+    Does nothing, and is thereby used to block a database session flush.
+    """
     log.debug("Attempt to flush a readonly database session blocked")
 
 
@@ -124,6 +171,18 @@ def get_database_engine_session_thread_scope(
         settings: Dict[str, Any],
         readonly: bool = False,
         autoflush: bool = True) -> Tuple[Engine, Session]:
+    """
+    Gets a thread-scoped SQLAlchemy :class:`Engine` and :class:`Session`.
+
+    Args:
+        settings: passed to :func:`get_database_engine
+        readonly: make the session read-only?
+        autoflush: passed to :func:`sessionmaker`
+
+    Returns:
+        tuple: ``(engine, session)``
+
+    """
     # The default for a Session is: autoflush=True, autocommit=False
     # http://docs.sqlalchemy.org/en/latest/orm/session_api.html#sqlalchemy.orm.session.Session  # noqa
     if readonly:
@@ -138,6 +197,19 @@ def get_database_engine_session_thread_scope(
 
 
 def get_database_session_thread_scope(*args, **kwargs) -> Session:
+    """
+    Gets a thread-scoped SQLAlchemy :class:`Session`.
+
+    Args:
+        args: positional arguments to
+            :func:`get_database_engine_session_thread_scope`
+        kwargs: keyword arguments to
+            :func:`get_database_engine_session_thread_scope`
+
+    Returns:
+        the session
+
+    """
     engine, session = get_database_engine_session_thread_scope(*args, **kwargs)
     return session
 
@@ -146,7 +218,20 @@ def get_database_session_thread_scope(*args, **kwargs) -> Session:
 def session_thread_scope(
         settings: Dict[str, Any],
         readonly: bool = False) -> Generator[Session, None, None]:
+    """
+    Context manager to provide a thread-safe SQLAlchemy database session (which
+    executes a ``COMMIT`` on success or a ``ROLLBACK`` on failure).
+
+    Args:
+        settings: passed to :func:`get_database_session_thread_scope`
+        readonly: passed to :func:`get_database_session_thread_scope`
+
+    Yields:
+        an SQLAlchemy :class:`Session`
+
+    """
     session = get_database_session_thread_scope(settings, readonly)
+    # noinspection PyPep8
     try:
         yield session
         if not readonly:
@@ -164,11 +249,17 @@ def session_thread_scope(
 # =============================================================================
 
 def database_is_sqlite(dbsettings: Dict[str, str]) -> bool:
+    """
+    Checks the URL in ``dbsettings['url']``: is it an SQLite database?
+    """
     database_url = dbsettings['url']
     return database_url.startswith("sqlite:")
 
 
 def database_is_postgresql(dbsettings: Dict[str, str]) -> bool:
+    """
+    Checks the URL in ``dbsettings['url']``: is it a PostgreSQL database?
+    """
     database_url = dbsettings['url']
     return database_url.startswith("postgresql")
     # ignore colon, since things like "postgresql:", "postgresql+psycopg2:"
@@ -176,5 +267,8 @@ def database_is_postgresql(dbsettings: Dict[str, str]) -> bool:
 
 
 def database_is_mysql(dbsettings: Dict[str, str]) -> bool:
+    """
+    Checks the URL in ``dbsettings['url']``: is it a MySQL database?
+    """
     database_url = dbsettings['url']
     return database_url.startswith("mysql")

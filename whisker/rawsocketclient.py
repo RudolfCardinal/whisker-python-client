@@ -21,17 +21,15 @@
     limitations under the License.
 
 ===============================================================================
-"""
+
+**Framework for Whisker Python clients using raw sockets.**
+
+**CONSIDER USING THE TWISTED OR QT FRAMEWORKS INSTEAD.**
+
+- Created: 18 Aug 2011.
+- Last update: 10 Feb 2016
 
 """
-Framework for Whisker Python clients using raw sockets.
-CONSIDER USING THE TWISTED FRAMEWORK INSTEAD.
-
-Author: Rudolf Cardinal (rudolf@pobox.com)
-Created: 18 Aug 2011
-Last update: 10 Feb 2016
-"""
-
 
 # =============================================================================
 # Dependencies

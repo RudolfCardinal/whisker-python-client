@@ -21,6 +21,9 @@
     limitations under the License.
 
 ===============================================================================
+
+**Qt classes for Whisker GUI tasks.**
+
 """
 
 
@@ -30,7 +33,7 @@ import logging
 import sys
 import threading
 import traceback
-from typing import Any, Iterable, List, Optional, Tuple
+from typing import Any, Iterable, List, Optional, Sequence, Tuple, Type
 
 from cardinal_pythonlib.debugging import get_caller_name
 from cardinal_pythonlib.lists import contains_duplicates
@@ -40,6 +43,7 @@ from cardinal_pythonlib.sort import attrgetter_nonesort, methodcaller_nonesort
 from PyQt5.QtCore import (
     QAbstractListModel,
     QAbstractTableModel,
+    QEvent,
     QModelIndex,
     QObject,
     Qt,
@@ -61,6 +65,7 @@ from PyQt5.QtGui import (
 # noinspection PyPackageRequirements
 from PyQt5.QtWidgets import (
     QAbstractItemView,
+    QApplication,
     QButtonGroup,
     QDialog,
     QDialogButtonBox,
@@ -95,6 +100,9 @@ NOTHING_SELECTED = -1  # e.g. http://doc.qt.io/qt-4.8/qbuttongroup.html#id
 # =============================================================================
 
 class ValidationError(Exception):
+    """
+    Exception to represent failure to validate user input.
+    """
     def __init__(self, message: str) -> None:
         super().__init__(message)
         self.message = message
@@ -104,6 +112,9 @@ class ValidationError(Exception):
 
 
 class EditCancelledException(Exception):
+    """
+    Exception to represent that the user cancelled editing.
+    """
     pass
 
 
@@ -130,13 +141,16 @@ QGroupBox::title {
 
 
 class StyledQGroupBox(QGroupBox):
+    """
+    :class:`QGroupBox` that applies a specific CSS stylesheet.
+    """
     def __init__(self, *args) -> None:
         super().__init__(*args)
         self.setStyleSheet(GROUPBOX_STYLESHEET)
 
 
 # =============================================================================
-# Hard-to-close dialog-style box for a GUI Python log window
+# LogWindow
 # =============================================================================
 
 LOGEDIT_STYLESHEET = """
@@ -151,6 +165,22 @@ QPlainTextEdit {
 
 
 class LogWindow(QMainWindow):
+    """
+    Hard-to-close dialog-style box for a GUI Python log window.
+
+    A :class:`QMainWindow` that provides a a console-style view on a Python
+    log, and provides copying facilities.
+
+    It achieves this by adding a new handler to that log.
+
+    Use this window when you wish to do nothing except show progress from
+    an application that uses the log. (Typically you would pass the root
+    logger to this window, so all log output is seen.)
+
+    Signals:
+
+    - ``emit_msg(str)``
+    """
     emit_msg = pyqtSignal(str)
 
     def __init__(self,
@@ -160,6 +190,16 @@ class LogWindow(QMainWindow):
                  min_width: int = 800,
                  min_height: int = 400,
                  maximum_block_count: int = 1000) -> None:
+        """
+        Args:
+            level: Python log level
+            window_title: window title
+            logger: Python logger
+            min_width: minimum window width in pixels
+            min_height: minimum window height in pixels
+            maximum_block_count: maxmium number of blocks (in this case:
+                log entries) that the window will hold
+        """
         super().__init__()
         self.setStyleSheet(LOGEDIT_STYLESHEET)
 
@@ -205,9 +245,16 @@ class LogWindow(QMainWindow):
             logger.addHandler(self.get_handler())
 
     def get_handler(self) -> logging.Handler:
+        """
+        Returns the log's handler (for this window).
+        """
         return self.handler
 
     def set_may_close(self, may_close: bool) -> None:
+        """
+        Sets the ``may_close`` property, and enable/disable the "close window"
+        button accordingly.
+        """
         # log.debug("LogWindow: may_close({})".format(may_close))
         self.may_close = may_close
         # return
@@ -222,6 +269,9 @@ class LogWindow(QMainWindow):
         # being shown).
 
     def copy_whole_log(self) -> None:
+        """
+        Copies the contents of the log to the clipboard.
+        """
         # Ctrl-C will copy the selected parts.
         # log.copy() will copy the selected parts.
         self.log.selectAll()
@@ -230,6 +280,9 @@ class LogWindow(QMainWindow):
         self.scroll_to_end_of_log()
 
     def scroll_to_end_of_log(self) -> None:
+        """
+        Scrolls the window to show the most recent entry.
+        """
         vsb = self.log.verticalScrollBar()
         vsb.setValue(vsb.maximum())
         hsb = self.log.horizontalScrollBar()
@@ -237,7 +290,10 @@ class LogWindow(QMainWindow):
 
     # noinspection PyPep8Naming
     def closeEvent(self, event: QCloseEvent) -> None:
-        """Trap exit."""
+        """
+        Trap the "please close" event, and say no if the ``may_close``
+        property is not set.
+        """
         if not self.may_close:
             # log.debug("LogWindow: ignore closeEvent")
             event.ignore()
@@ -246,11 +302,18 @@ class LogWindow(QMainWindow):
             event.accept()
 
     def log_message(self, html: str) -> None:
+        """
+        Passes a message (in HTML format) to the :func:`log_internal`
+        function (which may be running in a different thread).
+        """
         # Jump threads via a signal
         self.emit_msg.emit(html)
 
     @pyqtSlot(str)
     def log_internal(self, html: str) -> None:
+        """
+        Adds an HTML-formatted message to the text shown in our window.
+        """
         # self.log.moveCursor(QTextCursor.End)
         # self.log.insertHtml(html)
         self.log.appendHtml(html)
@@ -260,6 +323,9 @@ class LogWindow(QMainWindow):
 
     @pyqtSlot()
     def exit(self) -> None:
+        """
+        Forces this window to close.
+        """
         # log.debug("LogWindow: exit")
         self.may_close = True
         # closed = QMainWindow.close(self)
@@ -268,20 +334,40 @@ class LogWindow(QMainWindow):
 
     @pyqtSlot()
     def may_exit(self) -> None:
+        """
+        Calls ``set_may_close(True)`` to enable this window to close.
+        """
         # log.debug("LogWindow: may_exit")
         self.set_may_close(True)
 
 
 # =============================================================================
-# TextLogElement - add a text log to your dialog box
+# TextLogElement
 # =============================================================================
 
 class TextLogElement(object):
+    """
+    Add a text log to your dialog box.
+
+    Encapsulates a :class:`QWidget` representing a textual log in a group box.
+
+    Use this to embed a log within another Qt dialogue.
+
+     (This is nothing to do with the Python ``logging`` logs.)
+    """
     def __init__(self,
                  maximum_block_count: int = 1000,
                  font_size_pt: int = 10,
                  font_family: str = "Courier",
                  title: str = "Log") -> None:
+        """
+        Args:
+            maximum_block_count: the maximum number of blocks (log entries)
+                to show in this window
+            font_size_pt: font size, in points
+            font_family: font family
+            title: title for group box
+        """
         # For nested layouts: (1) create everything, (2) lay out
         self.log_group = StyledQGroupBox(title)
         log_layout_1 = QVBoxLayout()
@@ -307,9 +393,17 @@ class TextLogElement(object):
         self.log_group.setLayout(log_layout_1)
 
     def get_widget(self) -> QWidget:
+        """
+        Returns:
+            a :class:`QWidget` that is the group box containing the log
+            and its controls
+        """
         return self.log_group
 
     def add(self, msg: str) -> None:
+        """
+        Adds a message to the log.
+        """
         # http://stackoverflow.com/questions/16568451
         # self.log.moveCursor(QTextCursor.End)
         self.log.appendPlainText(msg)
@@ -317,6 +411,9 @@ class TextLogElement(object):
         # self.scroll_to_end_of_log()
 
     def copy_whole_log(self) -> None:
+        """
+        Copies the log to the clipboard.
+        """
         # Ctrl-C will copy the selected parts.
         # log.copy() will copy the selected parts.
         self.log.selectAll()
@@ -325,6 +422,9 @@ class TextLogElement(object):
         self.scroll_to_end_of_log()
 
     def scroll_to_end_of_log(self) -> None:
+        """
+        Scrolls the log so that the last entry is visible.
+        """
         vsb = self.log.verticalScrollBar()
         vsb.setValue(vsb.maximum())
         hsb = self.log.horizontalScrollBar()
@@ -332,15 +432,22 @@ class TextLogElement(object):
 
 
 # =============================================================================
-# StatusMixin - emit status to log and Qt signals
+# StatusMixin
 # =============================================================================
 
 class StatusMixin(object):
     """
-    Add this to a QObject to provide easy Python logging and Qt signal-based
-    status/error messaging.
+    Add this to a :class:`QObject` to provide easy Python logging and Qt
+    signal-based status/error messaging.
+
+    It emits status messages to a Python log and to Qt signals.
 
     Uses the same function names as Python logging, for predictability.
+
+    Signals:
+
+    - ``status_sent(str, str)``
+    - ``error_sent(str, str)``
     """
     status_sent = pyqtSignal(str, str)
     error_sent = pyqtSignal(str, str)
@@ -351,6 +458,15 @@ class StatusMixin(object):
                  thread_info: bool = True,
                  caller_info: bool = True,
                  **kwargs) -> None:
+        """
+        Args:
+            name: name to add to log output
+            logger: Python logger to send output to
+            thread_info: show thread information as part of the output?
+            caller_info: add information about the function that sent the
+                message?
+            kwargs: additional parameters for superclass (required for mixins)
+        """
         # Somewhat verbose names to make conflict with a user class unlikely.
         super().__init__(**kwargs)
         self._statusmixin_name = name
@@ -359,6 +475,14 @@ class StatusMixin(object):
         self._statusmixin_debug_caller_info = caller_info
 
     def _process_status_message(self, msg: str) -> str:
+        """
+        Args:
+            msg: a log message
+
+        Returns:
+            a version with descriptive information added
+
+        """
         callerinfo = ''
         if self._statusmixin_debug_caller_info:
             callerinfo = "{}:".format(get_caller_name(back=1))
@@ -378,31 +502,54 @@ class StatusMixin(object):
 
     @pyqtSlot(str)
     def debug(self, msg: str) -> None:
+        """
+        Writes a debug-level log message.
+        """
         self._statusmixin_log.debug(self._process_status_message(msg))
 
     @pyqtSlot(str)
     def critical(self, msg: str) -> None:
+        """
+        Writes a critical-level log message, and triggers the
+        ``error_sent`` signal.
+        """
         self._statusmixin_log.critical(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
     @pyqtSlot(str)
     def error(self, msg: str) -> None:
+        """
+        Writes a error-level log message, and triggers the
+        ``error_sent`` signal.
+        """
         self._statusmixin_log.error(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
     @pyqtSlot(str)
     def warning(self, msg: str) -> None:
+        """
+        Writes a warning-level log message, and triggers the
+        ``error_sent`` signal.
+        """
         # warn() is deprecated; use warning()
         self._statusmixin_log.warning(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
     @pyqtSlot(str)
     def info(self, msg: str) -> None:
+        """
+        Writes an info-level log message, and triggers the
+        ``status_sent`` signal.
+        """
         self._statusmixin_log.info(self._process_status_message(msg))
         self.status_sent.emit(msg, self._statusmixin_name)
 
     @pyqtSlot(str)
     def status(self, msg: str) -> None:
+        """
+        Writes an info-level log message, and triggers the
+        ``status_sent`` signal.
+        """
         # Don't just call info, because of the stack-counting thing
         # in _process_status_message
         self._statusmixin_log.info(self._process_status_message(msg))
@@ -410,22 +557,44 @@ class StatusMixin(object):
 
 
 # =============================================================================
-# Framework for a config-editing dialogue
+# TransactionalEditDialogMixin
 # =============================================================================
 
 class TransactionalEditDialogMixin(object):
     """
-    Mixin for a config-editing dialogue.
-    Wraps the editing in a SAVEPOINT transaction.
-    The caller must still commit() afterwards, but any rollbacks are automatic.
+    Mixin for a config-editing dialogue. Use it as:
+
+    .. code-block:: python
+
+        class MyEditingDialog(TransactionalEditDialogMixin, QDialog):
+            pass
+
+    Wraps the editing in a ``SAVEPOINT`` transaction.
+    The caller must still ``commit()`` afterwards, but any rollbacks are
+    automatic.
 
     See also http://pyqt.sourceforge.net/Docs/PyQt5/multiinheritance.html
     for the ``super().__init__(..., **kwargs)`` chain.
+
+    Signals:
+
+    - ``ok()``
+
     """
     ok = pyqtSignal()
 
     def __init__(self, session: Session, obj: object, layout: QLayout,
                  readonly: bool = False, **kwargs) -> None:
+        """
+        Args:
+            session: SQLAlchemy :class:`Session`
+            obj: SQLAlchemy ORM object being edited
+            layout: Qt class`QLayout` to encapsulate within the
+                class:`QDialog`'s main layout. This should contain all the
+                editing widgets. The mixin wraps that with OK/cancel buttons.
+            readonly: make this a read-only view
+            kwargs: additional parameters to superclass
+        """
         super().__init__(**kwargs)
 
         # Store variables
@@ -455,10 +624,17 @@ class TransactionalEditDialogMixin(object):
 
     @pyqtSlot()
     def ok_clicked(self) -> None:
+        """
+        Slot for the "OK clicked" signal. Validates the data through
+        :func:`dialog_to_object`, and if it passes, calls the Qt
+        :func:`accept` function. Otherwise, refuse to close and show
+        the validation error.
+        """
         try:
             self.dialog_to_object(self.obj)
             self.accept()
         except Exception as e:
+            # noinspection PyCallByClass
             QMessageBox.about(self, "Invalid data", str(e))
             # ... str(e) will be a simple message for ValidationError
 
@@ -472,79 +648,92 @@ class TransactionalEditDialogMixin(object):
         - If the user cancels, rolls back the transaction.
         - We want it nestable, so that the config dialog box can edit part of
           the config, reversibly, without too much faffing around.
-        """
-        """
+          
+        *Development notes:*
+
         - We could nest using SQLAlchemy's support for nested transactions,
           which works whether or not the database itself supports nested
-          transactions via the SAVEPOINT method.
-        - With sessions, one must use autocommit=True and the subtransactions
-          flag; these are virtual transactions handled by SQLAlchemy.
-        - Alternatively one can use begin_nested() or begin(nested=True), which
-          uses SAVEPOINT.
-        - The following databases support the SAVEPOINT method:
-            MySQL with InnoDB
-            SQLite, from v3.6.8 (2009)
-            PostgreSQL
-        - Which is better? The author suggests SAVEPOINT for most applications.
-          https://groups.google.com/forum/#!msg/sqlalchemy/CaZyyMx7_8Y/otM0BzDyaigJ  # noqa
-          ... including, for subtransactions: "When a rollback is issued, the
+          transactions via the ``SAVEPOINT`` method.
+        - With sessions, one must use ``autocommit=True`` and the
+          ``subtransactions`` flag; these are virtual transactions handled by
+          SQLAlchemy.
+        - Alternatively one can use ``begin_nested()`` or
+          ``begin(nested=True)``, which uses ``SAVEPOINT``.
+        - The following databases support the ``SAVEPOINT`` method:
+        
+          - MySQL with InnoDB
+          - SQLite, from v3.6.8 (2009)
+          - PostgreSQL
+          
+        - Which is better? The author suggests ``SAVEPOINT`` for most applications
+          (https://groups.google.com/forum/#!msg/sqlalchemy/CaZyyMx7_8Y/otM0BzDyaigJ).
+          Regarding subtransactions: "When a rollback is issued, the
           subtransaction will directly roll back the innermost real
           transaction, however each subtransaction still must be explicitly
-          rolled back to maintain proper stacking of subtransactions."
-          ... i.e. it's not as simple as you might guess.
-        - See
-          http://docs.sqlalchemy.org/en/latest/core/connections.html
-          http://docs.sqlalchemy.org/en/latest/orm/session_transaction.html
-          http://stackoverflow.com/questions/2336950/transaction-within-transaction  # noqa
-          http://stackoverflow.com/questions/1306869/are-nested-transactions-allowed-in-mysql  # noqa
-          https://en.wikipedia.org/wiki/Savepoint
-          http://www.sqlite.org/lang_savepoint.html
-          http://stackoverflow.com/questions/1654857/nested-transactions-with-sqlalchemy-and-sqlite  # noqa
+          rolled back to maintain proper stacking of subtransactions." So it's
+          not as simple as you might guess.
+        - See:
+        
+          - http://docs.sqlalchemy.org/en/latest/core/connections.html
+          - http://docs.sqlalchemy.org/en/latest/orm/session_transaction.html
+          - http://stackoverflow.com/questions/2336950/transaction-within-transaction
+          - http://stackoverflow.com/questions/1306869/are-nested-transactions-allowed-in-mysql
+          - https://en.wikipedia.org/wiki/Savepoint
+          - http://www.sqlite.org/lang_savepoint.html
+          - http://stackoverflow.com/questions/1654857/nested-transactions-with-sqlalchemy-and-sqlite
 
-        - Let's use the SAVEPOINT technique.
+        - Let's use the ``SAVEPOINT`` technique.
 
         - No. Even this fails:
+        
+          .. code-block:: python
 
-        with self.session.begin_nested():
-            self.config.port = 5000
+            with self.session.begin_nested():
+                self.config.port = 5000
 
         - We were aiming for this:
+        
+          .. code-block:: python
 
-        try:
-            with self.session.begin_nested():
-                result = self.exec_()  # enforces modal
-                if result == QDialog.Accepted:
-                    logger.debug("Config changes accepted;  will be committed")
-                else:
-                    logger.debug("Config changes cancelled")
-                    raise EditCancelledException()
-        except EditCancelledException:
-            logger.debug("Config changes rolled back.")
-        except:
-            logger.debug("Exception within nested transaction. "
-                         "Config changes will be rolled back.")
-            raise
-            # Other exceptions will be handled as normal.
+            try:
+                with self.session.begin_nested():
+                    result = self.exec_()  # enforces modal
+                    if result == QDialog.Accepted:
+                        logger.debug("Config changes accepted;  will be committed")
+                    else:
+                        logger.debug("Config changes cancelled")
+                        raise EditCancelledException()
+            except EditCancelledException:
+                logger.debug("Config changes rolled back.")
+            except:
+                logger.debug("Exception within nested transaction. "
+                             "Config changes will be rolled back.")
+                raise
+                # Other exceptions will be handled as normal.
 
         - No... the commit fails, and this SQL is emitted:
+        
+          .. code-block:: sql
+          
             SAVEPOINT sa_savepoint_1
             UPDATE table SET field=?
             RELEASE SAVEPOINT sa_savepoint_1  -- sensible
             ROLLBACK TO SAVEPOINT sa_savepoint_1  -- not sensible
-            -- raises sqlite3.OperationalError: no such savepoint: sa_savepoint_1  # noqa
+            -- raises sqlite3.OperationalError: no such savepoint: sa_savepoint_1
 
         - May be this bug:
-            https://www.mail-archive.com/sqlalchemy@googlegroups.com/msg28381.html  # noqa
-            http://bugs.python.org/issue10740
-            https://groups.google.com/forum/#!topic/sqlalchemy/1QelhQ19QsE
+        
+          - https://www.mail-archive.com/sqlalchemy@googlegroups.com/msg28381.html
+          - http://bugs.python.org/issue10740
+          - https://groups.google.com/forum/#!topic/sqlalchemy/1QelhQ19QsE
 
-        - The bugs are detailed in sqlalchemy/dialects/sqlite/pysqlite.py; see
-          "Serializable isolation / Savepoints / Transactional DDL"
+        - The bugs are detailed in ``sqlalchemy/dialects/sqlite/pysqlite.py``;
+           see "Serializable isolation / Savepoints / Transactional DDL"
 
         - We work around it by adding hooks to the engine as per that advice;
-          see db.py
+          see ``db.py``
 
-        """
+        """  # noqa
         # A context manager provides cleaner error handling than explicit
         # begin_session() / commit() / rollback() calls.
         # The context manager provided by begin_nested() will commit, or roll
@@ -572,26 +761,45 @@ class TransactionalEditDialogMixin(object):
         # read-only.
 
     def dialog_to_object(self, obj: object) -> None:
+        """
+        The class using the mixin must override this to write information
+        from the dialogue box to the SQLAlchemy ORM object. It should
+        raise an exception if validation fails. (This class isn't fussy about
+        which exception that is; it checks for :exc:`Exception`.)
+        """
         raise NotImplementedError
 
 
 class TransactionalDialog(QDialog):
     """
-    Simpler dialog for transactional database processing.
-    Just overrides exec_().
-    Wraps the editing in a SAVEPOINT transaction.
-    The caller must still commit() afterwards, but any rollbacks are automatic.
-    The read-only situation REQUIRES that the session itself is read-only.
+    Dialog for transactional database processing that is simpler than
+    :class:`TransactionalEditDialogMixin`.
+
+    - Just overrides ``exec_()``.
+    - Wraps the editing in a ``SAVEPOINT`` transaction.
+    - The caller must still ``commit()`` afterwards, but any rollbacks are
+      automatic.
+    - The read-only situation REQUIRES that the session itself is read-only.
     """
 
     def __init__(self, session: Session, readonly: bool = False,
                  parent: QObject = None, **kwargs) -> None:
+        """
+        Args:
+            session: SQLAlchemy :class:`Session`
+            readonly: is this being used in a read-only situation?
+            parent: optional parent :class:`QObject`
+            kwargs: additional parameters to superclass
+        """
         super().__init__(parent=parent, **kwargs)
         self.session = session
         self.readonly = readonly
 
     @pyqtSlot()
     def exec_(self, *args, **kwargs):
+        """
+        Runs the dialogue.
+        """
         if self.readonly:
             return super().exec_(*args, **kwargs)  # enforces modal
         result = None
@@ -614,13 +822,43 @@ class TransactionalDialog(QDialog):
 # =============================================================================
 
 class DatabaseModelMixin(object):
-    def __init__(self, session: Session, listdata, **kwargs) -> None:
+    """
+    Mixin to provide functions that operate on items within a Qt
+    Model and talk to an underlying SQLAlchemy database session.
+
+    Typically mixed in like this:
+
+    .. code-block:: python
+
+        class MyListModel(QAbstractListModel, DatabaseModelMixin):
+            pass
+
+    """
+    def __init__(self,
+                 session: Session,
+                 listdata: Sequence[Any],
+                 **kwargs) -> None:
+        """
+        Args:
+            session: SQLAlchemy :class:`Session`
+            listdata: data; a collection of SQLAlchemy ORM objects in a format
+                that behaves like a list
+            kwargs: additional parameters for superclass (required for mixins)
+        """
         super().__init__(**kwargs)
         self.session = session
         self.listdata = listdata
         log.debug("DatabaseModelMixin: session={}".format(repr(session)))
 
     def get_object(self, index: int) -> Any:
+        """
+        Args:
+            index: integer index
+
+        Returns:
+            ORM object at the index, or ``None`` if the index is out of bounds
+
+        """
         if index is None or not (0 <= index < len(self.listdata)):
             # log.debug("DatabaseModelMixin.get_object: bad index")
             return None
@@ -628,11 +866,26 @@ class DatabaseModelMixin(object):
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def item_deletable(self, rowindex: int) -> bool:
-        """Override this if you need to prevent rows being deleted."""
+        """
+        Override this if you need to prevent rows being deleted.
+        """
         return True
 
     def delete_item(self, row_index: bool,
                     delete_from_session: bool = True) -> None:
+        """
+        Deletes an item from the collection (and optionally from the
+        SQLAlchemy session).
+
+        Args:
+            row_index: index
+            delete_from_session: also delete the ORM object from the SQLAlchemy
+                session? Default is ``True``.
+
+        Raises:
+            ValueError: if index invalid
+
+        """
         if row_index < 0 or row_index >= len(self.listdata):
             raise ValueError("Invalid index {}".format(row_index))
         if delete_from_session:
@@ -645,6 +898,22 @@ class DatabaseModelMixin(object):
     def insert_at_index(self, obj: object, index: int = None,
                         add_to_session: bool = True,
                         flush: bool = True) -> None:
+        """
+        Inserts an ORM object into the data list.
+
+        Args:
+            obj: SQLAlchemy ORM object to insert
+            index: add it at this index location; specifying ``None`` adds it
+                at the end of the list
+            add_to_session: also add the object to the SQLAlchemy session?
+                Default is ``True``.
+            flush: flush the SQLAlchemy session after adding the object?
+                Only applicable if ``add_to_session`` is true.
+
+        Raises:
+            ValueError: if index invalid
+
+        """
         if index is None:
             index = len(self.listdata)
         if index < 0 or index > len(self.listdata):  # NB permits "== len"
@@ -659,6 +928,17 @@ class DatabaseModelMixin(object):
         self.endInsertRows()
 
     def move_up(self, index: int) -> None:
+        """
+        Moves an object up one place in the list (from ``index`` to ``index -
+        1``).
+
+        Args:
+            index: index of the object to move
+
+        Raises:
+            ValueError: if index invalid
+
+        """
         if index is None or index < 0 or index >= len(self.listdata):
             raise ValueError("Bad index")
         if index == 0:
@@ -668,6 +948,17 @@ class DatabaseModelMixin(object):
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def move_down(self, index: int) -> None:
+        """
+        Moves an object down one place in the list (from ``index`` to ``index +
+        1``).
+
+        Args:
+            index: index of the object to move
+
+        Raises:
+            ValueError: if index invalid
+
+        """
         if index is None or index < 0 or index >= len(self.listdata):
             raise ValueError("Bad index")
         if index == len(self.listdata) - 1:
@@ -678,6 +969,23 @@ class DatabaseModelMixin(object):
 
 
 class ViewAssistMixin(object):
+    """
+    Mixin to add SQLAlchemy database-handling functions to a
+    :class:`ViewAssistMixin`.
+
+    Typically used like this:
+
+    .. code-block:: python
+
+        class MyListView(QListView, ViewAssistMixin):
+            pass
+
+    Signals:
+
+    - ``selection_changed(QItemSelection, QItemSelection)``
+    - ``selected_maydelete(bool, bool)``
+
+    """
     selection_changed = pyqtSignal(QItemSelection, QItemSelection)
     # ... selected (set), deselected (set)
     selected_maydelete = pyqtSignal(bool, bool)
@@ -688,19 +996,37 @@ class ViewAssistMixin(object):
     # -------------------------------------------------------------------------
 
     def __init__(self, session: Session,
-                 modal_dialog_class,
+                 modal_dialog_class: Type[TransactionalEditDialogMixin],
                  readonly: bool = False,
                  **kwargs) -> None:
+        """
+        Args:
+            session: SQLAlchemy :class:`Session`
+            modal_dialog_class: class that is a subclass of
+                :class:`TransactionalEditDialogMixin`
+            readonly: read-only view?
+            kwargs: additional parameters for superclass (required for mixins)
+        """
         super().__init__(**kwargs)
         self.session = session
         self.modal_dialog_class = modal_dialog_class
         self.readonly = readonly
         self.selection_model = None
 
-    def set_model_common(self, model, list_base_class) -> None:
+    def set_model_common(self,
+                         model: QAbstractListModel,
+                         listview_base_class: Type[QListView]) -> None:
+        """
+        Helper function to set up a Qt model.
+
+        Args:
+            model: instance of the Qt model
+            listview_base_class: class being used as the Qt view
+        """
         if self.selection_model:
             self.selection_model.selectionChanged.disconnect()
-        list_base_class.setModel(self, model)
+        # noinspection PyCallByClass,PyTypeChecker
+        listview_base_class.setModel(self, model)
         self.selection_model = QItemSelectionModel(model)
         self.selection_model.selectionChanged.connect(self._selection_changed)
         self.setSelectionModel(self.selection_model)
@@ -710,23 +1036,39 @@ class ViewAssistMixin(object):
     # -------------------------------------------------------------------------
 
     def clear_selection(self) -> None:
+        """
+        Clears any selection.
+        """
         # log.debug("GenericAttrTableView.clear_selection")
         if not self.selection_model:
             return
         self.selection_model.clearSelection()
 
     def get_selected_row_index(self) -> Optional[int]:
-        """Returns an integer or None."""
+        """
+        Gets the index of the currently selected row.
+
+        Returns:
+            index, or ``None``
+
+        """
         selected_modelindex = self.get_selected_modelindex()
         if selected_modelindex is None:
             return None
         return selected_modelindex.row()
 
     def is_selected(self) -> bool:
+        """
+        Is a row currently selected?
+        """
         row_index = self.get_selected_row_index()
         return row_index is not None
 
     def get_selected_object(self) -> Optional[object]:
+        """
+        Returns the SQLAlchemy ORM object that's currently selected, or
+        ``None``.
+        """
         index = self.get_selected_row_index()
         if index is None:
             return None
@@ -736,9 +1078,21 @@ class ViewAssistMixin(object):
         return model.get_object(index)
 
     def get_selected_modelindex(self) -> Optional[QModelIndex]:
+        """
+        Returns the :class:`QModelIndex` of the currently selected row, or
+        ``None``.
+
+        Should be overridden in derived classes.
+        """
         raise NotImplementedError()
 
     def go_to(self, row: Optional[int]) -> None:
+        """
+        Makes a specific row (by index) the currently selected row.
+
+        Args:
+            row: row index, or ``None`` to select the last row if there is one
+        """
         model = self.model()
         if row is None:
             # Go to the end.
@@ -749,7 +1103,12 @@ class ViewAssistMixin(object):
         modelindex = model.index(row, 0)  # second parameter is column
         self.setCurrentIndex(modelindex)
 
-    def _selection_changed(self, selected, deselected) -> None:
+    def _selection_changed(self,
+                           selected: QItemSelection,
+                           deselected: QItemSelection) -> None:
+        """
+        Receives an event when the model's selection is changed.
+        """
         self.selection_changed.emit(selected, deselected)
         selected_model_indexes = selected.indexes()
         selected_row_indexes = [mi.row() for mi in selected_model_indexes]
@@ -760,6 +1119,10 @@ class ViewAssistMixin(object):
         self.selected_maydelete.emit(is_selected, may_delete)
 
     def get_n_rows(self) -> int:
+        """
+        Returns:
+            the number of rows (items) present
+        """
         model = self.model()
         return model.rowCount()
 
@@ -770,7 +1133,18 @@ class ViewAssistMixin(object):
     def insert_at_index(self, obj: object, index: int = None,
                         add_to_session: bool = True,
                         flush: bool = True) -> None:
-        # index: None for end, 0 for start
+        """
+        Insert an SQLAlchemy ORM object into the model at a specific location
+        (and, optionally, into the SQLAlchemy session).
+
+        Args:
+            obj: SQLAlchemy ORM object to insert
+            index: index to insert at; ``None`` for end, ``0`` for start
+            add_to_session: also add the object to the SQLAlchemy session?
+                Default is ``True``.
+            flush: flush the SQLAlchemy session after adding the object?
+                Only applicable if ``add_to_session`` is true.
+        """
         model = self.model()
         model.insert_at_index(obj, index,
                               add_to_session=add_to_session, flush=flush)
@@ -779,18 +1153,51 @@ class ViewAssistMixin(object):
     def insert_at_start(self, obj: object,
                         add_to_session: bool = True,
                         flush: bool = True) -> None:
+        """
+        Insert a SQLAlchemy ORM object into the model at the start of the list
+        (and, optionally, into the SQLAlchemy session).
+
+        Args:
+            obj: SQLAlchemy ORM object to insert
+            add_to_session: also add the object to the SQLAlchemy session?
+                Default is ``True``.
+            flush: flush the SQLAlchemy session after adding the object?
+                Only applicable if ``add_to_session`` is true.
+        """
         self.insert_at_index(obj, 0,
                              add_to_session=add_to_session, flush=flush)
 
     def insert_at_end(self, obj: object,
                       add_to_session: bool = True,
                       flush: bool = True) -> None:
+        """
+        Insert a SQLAlchemy ORM object into the model at the end of the list
+        (and, optionally, into the SQLAlchemy session).
+
+        Args:
+            obj: SQLAlchemy ORM object to insert
+            add_to_session: also add the object to the SQLAlchemy session?
+                Default is ``True``.
+            flush: flush the SQLAlchemy session after adding the object?
+                Only applicable if ``add_to_session`` is true.
+        """
         self.insert_at_index(obj, None,
                              add_to_session=add_to_session, flush=flush)
 
     def add_in_nested_transaction(self, new_object: object,
                                   at_index: int = None) -> Optional[int]:
-        # at_index: None for end, 0 for start
+        """
+        Starts an SQLAlchemy nested transaction (which uses ``SAVEPOINT`` SQL);
+        adds the new object into the session; edits the object. If the editing
+        is cancelled, cancel the addition. Otherwise, the object is added to
+        the session (in a nested transaction that might be cancelled by a
+        caller) and to the model/list.
+
+        Args:
+            new_object: SQLAlchemy ORM object to insert
+            at_index: add it at this index location; specifying ``None`` (the
+                default) adds it at the end of the list; ``0`` is the start
+        """
         if self.readonly:
             log.warning("Can't add; readonly")
             return
@@ -814,12 +1221,27 @@ class ViewAssistMixin(object):
     # -------------------------------------------------------------------------
 
     def remove_selected(self, delete_from_session: bool = True) -> None:
+        """
+        Remove the currently selected SQLAlchemy ORM object from the list.
+
+        Args:
+            delete_from_session: also delete it from the SQLAlchemy session?
+                (default: ``True``)
+        """
         row_index = self.get_selected_row_index()
         self.remove_by_index(row_index,
                              delete_from_session=delete_from_session)
 
     def remove_by_index(self, row_index: int,
                         delete_from_session: bool = True) -> None:
+        """
+        Remove a specified SQLAlchemy ORM object from the list.
+
+        Args:
+            row_index: index of object to remove
+            delete_from_session: also delete it from the SQLAlchemy session?
+                (default: ``True``)
+        """
         if row_index is None:
             return
         model = self.model()
@@ -830,6 +1252,9 @@ class ViewAssistMixin(object):
     # -------------------------------------------------------------------------
 
     def move_selected_up(self) -> None:
+        """
+        Moves the selected object up one place in the list.
+        """
         row_index = self.get_selected_row_index()
         if row_index is None or row_index == 0:
             return
@@ -838,6 +1263,9 @@ class ViewAssistMixin(object):
         self.go_to(row_index - 1)
 
     def move_selected_down(self) -> None:
+        """
+        Moves the selected object down one place in the list.
+        """
         row_index = self.get_selected_row_index()
         if row_index is None or row_index == self.get_n_rows() - 1:
             return
@@ -850,7 +1278,26 @@ class ViewAssistMixin(object):
     # -------------------------------------------------------------------------
 
     # noinspection PyUnusedLocal
-    def edit(self, index: QModelIndex, trigger, event) -> bool:
+    def edit(self,
+             index: QModelIndex,
+             trigger: QAbstractItemView.EditTrigger,
+             event: QEvent) -> bool:
+        """
+        Edits the specified object.
+
+        Overrides :func:`QAbstractItemView::edit`; see
+        http://doc.qt.io/qt-5/qabstractitemview.html#edit-1.
+
+        Args:
+            index: :class:`QModelIndex` of the object to edit
+            trigger: action that caused the editing process
+            event: associated :class:`QEvent`
+
+        Returns:
+            ``True`` if the view's ``State`` is now ``EditingState``;
+            otherwise ``False``
+
+        """
         if trigger != QAbstractItemView.DoubleClicked:
             return False
         self.edit_by_modelindex(index)
@@ -858,6 +1305,14 @@ class ViewAssistMixin(object):
 
     def edit_by_modelindex(self, index: QModelIndex,
                            readonly: bool = None) -> None:
+        """
+        Edits the specified object.
+
+        Args:
+            index: :class:`QModelIndex` of the object to edit
+            readonly: read-only view? If ``None`` (the default), uses the
+                setting from ``self``.
+        """
         if index is None:
             return
         if readonly is None:
@@ -868,6 +1323,13 @@ class ViewAssistMixin(object):
         win.edit_in_nested_transaction()
 
     def edit_selected(self, readonly: bool = None) -> None:
+        """
+        Edits the currently selected object.
+
+        Args:
+            readonly: read-only view? If ``None`` (the default), uses the
+                setting from ``self``.
+        """
         selected_modelindex = self.get_selected_modelindex()
         self.edit_by_modelindex(selected_modelindex, readonly=readonly)
 
@@ -905,8 +1367,17 @@ class ViewAssistMixin(object):
 
 class GenericListModel(QAbstractListModel, DatabaseModelMixin):
     """
-    Takes a list and provides a view on it using str().
-    Note that it MODIFIES THE LIST PASSED TO IT.
+    Takes a list and provides a view on it using :func:`str`. That is, for
+    a list of object ``[a, b, c]``, it displays a list view with items (rows)
+    like this:
+
+        ------------
+        ``str(a)``
+        ``str(b)``
+        ``str(c)``
+        ------------
+
+    - Note that it MODIFIES THE LIST PASSED TO IT.
     """
     def __init__(self, data, session: Session, parent: QObject = None,
                  **kwargs) -> None:
@@ -916,26 +1387,74 @@ class GenericListModel(QAbstractListModel, DatabaseModelMixin):
     # noinspection PyUnusedLocal, PyPep8Naming
     def rowCount(self, parent: QModelIndex = QModelIndex(),
                  *args, **kwargs) -> int:
-        """Qt override."""
+        """
+        Counts the number of rows.
+
+        Overrides :func:`QAbstractListModel.rowCount`; see
+        http://doc.qt.io/qt-5/qabstractitemmodel.html.
+
+        Args:
+            parent: parent object, specified by :class:`QModelIndex`
+            args: unnecessary? Certainly unused.
+            kwargs: unnecessary? Certainly unused.
+
+        Returns:
+            In the Qt original: "number of rows under the given parent.
+            When the parent is valid... the number of children of ``parent``."
+            Here: the number of objects in the list.
+
+        """
         return len(self.listdata)
 
     def data(self, index: QModelIndex,
              role: int = Qt.DisplayRole) -> Optional[str]:
-        """Qt override."""
+        """
+        Returns the data for a given row (in this case as a string).
+
+        Overrides :func:`QAbstractListModel.data`; see
+        http://doc.qt.io/qt-5/qabstractitemmodel.html.
+
+        Args:
+            index: :class:`QModelIndex`, which specifies the row number
+            role: a way of specifying the type of view on the data; here,
+                we only accept ``Qt.DisplayRole``
+
+        Returns:
+            string representation of the object, or ``None``
+
+        """
         if index.isValid() and role == Qt.DisplayRole:
             return str(self.listdata[index.row()])
         return None
 
 
 class ModalEditListView(QListView, ViewAssistMixin):
+    """
+    A version of :class:`QListView` that supports SQLAlchemy handling of its
+    objects.
+    """
 
     # -------------------------------------------------------------------------
     # Initialization and setting data (model)
     # -------------------------------------------------------------------------
 
-    def __init__(self, session: Session, modal_dialog_class,
-                 *args, **kwargs) -> None:
-        self.readonly = kwargs.pop('readonly', False)
+    def __init__(self,
+                 session: Session,
+                 modal_dialog_class: Type[TransactionalEditDialogMixin],
+                 *args,
+                 readonly: bool = False,
+                 **kwargs) -> None:
+        """
+
+        Args:
+            session: SQLAlchemy :class:`Session`
+            modal_dialog_class: class that is a subclass of
+                :class:`TransactionalEditDialogMixin`
+            readonly: read-only view?
+            args: positional arguments to superclass
+            kwargs: keyword arguments to superclass
+        """
+        self.readonly = readonly
         super().__init__(session=session,
                          modal_dialog_class=modal_dialog_class,
                          readonly=self.readonly,
@@ -946,7 +1465,13 @@ class ModalEditListView(QListView, ViewAssistMixin):
         # Otherwise see SelectionBehavior and SelectionMode.
 
     # noinspection PyPep8Naming
-    def setModel(self, model) -> None:
+    def setModel(self, model: QAbstractListModel) -> None:
+        """
+        Qt override to set the model used by this view.
+
+        Args:
+            model: instance of the model
+        """
         self.set_model_common(model, QListView)
 
     # -------------------------------------------------------------------------
@@ -954,7 +1479,13 @@ class ModalEditListView(QListView, ViewAssistMixin):
     # -------------------------------------------------------------------------
 
     def get_selected_modelindex(self) -> Optional[QModelIndex]:
-        """Returns a QModelIndex or None."""
+        """
+        Gets the model index of the selected item.
+
+        Returns:
+            a :class:`QModelIndex` or ``None``
+
+        """
         selected_indexes = self.selectedIndexes()
         if not selected_indexes or len(selected_indexes) > 1:
             # log.warning("get_selected_modelindex: 0 or >1 selected")
@@ -968,30 +1499,58 @@ class ModalEditListView(QListView, ViewAssistMixin):
 
 class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
     """
-    Takes a list of objects, a list of column headers;
-    provides a view on it using str().
-    Note that it MODIFIES THE LIST PASSED TO IT.
+    Takes a list of objects and a list of column headers;
+    provides a view on it using func:`str`. That is, for a list of objects
+    ``[a, b, c]`` and a list of headers ``["h1", "h2", "h3"]``, it provides
+    a table view like
 
-    Sorting: consider QSortFilterProxyModel
-        ... but not clear that can do arbitrary column sorts, since its sorting
-            is via its lessThan() function.
+        --------------- --------------- -----------------
+        h1              h2              h3
+        --------------- --------------- -----------------
+        ``str(a.h1)``   ``str(a.h2)``   ``str(a.h3)``
+        ``str(b.h1)``   ``str(b.h2)``   ``str(b.h3)``
+        ``str(c.h1)``   ``str(c.h2)``   ``str(c.h3)``
+        --------------- --------------- -----------------
 
-    The tricky part is keeping selections persistent after sorting.
-    Not achieved yet. Simpler to wipe the selections.
+    - Note that it MODIFIES THE LIST PASSED TO IT.
+
+    - Sorting: consider :class:`QSortFilterProxyModel`... but not clear that
+      can do arbitrary column sorts, since its sorting is via its
+      ``lessThan()`` function.
+
+    - The tricky part is keeping selections persistent after sorting.
+      Not achieved yet. Simpler to wipe the selections.
     """
     # http://doc.qt.io/qt-4.8/qabstracttablemodel.html
 
     def __init__(self,
-                 data,
+                 data: Sequence[Any],
                  header: List[Tuple[str, str]],
                  session: Session,
                  default_sort_column_name: str = None,
-                 default_sort_order=Qt.AscendingOrder,
+                 default_sort_order: int = Qt.AscendingOrder,
                  deletable: bool = True,
                  parent: QObject = None,
                  **kwargs) -> None:
         """
-        header: list of colname, attr/func tuples
+        Args:
+            data: data; a collection of SQLAlchemy ORM objects in a format
+                that behaves like a list
+            header: list of ``(colname, attr_or_func)`` tuples. The first part,
+                ``colname``, is displayed to the user. The second part,
+                ``attr_or_func`, is used to retrieve data. For each object
+                ``obj``, the view will call ``thing = getattr(obj,
+                attr_or_func)``. If  ``thing`` is callable (i.e. is a member
+                function), the view will display ``str(thing())`; otherwise, it
+                will display ``str(thing)``.
+            session: SQLAlchemy :class:`Session`
+            default_sort_column_name: column to sort by to begin with, or
+                ``None`` to respect the original order of ``data
+            default_sort_order: default sort order (default is ascending
+                order)
+            deletable: may the user delete objects from the collection?
+            parent: parent (owning) :class:`QObject`
+            kwargs: additional parameters for superclass (required for mixins)
         """
         super().__init__(session=session,
                          listdata=data,
@@ -1008,24 +1567,73 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
             # ... will raise an exception if bad
             self.sort(self.default_sort_column_num, default_sort_order)
 
-    def get_default_sort(self) -> Tuple[int, Any]:
+    def get_default_sort(self) -> Tuple[int, int]:
+        """
+        Returns:
+            ``(default_sort_column_number, default_sort_order)``
+            where the column number is zero-based and the sort order is
+            as per :func:`__init__`
+        """
         return self.default_sort_column_num, self.default_sort_order
 
     # noinspection PyUnusedLocal, PyPep8Naming
     def rowCount(self, parent: QModelIndex = QModelIndex(),
                  *args, **kwargs):
-        """Qt override."""
+        """
+        Counts the number of rows.
+
+        Overrides :func:`QAbstractTableModel.rowCount`; see
+        http://doc.qt.io/qt-5/qabstractitemmodel.html.
+
+        Args:
+            parent: parent object, specified by :class:`QModelIndex`
+            args: unnecessary? Certainly unused.
+            kwargs: unnecessary? Certainly unused.
+
+        Returns:
+            In the Qt original: "number of rows under the given parent.
+            When the parent is valid... the number of children of ``parent``."
+            Here: the number of objects in the list.
+
+        """
         return len(self.listdata)
 
     # noinspection PyUnusedLocal, PyPep8Naming
     def columnCount(self, parent: QModelIndex = QModelIndex(),
                     *args, **kwargs):
-        """Qt override."""
+        """
+        Qt override.
+
+        Args:
+            parent: parent object, specified by :class:`QModelIndex`
+            args: unnecessary? Certainly unused.
+            kwargs: unnecessary? Certainly unused.
+
+        Returns:
+            number of columns
+
+        """
         return len(self.header_attr)
 
     def data(self, index: QModelIndex,
              role: int = Qt.DisplayRole) -> Optional[str]:
-        """Qt override."""
+        """
+        Returns the data for a given row/column (in this case as a string).
+
+        Overrides :func:`QAbstractTableModel.data`; see
+        http://doc.qt.io/qt-5/qabstractitemmodel.html.
+
+        Args:
+            index: :class:`QModelIndex`, which specifies the row/column
+                number
+            role: a way of specifying the type of view on the data; here,
+                we only accept ``Qt.DisplayRole``
+
+        Returns:
+            string representation of the relevant attribute (or member function
+            result) for the relevant SQLAlchemy ORM object, or ``None``
+
+        """
         if index.isValid() and role == Qt.DisplayRole:
             obj = self.listdata[index.row()]
             colname = self.header_attr[index.column()]
@@ -1039,12 +1647,32 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
     # noinspection PyPep8Naming
     def headerData(self, col: int, orientation: int,
                    role: int = Qt.DisplayRole) -> Optional[str]:
+        """
+        Qt override.
+
+        Returns the column heading for a particular column.
+
+        Args:
+            col: column number
+            orientation: required to be ``Qt.Horizontal``
+            role: required to be ``Qt.DisplayRole``
+
+        Returns:
+            column header string, or ``None``
+
+        """
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self.header_display[col]
         return None
 
     def sort(self, col: int, order: int = Qt.AscendingOrder) -> None:
-        """Sort table by column number col."""
+        """
+        Sort table on a specified column.
+
+        Args:
+            col: column number
+            order: sort order (e.g. ascending order)
+        """
         # log.debug("GenericAttrTableModel.sort")
         if not self.listdata:
             return
@@ -1064,6 +1692,14 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
 
 
 class GenericAttrTableView(QTableView, ViewAssistMixin):
+    """
+    Provides a :class:`QTableView` view on SQLAlchemy data.
+
+    Signals:
+
+    - ``selection_changed(QItemSelection, QItemSelection)``
+
+    """
     selection_changed = pyqtSignal(QItemSelection, QItemSelection)
 
     # -------------------------------------------------------------------------
@@ -1078,6 +1714,18 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
                  stretch_last_section: bool = True,
                  readonly: bool = False,
                  **kwargs) -> None:
+        """
+        Args:
+            session: SQLAlchemy :class:`Session`
+            modal_dialog_class: class that is a subclass of
+                :class:`TransactionalEditDialogMixin`
+            parent: parent (owning) :class:`QObject`
+            sortable: should we sort the data?
+            stretch_last_section: stretch the last column (section)
+                horizontally?
+            readonly: read-only view?
+            kwargs: additional parameters for superclass (required for mixins)
+        """
         super().__init__(session=session,
                          modal_dialog_class=modal_dialog_class,
                          readonly=readonly,
@@ -1097,7 +1745,13 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
         hh.setStretchLastSection(stretch_last_section)
 
     # noinspection PyPep8Naming
-    def setModel(self, model) -> None:
+    def setModel(self, model: QAbstractTableModel) -> None:
+        """
+        Qt override to set the model used by this view.
+
+        Args:
+            model: instance of the model
+        """
         self.set_model_common(model, QTableView)
         if self.sortable:
             colnum, order = model.get_default_sort()
@@ -1110,11 +1764,18 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
     # -------------------------------------------------------------------------
 
     def refresh_sizing(self) -> None:
+        """
+        Ask the view to resize its rows/columns to fit its data.
+        """
         self.sizing_done = False
         self.resize()
 
     def resize(self) -> None:
-        # Resize all rows to have the correct height
+        """
+        Resize all rows to have the correct height, and its columns to the
+        correct width.
+        """
+        #
         if self.sizing_done:
             return
         self.resizeRowsToContents()
@@ -1126,7 +1787,13 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
     # -------------------------------------------------------------------------
 
     def get_selected_modelindex(self) -> Optional[QModelIndex]:
-        """Returns a QModelIndex or None."""
+        """
+        Gets the model index of the selected item.
+
+        Returns:
+            a :class:`QModelIndex` or ``None``
+
+        """
         # Here, self.selectedIndexes() returns a list of (row, col)
         # tuple indexes, which is not what we want.
         # So we use the selectedRows() method of the selection model.
@@ -1141,13 +1808,24 @@ class GenericAttrTableView(QTableView, ViewAssistMixin):
 
 
 # =============================================================================
-# Framework for radio buttons
+# RadioGroup
 # =============================================================================
 
 class RadioGroup(object):
+    """
+    Framework for radio buttons.
+    """
+
     def __init__(self,
                  value_text_tuples: Iterable[Tuple[str, Any]],
                  default: Any = None) -> None:
+        """
+        Args:
+            value_text_tuples: list of ``(value, text)`` tuples, where
+                ``value`` is the value stored to Python object and ``text``
+                is the text shown to the user
+            default: default value
+        """
         # There's no reason for the caller to care about the internal IDs
         # we use. So let's make them up here as positive integers.
         self.default_value = default
@@ -1171,18 +1849,29 @@ class RadioGroup(object):
             self.map_value_to_button[value] = button
 
     def get_value(self) -> Any:
+        """
+        Returns:
+            the value of the currently selected radio button, or ``None`` if
+            none is selected
+        """
         buttongroup_id = self.bg.checkedId()
         if buttongroup_id == NOTHING_SELECTED:
             return None
         return self.map_id_to_value[buttongroup_id]
 
     def set_value(self, value: Any) -> None:
+        """
+        Set the radio group to the specified value.
+        """
         if value not in self.map_value_to_button:
             value = self.default_value
         button = self.map_value_to_button[value]
         button.setChecked(True)
 
     def add_buttons_to_layout(self, layout: QLayout) -> None:
+        """
+        Adds its button widgets to the specified Qt layout.
+        """
         for button in self.buttons:
             layout.addWidget(button)
 
@@ -1208,6 +1897,14 @@ class GarbageCollector(QObject):
 
     def __init__(self, parent: QObject, debug: bool = False,
                  interval_ms=10000) -> None:
+        """
+
+        Args:
+            parent: parent :class:`QObject`
+            debug: be verbose about garbage collection
+            interval_ms: period/interval (in ms) at which to perform garbage
+                collection
+        """
         super().__init__(parent)
         self.debug = debug
         self.interval_ms = interval_ms
@@ -1220,6 +1917,9 @@ class GarbageCollector(QObject):
         self.timer.start(self.interval_ms)
 
     def check(self) -> None:
+        """
+        Check if garbage collection should happen, and if it should, do it.
+        """
         # return self.debug_cycles()  # uncomment to just debug cycles
         l0, l1, l2 = gc.get_count()
         if self.debug:
@@ -1243,6 +1943,9 @@ class GarbageCollector(QObject):
 
     @staticmethod
     def debug_cycles() -> None:
+        """
+        Collect garbage and print what was collected.
+        """
         gc.set_debug(gc.DEBUG_SAVEALL)
         gc.collect()
         for obj in gc.garbage:
@@ -1252,13 +1955,27 @@ class GarbageCollector(QObject):
 # =============================================================================
 # Decorator to stop whole program on exceptions (use for threaded slots)
 # =============================================================================
-# http://stackoverflow.com/questions/18740884
-# http://stackoverflow.com/questions/308999/what-does-functools-wraps-do
 
 def exit_on_exception(func):
+    """
+    Decorator to stop whole program on exceptions (use for threaded slots).
+
+    See
+
+    - http://stackoverflow.com/questions/18740884
+    - http://stackoverflow.com/questions/308999/what-does-functools-wraps-do
+
+    Args:
+        func: the function to decorate
+
+    Returns:
+        the decorated function
+
+    """
+
     @wraps(func)
     def with_exit_on_exception(*args, **kwargs):
-        # noinspection PyBroadException
+        # noinspection PyBroadException,PyPep8
         try:
             return func(*args, **kwargs)
         except:
@@ -1281,6 +1998,17 @@ def exit_on_exception(func):
 # Run a GUI, given a base window.
 # =============================================================================
 
-def run_gui(qt_app, win) -> int:
+def run_gui(qt_app: QApplication, win: QDialog) -> int:
+    """
+    Run a GUI, given a base window.
+
+    Args:
+        qt_app: Qt application
+        win: Qt dialogue window
+
+    Returns:
+        exit code
+
+    """
     win.show()
     return qt_app.exec_()

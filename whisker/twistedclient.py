@@ -21,14 +21,11 @@
     limitations under the License.
 
 ===============================================================================
-"""
 
-"""
-Event-driven framework for Whisker Python clients using Twisted.
+**Event-driven framework for Whisker Python clients using Twisted.**
 
-Author: Rudolf Cardinal (rudolf@pobox.com)
-Created: 18 Aug 2011
-Last update: 10 Feb 2016
+- Created: 18 Aug 2011
+- Last update: 10 Feb 2016
 """
 
 import logging
@@ -70,7 +67,12 @@ log.addHandler(logging.NullHandler())
 # =============================================================================
 
 class WhiskerTask(object):
-    """Usage: see test_twisted.py."""
+    """
+    Base class for Whisker clients using the Twisted socket system.
+
+    - Contains ``self.whisker``, an instance of :class:`WhiskerApi`.
+    - Specimen usage: see ``test_twisted.py``.
+    """
 
     def __init__(self) -> None:
         self.server = None
@@ -85,12 +87,25 @@ class WhiskerTask(object):
 
     @classmethod
     def set_verbose_logging(cls, verbose: bool) -> None:
+        """
+        Sets the Python log level for this module.
+
+        Args:
+            verbose: be verbose?
+        """
         if verbose:
             log.setLevel(logging.DEBUG)
         else:
             log.setLevel(logging.INFO)
 
     def connect(self, server: str, port: Union[str, int]) -> None:
+        """
+        Connects to the Whisker server.
+
+        Args:
+            server: Whisker server hostname/IP address
+            port: Whisker main TCP/IP port number
+        """
         self.server = server
         self.mainport = get_port(port)
         log.info(
@@ -101,7 +116,10 @@ class WhiskerTask(object):
         # noinspection PyUnresolvedReferences
         reactor.connectTCP(self.server, self.mainport, self.mainfactory)
 
-    def connect_immediate(self) -> None:
+    def _connect_immediate(self) -> None:
+        """
+        Connect the Whisker immediate socket.
+        """
         # Twisted really hates blocking.
         # So we need to do some special things here.
         self.immsocket = WhiskerImmSocket(self)
@@ -131,10 +149,18 @@ class WhiskerTask(object):
         # So pause.
 
     def fully_connected(self) -> None:
-        """Override this."""
+        """
+        The Whisker server is now fully connected.
+
+        Override this, e.g. to start the task.
+        """
         pass
 
     def send(self, *args) -> None:
+        """
+        Builds its arguments into a string and sends that as a command to the
+        Whisker server via the main socket.
+        """
         if not self.mainsocket:
             log.error("can't send without a mainsocket")
             return
@@ -142,6 +168,11 @@ class WhiskerTask(object):
         self.mainsocket.send(msg)
 
     def send_and_get_reply(self, *args) -> Optional[str]:
+        """
+        Builds its arguments into a string, sends that as a command to the
+        Whisker server via the immediate socket, blocks and waits for the
+        reply, and returns that reply. (Returns ``None`` if not connected.)
+        """
         if not self.immsocket:
             log.error("can't send_and_get_reply without an immsocket")
             return
@@ -149,6 +180,10 @@ class WhiskerTask(object):
         return reply
 
     def incoming_message(self, msg: str) -> None:
+        """
+        Processes an incoming message from the Whisker server (via the main
+        socket).
+        """
         # log.debug("INCOMING MESSAGE: " + str(msg))
         handled = False
         if not self.immport:
@@ -162,7 +197,7 @@ class WhiskerTask(object):
                 self.code = m.group(1)
                 handled = True
         if (not self.immsocket) and (self.immport and self.code):
-            self.connect_immediate()
+            self._connect_immediate()
         if handled:
             return
 
@@ -220,10 +255,18 @@ class WhiskerTask(object):
             self.incoming_error(msg)
             return
 
-        log.debug("Unhandled incoming_message: " + str(msg))
+        log.debug("Unhandled incoming message: " + str(msg))
 
     def incoming_event(self, event: str, timestamp: int = None) -> None:
-        """Override this."""
+        """
+        General Whisker event received.
+
+        Override this function.
+
+        Args:
+            event: event
+            timestamp: server timestamp (ms)
+        """
         log.debug("UNHANDLED EVENT: {e} (timestamp={t}".format(
             e=event,
             t=timestamp
@@ -232,7 +275,16 @@ class WhiskerTask(object):
     # noinspection PyMethodMayBeStatic
     def incoming_client_message(self, fromclientnum: int, msg: str,
                                 timestamp: int = None) -> None:
-        """Override this."""
+        """
+        Client message (from another client) received.
+
+        Override this function.
+
+        Args:
+            fromclientnum: source client number
+            msg: message
+            timestamp: server timestamp (ms)
+        """
         log.debug(
             "UNHANDLED CLIENT MESSAGE from client {c}: {m} "
             "(timestamp={t})".format(
@@ -244,7 +296,17 @@ class WhiskerTask(object):
     # noinspection PyMethodMayBeStatic
     def incoming_key_event(self, key: str, depressed: bool, document: str,
                            timestamp: int = None) -> None:
-        """Override this."""
+        """
+        Keyboard event received.
+
+        Override this function.
+
+        Args:
+            key: which key?
+            depressed: was it depressed (or released)?
+            document: source display document
+            timestamp: server timestamp (ms)
+        """
         log.debug(
             "UNHANDLED KEY EVENT: key {k} {dr} (document={d}, "
             "timestamp={t})".format(
@@ -256,40 +318,76 @@ class WhiskerTask(object):
 
     # noinspection PyMethodMayBeStatic
     def incoming_info(self, msg: str) -> None:
-        """Override this."""
+        """
+        Information message received from Whisker server.
+
+        Args:
+            msg: message
+        """
         log.info(msg)
 
     # noinspection PyMethodMayBeStatic
     def incoming_warning(self, msg: str) -> None:
-        """Override this."""
+        """
+        Warning received from Whisker server.
+
+        Args:
+            msg: message
+        """
         log.warning(msg)
 
     # noinspection PyMethodMayBeStatic
     def incoming_error(self, msg: str) -> None:
-        """Override this."""
+        """
+        Error report received from Whisker server.
+
+        Args:
+            msg: message
+        """
         log.error(msg)
 
     # noinspection PyMethodMayBeStatic
     def incoming_syntax_error(self, msg: str) -> None:
-        """Override this."""
+        """
+        Syntax error report received from Whisker server.
+
+        Args:
+            msg: message
+        """
         log.error(msg)
 
 
 class WhiskerMainPortFactory(ClientFactory):
+    """
+    A Protocol factory for the Whisker main port.
+    """
 
     def __init__(self, task: WhiskerTask) -> None:
+        """
+        Args:
+            task: instance of class:`WhiskerTask`
+        """
         self.task = task
 
     def clientConnectionLost(self, connector: Connector, reason: str) -> None:
-        """If we get disconnected, reconnect to server."""
+        """
+        If we get disconnected, reconnect to server.
+        """
         log.warning("WhiskerMainPortFactory: disconnected")
         connector.connect()
 
-    def clientConnectionFailed(self, connector: Connector, reason: str) -> None:
+    def clientConnectionFailed(self, connector: Connector,
+                               reason: str) -> None:
+        """
+        Client connection failed. Stop the reactor.
+        """
         log.error("connection failed: " + str(reason))
         reactor.stop()
 
     def buildProtocol(self, addr: str) -> Optional['WhiskerMainPortProtocol']:
+        """
+        Build and return the protocol.
+        """
         log.debug("WhiskerMainPortFactory: buildProtocol({})".format(addr))
         if self.task.mainsocket:
             log.error("mainsocket already connected")
@@ -299,6 +397,9 @@ class WhiskerMainPortFactory(ClientFactory):
 
 
 class WhiskerMainPortProtocol(LineReceiver):
+    """
+    Line-based Twisted protocol for the Whisker main port.
+    """
 
     delimiter = b"\n"  # MUST BE BYTES, NOT STR!
     # Otherwise, you get a crash ('str' does not support the buffer interface)
@@ -306,11 +407,19 @@ class WhiskerMainPortProtocol(LineReceiver):
     #   something = bytes_buffer.split(string_delimiter, 1)
 
     def __init__(self, task: WhiskerTask, encoding: str = 'ascii') -> None:
+        """
+        Args:
+            task: instance of :class:`WhiskerTask`
+            encoding: encoding to use; normally ``"ascii"``
+        """
         self.task = task
         self.task.mainsocket = self
         self.encoding = encoding
 
     def connectionMade(self) -> None:
+        """
+        Called when the main port is connected.
+        """
         peer = self.transport.getPeer()
         if hasattr(peer, "host") and hasattr(peer, "port"):
             log.info("Connected to main port {p} on server {h}".format(
@@ -323,28 +432,56 @@ class WhiskerMainPortProtocol(LineReceiver):
         log.debug("Main port: Nagle algorithm disabled (TCP_NODELAY set)")
 
     def lineReceived(self, data: bytes) -> None:
+        """
+        Called when data is received on the main port.
+        Sends it to :func:`self.task.incoming_message`.
+
+        Args:
+            data: bytes
+        """
         str_data = data.decode(self.encoding)
         log.debug("Main port received: {}".format(str_data))
         self.task.incoming_message(str_data)
 
     def send(self, data: str) -> None:
+        """
+        Encodes and sends data to the main port.
+        """
         log.debug("Main port sending: {}".format(data))
         self.sendLine(data.encode(self.encoding))
 
     def rawDataReceived(self, data: bytes) -> None:
+        """
+        Raw data received. Unused; we use :func:`lineReceived` instead.
+        """
         pass
 
 
 class WhiskerImmSocket(object):
-    """Uses raw sockets."""
+    """
+    Whisker Twisted immediate socket handler.
+
+    Uses raw sockets.
+    """
 
     def __init__(self, task: WhiskerTask) -> None:
+        """
+        Args:
+            task: instance of :class:`WhiskerTask`
+        """
         self.task = task
         self.connected = False
         self.error = ""
         self.immsock = None
 
     def connect(self, server: str, port: int) -> None:
+        """
+        Connects the Whisker immediate socket.
+
+        Args:
+            server: server hostname/IP address
+            port: immediate port number
+        """
         log.debug("WhiskerImmSocket: connect")
         proto = socket.getprotobyname("tcp")
         try:
@@ -366,7 +503,12 @@ class WhiskerImmSocket(object):
         log.debug("Immediate port: set to blocking mode")
 
     def getlines_immsock(self) -> Generator[str, None, None]:
-        """Yield a set of lines from the socket."""
+        """
+        Generates lines from the immediate socket.
+
+        Yields:
+            lines from the socket
+        """
         # log.debug("WhiskerImmSocket: getlines_immsock")
         # http://stackoverflow.com/questions/822001/python-sockets-buffering
         buf = socket_receive(self.immsock)
@@ -385,6 +527,10 @@ class WhiskerImmSocket(object):
             yield buf
 
     def send_and_get_reply(self, *args) -> str:
+        """
+        Builds its arguments into a string; sends it to Whisker via the
+        immediate socket; gets the reply; returns it.
+        """
         msg = msg_from_args(*args)
         log.debug("Immediate socket sending: " + msg)
         socket_sendall(self.immsock, msg + "\n")

@@ -21,6 +21,9 @@
     limitations under the License.
 
 ===============================================================================
+
+**Command-line tool to test the Whisker raw-socket client.**
+
 """
 
 import argparse
