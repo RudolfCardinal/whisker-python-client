@@ -28,10 +28,15 @@ from whisker.version import VERSION
 here = path.abspath(path.dirname(__file__))
 
 # -----------------------------------------------------------------------------
-# Get the long description from the README file
+# Get the long description
 # -----------------------------------------------------------------------------
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+long_description = r"""
+    Whisker Python client library.
+    
+    See https://whiskerpythonclient.readthedocs.io/
+"""
+
+# *** readthedocs
 
 # -----------------------------------------------------------------------------
 # setup args
