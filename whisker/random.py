@@ -30,14 +30,14 @@ from itertools import islice
 import logging
 import operator
 import random
-from typing import Any, Callable, Generator, Iterable, List, Sequence, Set
+from typing import Any, Callable, Generator, Iterable, List, Sequence
 
 from cardinal_pythonlib.lists import flatten_list, sort_list_by_index_list
 from cardinal_pythonlib.reprfunc import auto_repr
 
 log = logging.getLogger(__name__)
 
-SHUFFLE_FUNC_TYPE = Callable[[Sequence[Any]], Sequence[int]]
+SHUFFLE_FUNC_TYPE = Callable[[Sequence[Any]], List[int]]
 
 
 # =============================================================================
@@ -66,7 +66,7 @@ def get_unique_values(iterable: Iterable[Any]) -> List[Any]:
     for element in iterable:
         hashed = element
         if isinstance(element, dict):
-            hashed = tuple(sorted(element.iteritems()))
+            hashed = tuple(sorted(element.items()))
         elif isinstance(element, list):
             hashed = tuple(element)
         if hashed not in seen:
@@ -760,7 +760,7 @@ class ShuffleLayerMethod(object):
 
 
 def layered_shuffle(x: List[Any],
-                        layers: List[ShuffleLayerMethod]) -> None:
+                    layers: List[ShuffleLayerMethod]) -> None:
     r"""
     Most powerful hierarchical shuffle command here.
 

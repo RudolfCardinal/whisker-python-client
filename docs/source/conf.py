@@ -197,12 +197,27 @@ autoclass_content = 'both'
 # ReadTheDocs configuration
 # -----------------------------------------------------------------------------
 # https://docs.readthedocs.io/en/latest/faq.html
-
+# https://stackoverflow.com/questions/27325165
 
 class Mock(MagicMock):
+    """
+    Mock class that gives whatever attribute it's asked for, as per
+    https://docs.readthedocs.io/en/latest/faq.html. Intended to be used when
+    you can't genuinely install/import a module because ReadTheDocs (RTD)
+    doesn't allow the installation of modules with C (rather than pure Python)
+    code.
+    """
     @classmethod
     def __getattr__(cls, name: str):
         return MagicMock()
+
+
+class SimpleClass(object):
+    """
+    Dummy base class to replace a :class:`Mock` version; see
+    https://stackoverflow.com/questions/27325165.
+    """
+    pass
 
 
 MOCK_MODULES = [
@@ -218,7 +233,17 @@ MOCK_MODULES = [
     'PyQt5.QtWidgets',
 ]
 
+MODULE_MEMBERS_TO_MAKE_SIMPLE_CLASS = {
+    # See https://stackoverflow.com/questions/27325165
+    'PyQt5.QtCore': 'QAbstractListModel',
+}
 
 ON_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
 if ON_READTHEDOCS:
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+    # Now some nastier hacks to avoid this error:
+    #   TypeError: metaclass conflict: the metaclass of a derived class must be
+    #   a (non-strict) subclass of the metaclasses of all its bases
+    # as per https://stackoverflow.com/questions/27325165
+    for module_name, class_name in MODULE_MEMBERS_TO_MAKE_SIMPLE_CLASS.items():
+        setattr(sys.modules[module_name], class_name, SimpleClass)

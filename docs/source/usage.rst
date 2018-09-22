@@ -28,9 +28,9 @@ Twisted client (preferred for simple interfaces)
 .. code-block:: python
 
     from twisted.internet import reactor
-    from whisker.twistedclient import WhiskerTask
+    from whisker.twistedclient import WhiskerTwistedTask
 
-    class MyWhiskerTask(WhiskerTask):
+    class MyWhiskerTask(WhiskerTwistedTask):
         # ...
 
     w = MyWhiskerTask()
@@ -47,9 +47,9 @@ Raw socket client (deprecated)
 
 .. code-block:: python
 
-    from whisker.rawsocketclient import Whisker
+    from whisker.rawsocketclient import WhiskerRawSocketClient
 
-    w = Whisker()
+    w = WhiskerRawSocketClient()
     w.connect_both_ports(...)
     # ...
     for line in w.getlines_mainsocket():

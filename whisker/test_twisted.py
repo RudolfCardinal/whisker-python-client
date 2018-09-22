@@ -41,7 +41,7 @@ from whisker.api import (
     Rectangle,
 )
 from whisker.constants import DEFAULT_PORT
-from whisker.twistedclient import WhiskerTask
+from whisker.twistedclient import WhiskerTwistedTask
 
 log = logging.getLogger(__name__)
 
@@ -60,9 +60,9 @@ DOC = "doc"
 VIDEO = "_video"
 
 
-class MyWhiskerTask(WhiskerTask):
+class MyWhiskerTwistedTask(WhiskerTwistedTask):
     """
-    Class deriving from :class:`whisker.twistedclient.WhiskerTask` to
+    Class deriving from :class:`whisker.twistedclient.WhiskerTwistedTask` to
     demonstrate the Twisted Whisker client.
     """
     def __init__(self,
@@ -262,7 +262,7 @@ def main() -> None:
     args = parser.parse_args()
 
     print("Module run explicitly. Running a Whisker test.")
-    w = MyWhiskerTask(
+    w = MyWhiskerTwistedTask(
         display_num=args.display_num,
         audio_num=args.audio_num,
         input_line=args.input,

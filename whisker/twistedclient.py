@@ -66,7 +66,7 @@ log.addHandler(logging.NullHandler())
 # Event-driven Whisker task class. Use this one.
 # =============================================================================
 
-class WhiskerTask(object):
+class WhiskerTwistedTask(object):
     """
     Base class for Whisker clients using the Twisted socket system.
 
@@ -363,10 +363,10 @@ class WhiskerMainPortFactory(ClientFactory):
     A Protocol factory for the Whisker main port.
     """
 
-    def __init__(self, task: WhiskerTask) -> None:
+    def __init__(self, task: WhiskerTwistedTask) -> None:
         """
         Args:
-            task: instance of :class:`WhiskerTask`
+            task: instance of :class:`WhiskerTwistedTask`
         """
         self.task = task
 
@@ -407,10 +407,11 @@ class WhiskerMainPortProtocol(LineReceiver):
     # from within twisted/protocols/basic.py, line 559, when it tries to do
     #   something = bytes_buffer.split(string_delimiter, 1)
 
-    def __init__(self, task: WhiskerTask, encoding: str = 'ascii') -> None:
+    def __init__(self, task: WhiskerTwistedTask,
+                 encoding: str = 'ascii') -> None:
         """
         Args:
-            task: instance of :class:`WhiskerTask`
+            task: instance of :class:`WhiskerTwistedTask`
             encoding: encoding to use; normally ``"ascii"``
         """
         self.task = task
@@ -435,7 +436,8 @@ class WhiskerMainPortProtocol(LineReceiver):
     def lineReceived(self, data: bytes) -> None:
         """
         Called when data is received on the main port.
-        Sends it to :func:`WhiskerTask.incoming_message` via ``self.task``.
+        Sends it to :func:`WhiskerTwistedTask.incoming_message` via
+        ``self.task``.
 
         Args:
             data: bytes
@@ -465,10 +467,10 @@ class WhiskerImmSocket(object):
     Uses raw sockets.
     """
 
-    def __init__(self, task: WhiskerTask) -> None:
+    def __init__(self, task: WhiskerTwistedTask) -> None:
         """
         Args:
-            task: instance of :class:`WhiskerTask`
+            task: instance of :class:`WhiskerTwistedTask`
         """
         self.task = task
         self.connected = False

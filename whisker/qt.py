@@ -33,7 +33,7 @@ import logging
 import sys
 import threading
 import traceback
-from typing import Any, Iterable, List, Optional, Sequence, Tuple, Type
+from typing import Any, Iterable, List, Optional, Tuple, Type
 
 from cardinal_pythonlib.debugging import get_caller_name
 from cardinal_pythonlib.lists import contains_duplicates
@@ -171,6 +171,7 @@ class LogWindow(QMainWindow):
     """
     emit_msg = pyqtSignal(str)
 
+    # noinspection PyArgumentList
     def __init__(self,
                  level: int = logging.INFO,
                  window_title: str = "Python log",
@@ -212,8 +213,10 @@ class LogWindow(QMainWindow):
         self.log.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.log.setMaximumBlockCount(maximum_block_count)
         log_clear_button = QPushButton('Clear log')
+        # noinspection PyUnresolvedReferences
         log_clear_button.clicked.connect(self.log.clear)
         log_copy_button = QPushButton('Copy to clipboard')
+        # noinspection PyUnresolvedReferences
         log_copy_button.clicked.connect(self.copy_whole_log)
         log_layout_2.addWidget(log_clear_button)
         log_layout_2.addWidget(log_copy_button)
@@ -297,6 +300,7 @@ class LogWindow(QMainWindow):
         # Jump threads via a signal
         self.emit_msg.emit(html)
 
+    # noinspection PyArgumentList
     @pyqtSlot(str)
     def log_internal(self, html: str) -> None:
         """
@@ -309,6 +313,7 @@ class LogWindow(QMainWindow):
         # ... unnecessary; if you're at the end, it scrolls, and if you're at
         # the top, it doesn't bug you.
 
+    # noinspection PyArgumentList
     @pyqtSlot()
     def exit(self) -> None:
         """
@@ -320,6 +325,7 @@ class LogWindow(QMainWindow):
         # log.debug("closed: {}".format(closed))
         QMainWindow.close(self)
 
+    # noinspection PyArgumentList
     @pyqtSlot()
     def may_exit(self) -> None:
         """
@@ -343,6 +349,8 @@ class TextLogElement(object):
 
      (This is nothing to do with the Python ``logging`` logs.)
     """
+
+    # noinspection PyArgumentList
     def __init__(self,
                  maximum_block_count: int = 1000,
                  font_size_pt: int = 10,
@@ -370,8 +378,10 @@ class TextLogElement(object):
         font.setPointSize(font_size_pt)
 
         log_clear_button = QPushButton('Clear log')
+        # noinspection PyUnresolvedReferences
         log_clear_button.clicked.connect(self.log.clear)
         log_copy_button = QPushButton('Copy to clipboard')
+        # noinspection PyUnresolvedReferences
         log_copy_button.clicked.connect(self.copy_whole_log)
         log_layout_2.addWidget(log_clear_button)
         log_layout_2.addWidget(log_copy_button)
@@ -488,6 +498,7 @@ class StatusMixin(object):
         return "{}:{} {}{}".format(self._statusmixin_name, callerinfo, msg,
                                    threadinfo)
 
+    # noinspection PyArgumentList
     @pyqtSlot(str)
     def debug(self, msg: str) -> None:
         """
@@ -495,6 +506,7 @@ class StatusMixin(object):
         """
         self._statusmixin_log.debug(self._process_status_message(msg))
 
+    # noinspection PyArgumentList
     @pyqtSlot(str)
     def critical(self, msg: str) -> None:
         """
@@ -504,6 +516,7 @@ class StatusMixin(object):
         self._statusmixin_log.critical(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
+    # noinspection PyArgumentList
     @pyqtSlot(str)
     def error(self, msg: str) -> None:
         """
@@ -513,6 +526,7 @@ class StatusMixin(object):
         self._statusmixin_log.error(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
+    # noinspection PyArgumentList
     @pyqtSlot(str)
     def warning(self, msg: str) -> None:
         """
@@ -523,6 +537,7 @@ class StatusMixin(object):
         self._statusmixin_log.warning(self._process_status_message(msg))
         self.error_sent.emit(msg, self._statusmixin_name)
 
+    # noinspection PyArgumentList
     @pyqtSlot(str)
     def info(self, msg: str) -> None:
         """
@@ -532,6 +547,7 @@ class StatusMixin(object):
         self._statusmixin_log.info(self._process_status_message(msg))
         self.status_sent.emit(msg, self._statusmixin_name)
 
+    # noinspection PyArgumentList
     @pyqtSlot(str)
     def status(self, msg: str) -> None:
         """
@@ -571,6 +587,7 @@ class TransactionalEditDialogMixin(object):
     """
     ok = pyqtSignal()
 
+    # noinspection PyArgumentList, PyUnresolvedReferences
     def __init__(self, session: Session, obj: object, layout: QLayout,
                  readonly: bool = False, **kwargs) -> None:
         """
@@ -610,6 +627,7 @@ class TransactionalEditDialogMixin(object):
         main_layout.addLayout(layout)
         main_layout.addWidget(ok_cancel_buttons)
 
+    # noinspection PyArgumentList
     @pyqtSlot()
     def ok_clicked(self) -> None:
         """
@@ -620,6 +638,7 @@ class TransactionalEditDialogMixin(object):
         """
         try:
             self.dialog_to_object(self.obj)
+            # noinspection PyUnresolvedReferences
             self.accept()
         except Exception as e:
             # noinspection PyCallByClass
@@ -728,9 +747,11 @@ class TransactionalEditDialogMixin(object):
         # back on an exception.
         result = None
         if self.readonly:
+            # noinspection PyUnresolvedReferences
             return self.exec_()  # enforces modal
         try:
             with self.session.begin_nested():
+                # noinspection PyUnresolvedReferences
                 result = self.exec_()  # enforces modal
                 if result == QDialog.Accepted:
                     return result
@@ -783,6 +804,7 @@ class TransactionalDialog(QDialog):
         self.session = session
         self.readonly = readonly
 
+    # noinspection PyArgumentList
     @pyqtSlot()
     def exec_(self, *args, **kwargs):
         """
@@ -824,7 +846,7 @@ class DatabaseModelMixin(object):
     """
     def __init__(self,
                  session: Session,
-                 listdata: Sequence[Any],
+                 listdata: List[Any],
                  **kwargs) -> None:
         """
         Args:
@@ -879,8 +901,10 @@ class DatabaseModelMixin(object):
         if delete_from_session:
             obj = self.listdata[row_index]
             self.session.delete(obj)
+        # noinspection PyUnresolvedReferences
         self.beginRemoveRows(QModelIndex(), row_index, row_index)
         del self.listdata[row_index]
+        # noinspection PyUnresolvedReferences
         self.endRemoveRows()
 
     def insert_at_index(self, obj: object, index: int = None,
@@ -911,8 +935,10 @@ class DatabaseModelMixin(object):
             if flush:
                 self.session.flush()
         # http://stackoverflow.com/questions/4702972
+        # noinspection PyUnresolvedReferences
         self.beginInsertRows(QModelIndex(), 0, 0)
         self.listdata.insert(index, obj)
+        # noinspection PyUnresolvedReferences
         self.endInsertRows()
 
     def move_up(self, index: int) -> None:
@@ -933,6 +959,7 @@ class DatabaseModelMixin(object):
             return
         x = self.listdata  # shorter name!
         x[index - 1], x[index] = x[index], x[index - 1]
+        # noinspection PyUnresolvedReferences
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def move_down(self, index: int) -> None:
@@ -953,6 +980,7 @@ class DatabaseModelMixin(object):
             return
         x = self.listdata  # shorter name!
         x[index + 1], x[index] = x[index], x[index + 1]
+        # noinspection PyUnresolvedReferences
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
 
@@ -986,6 +1014,7 @@ class ViewAssistMixin(object):
     def __init__(self, session: Session,
                  modal_dialog_class: Type[TransactionalEditDialogMixin],
                  readonly: bool = False,
+                 *args,
                  **kwargs) -> None:
         """
         Args:
@@ -995,7 +1024,7 @@ class ViewAssistMixin(object):
             readonly: read-only view?
             kwargs: additional parameters for superclass (required for mixins)
         """
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
         self.session = session
         self.modal_dialog_class = modal_dialog_class
         self.readonly = readonly
@@ -1012,11 +1041,14 @@ class ViewAssistMixin(object):
             listview_base_class: class being used as the Qt view
         """
         if self.selection_model:
+            # noinspection PyUnresolvedReferences
             self.selection_model.selectionChanged.disconnect()
         # noinspection PyCallByClass,PyTypeChecker
         listview_base_class.setModel(self, model)
         self.selection_model = QItemSelectionModel(model)
+        # noinspection PyUnresolvedReferences
         self.selection_model.selectionChanged.connect(self._selection_changed)
+        # noinspection PyUnresolvedReferences
         self.setSelectionModel(self.selection_model)
 
     # -------------------------------------------------------------------------
@@ -1060,6 +1092,7 @@ class ViewAssistMixin(object):
         index = self.get_selected_row_index()
         if index is None:
             return None
+        # noinspection PyUnresolvedReferences
         model = self.model()
         if model is None:
             return None
@@ -1081,6 +1114,7 @@ class ViewAssistMixin(object):
         Args:
             row: row index, or ``None`` to select the last row if there is one
         """
+        # noinspection PyUnresolvedReferences
         model = self.model()
         if row is None:
             # Go to the end.
@@ -1089,6 +1123,7 @@ class ViewAssistMixin(object):
                 return
             row = nrows - 1
         modelindex = model.index(row, 0)  # second parameter is column
+        # noinspection PyUnresolvedReferences
         self.setCurrentIndex(modelindex)
 
     def _selection_changed(self,
@@ -1101,6 +1136,7 @@ class ViewAssistMixin(object):
         selected_model_indexes = selected.indexes()
         selected_row_indexes = [mi.row() for mi in selected_model_indexes]
         is_selected = bool(selected_row_indexes)
+        # noinspection PyUnresolvedReferences
         model = self.model()
         may_delete = is_selected and all(
             [model.item_deletable(ri) for ri in selected_row_indexes])
@@ -1111,6 +1147,7 @@ class ViewAssistMixin(object):
         Returns:
             the number of rows (items) present
         """
+        # noinspection PyUnresolvedReferences
         model = self.model()
         return model.rowCount()
 
@@ -1133,6 +1170,7 @@ class ViewAssistMixin(object):
             flush: flush the SQLAlchemy session after adding the object?
                 Only applicable if ``add_to_session`` is true.
         """
+        # noinspection PyUnresolvedReferences
         model = self.model()
         model.insert_at_index(obj, index,
                               add_to_session=add_to_session, flush=flush)
@@ -1193,6 +1231,7 @@ class ViewAssistMixin(object):
         try:
             with self.session.begin_nested():
                 self.session.add(new_object)
+                # noinspection PyArgumentList
                 win = self.modal_dialog_class(self.session, new_object)
                 result = win.edit_in_nested_transaction()
                 if result != QDialog.Accepted:
@@ -1232,6 +1271,7 @@ class ViewAssistMixin(object):
         """
         if row_index is None:
             return
+        # noinspection PyUnresolvedReferences
         model = self.model()
         model.delete_item(row_index, delete_from_session=delete_from_session)
 
@@ -1246,6 +1286,7 @@ class ViewAssistMixin(object):
         row_index = self.get_selected_row_index()
         if row_index is None or row_index == 0:
             return
+        # noinspection PyUnresolvedReferences
         model = self.model()
         model.move_up(row_index)
         self.go_to(row_index - 1)
@@ -1257,6 +1298,7 @@ class ViewAssistMixin(object):
         row_index = self.get_selected_row_index()
         if row_index is None or row_index == self.get_n_rows() - 1:
             return
+        # noinspection PyUnresolvedReferences
         model = self.model()
         model.move_down(row_index)
         self.go_to(row_index + 1)
@@ -1305,8 +1347,10 @@ class ViewAssistMixin(object):
             return
         if readonly is None:
             readonly = self.readonly
+        # noinspection PyUnresolvedReferences
         model = self.model()
         item = model.listdata[index.row()]
+        # noinspection PyArgumentList
         win = self.modal_dialog_class(self.session, item, readonly=readonly)
         win.edit_in_nested_transaction()
 
@@ -1514,7 +1558,7 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
     # http://doc.qt.io/qt-4.8/qabstracttablemodel.html
 
     def __init__(self,
-                 data: Sequence[Any],
+                 data: List[Any],
                  header: List[Tuple[str, str]],
                  session: Session,
                  default_sort_column_name: str = None,
@@ -1666,6 +1710,7 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
         # log.debug("GenericAttrTableModel.sort")
         if not self.listdata:
             return
+        # noinspection PyUnresolvedReferences
         self.layoutAboutToBeChanged.emit()
         colname = self.header_attr[col]
         isfunc = callable(getattr(self.listdata[0], colname))
@@ -1678,6 +1723,7 @@ class GenericAttrTableModel(QAbstractTableModel, DatabaseModelMixin):
                                    key=attrgetter_nonesort(colname))
         if order == Qt.DescendingOrder:
             self.listdata.reverse()
+        # noinspection PyUnresolvedReferences
         self.layoutChanged.emit()
 
 
@@ -1901,6 +1947,7 @@ class GarbageCollector(QObject):
         self.interval_ms = interval_ms
 
         self.timer = QTimer(self)
+        # noinspection PyUnresolvedReferences
         self.timer.timeout.connect(self.check)
 
         self.threshold = gc.get_threshold()

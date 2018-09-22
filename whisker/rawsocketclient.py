@@ -55,12 +55,12 @@ log = logging.getLogger(__name__)
 # Basic Whisker class, in which clients do all the work
 # =============================================================================
 
-class Whisker(object):
+class WhiskerRawSocketClient(object):
     """
     Basic Whisker class, in which clients do all the work via raw network
     sockets.
 
-    (Not sophisticated. Use :class:`whisker.twistedclient.WhiskerTask`
+    (Not sophisticated. Use :class:`whisker.twistedclient.WhiskerTwistedTask`
     instead.)
     """
 

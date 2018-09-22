@@ -27,7 +27,7 @@ Change history
 - Python type hints.
 - Write ``exit_on_exception`` exceptions to log, not via :func:`print`.
 - :class:`whisker.qtclient.WhiskerOwner` offers new ``pingack_received``
-signal.
+  signal.
 
 * 2016-12-01: v0.3.6
 
@@ -36,10 +36,10 @@ signal.
 * 2017-03-23: v0.3.6
 
 - Removed annotations from ``alembic.py``; alembic uses
-``inspect.getargspec()``, which chokes with ``ValueError: Function has
-keyword-only arguments or annotations...``.
+  ``inspect.getargspec()``, which chokes with ``ValueError: Function has
+  keyword-only arguments or annotations...``.
 - Support PyQt 5.8, including removing calls to ``QHeaderView.setClickable``,
-which has gone: https://doc.qt.io/qt-5/qheaderview.html
+  which has gone: https://doc.qt.io/qt-5/qheaderview.html
 
 * 2016-06-22: v0.1.10
 
@@ -68,7 +68,10 @@ which has gone: https://doc.qt.io/qt-5/qheaderview.html
   ``whisker.exceptions`` (previously duplicated)
 - additional randomization functions
 
-* 2018-09-21: v1.0.5
+* 2018-09-21 to 2018-09-22: v1.1.0
 
 - updated required version to ``cardinal_pythonlib>=1.0.26`` in view of
   bugfix there
+- there were two classes named ``WhiskerTask``; renamed one to
+  ``WhiskerTwistedTask`` and the other to ``WhiskerQtTask``. Also renamed
+  ``Whisker`` to ``WhiskerRawSocketClient`` for clarity.

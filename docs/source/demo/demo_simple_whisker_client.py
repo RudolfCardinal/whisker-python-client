@@ -16,7 +16,7 @@ from whisker.convenience import (load_config_or_die,
                                  insert_and_set_id,
                                  ask_user,
                                  save_data)
-from whisker.twistedclient import WhiskerTask
+from whisker.twistedclient import WhiskerTwistedTask
 
 log = logging.getLogger(__name__)
 configure_logger_for_colour(log)
@@ -42,7 +42,7 @@ SUMMARY_TABLE = 'summary'
 # The task itself
 # =============================================================================
 
-class MyWhiskerTask(WhiskerTask):
+class MyWhiskerTwistedTask(WhiskerTwistedTask):
     def __init__(self, config, db, session):
         """Here, we initialize the task, and store any relevant variables."""
         super().__init__()  # call base class init
@@ -117,7 +117,7 @@ def main():
                        num_pings=num_pings)
     insert_and_set_id(db[SESSION_TABLE], session)  # save to database
     log.info("Off we go...")
-    task = MyWhiskerTask(config, db, session)
+    task = MyWhiskerTwistedTask(config, db, session)
     task.connect(config.server, config.port)
     # noinspection PyUnresolvedReferences
     reactor.run()  # starts Twisted and thus network processing

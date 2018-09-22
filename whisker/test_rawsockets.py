@@ -39,7 +39,7 @@ from whisker.api import (
     CMD_WHISKER_STATUS,
 )
 from whisker.constants import DEFAULT_PORT
-from whisker.rawsocketclient import Whisker
+from whisker.rawsocketclient import WhiskerRawSocketClient
 
 
 def test_whisker(server: str,
@@ -53,7 +53,7 @@ def test_whisker(server: str,
         port: main Whisker port number
         verbose_network: be verbose about network traffic
     """
-    w = Whisker()
+    w = WhiskerRawSocketClient()
     print("Connecting to {}:{}".format(server, port))
     if not w.connect_both_ports(server, port):
         raise RuntimeError("Failed to connect")
