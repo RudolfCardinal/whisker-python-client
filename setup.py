@@ -25,16 +25,14 @@ from os import path
 
 from whisker.version import VERSION
 
-here = path.abspath(path.dirname(__file__))
+THIS_DIR = path.abspath(path.dirname(__file__))
 
 # -----------------------------------------------------------------------------
 # Get the long description
 # -----------------------------------------------------------------------------
-long_description = r"""
-    Whisker Python client library.
-    
-    See https://whiskerpythonclient.readthedocs.io/
-"""
+README_FILE = path.join(THIS_DIR, 'README.rst')  # read
+with open(README_FILE, encoding='utf-8') as f:
+    long_description = f.read()
 
 SIMPLE_REQUIRES = [
     'arrow',  # better datetime
@@ -48,9 +46,11 @@ SIMPLE_REQUIRES = [
     'pyyaml',  # Yet Another Markup Language
     'sqlalchemy',  # Databases
 ]
+
 REQUIRES_THAT_RTD_DISLIKES = [
     'PyQt5',  # Qt for Python; needs C compiler; doesn't install on RTD
-]
+]  # see also fixes for Sphinx/autodoc in conf.py
+
 DEVELOPMENT_ONLY_REQUIRES = [
     # ---------------------------------------------------------------------
     # For development only:
@@ -106,11 +106,11 @@ setup(
         'Operating System :: OS Independent',
 
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
+        # 'Programming Language :: Python :: 3.2',
+        # 'Programming Language :: Python :: 3.3',
+        # 'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3 :: Only',
+        # 'Programming Language :: Python :: 3 :: Only',
 
         'Topic :: System :: Hardware',
         'Topic :: System :: Networking',
