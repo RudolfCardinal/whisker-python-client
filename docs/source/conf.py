@@ -207,7 +207,17 @@ class Mock(MagicMock):
 MOCK_MODULES = [
     # Things that ReadTheDocs won't install
     'cardinal_pythonlib',  # wants numpy, which RTD won't install
+    'cardinal_pythonlib.debugging',
+    'cardinal_pythonlib.regexfunc',
+    'cardinal_pythonlib.lists',
+    'cardinal_pythonlib.logs',
+    'cardinal_pythonlib.reprfunc',
+    'cardinal_pythonlib.sort',
     'PyQt5',  # C-based
+    'PyQt5.QtCore',
+    'PyQt5.QtGui',
+    'PyQt5.QtNetwork',
+    'PyQt5.QtWidgets',
 ]
 
 
