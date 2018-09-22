@@ -233,10 +233,14 @@ MOCK_MODULES = [
     'PyQt5.QtWidgets',
 ]
 
-MODULE_MEMBERS_TO_MAKE_SIMPLE_CLASS = {
+MODULE_MEMBERS_TO_MAKE_SIMPLE_CLASS = (
     # See https://stackoverflow.com/questions/27325165
-    'PyQt5.QtCore': 'QAbstractListModel',
-}
+    ('PyQt5.QtCore', 'QAbstractListModel'),
+    ('PyQt5.QtCore', 'QAbstractTableModel'),
+    ('PyQt5.QtCore', 'QObject'),
+    ('PyQt5.QtWidgets', 'QListView'),
+    ('PyQt5.QtWidgets', 'QTableView'),
+)
 
 ON_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
 if ON_READTHEDOCS:
@@ -245,5 +249,5 @@ if ON_READTHEDOCS:
     #   TypeError: metaclass conflict: the metaclass of a derived class must be
     #   a (non-strict) subclass of the metaclasses of all its bases
     # as per https://stackoverflow.com/questions/27325165
-    for module_name, class_name in MODULE_MEMBERS_TO_MAKE_SIMPLE_CLASS.items():
+    for module_name, class_name in MODULE_MEMBERS_TO_MAKE_SIMPLE_CLASS:
         setattr(sys.modules[module_name], class_name, SimpleClass)
