@@ -205,8 +205,9 @@ class Mock(MagicMock):
 
 
 MOCK_MODULES = [
-    # C-based things that ReadTheDocs won't install
-    'PyQt5',
+    # Things that ReadTheDocs won't install
+    'cardinal_pythonlib',  # wants numpy, which RTD won't install
+    'PyQt5',  # C-based
 ]
 
 

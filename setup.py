@@ -36,10 +36,9 @@ long_description = r"""
     See https://whiskerpythonclient.readthedocs.io/
 """
 
-PURE_PYTHON_REQUIRES = [
+SIMPLE_REQUIRES = [
     'arrow',  # better datetime
     'attrdict',  # dictionaries with attribute-style access
-    'cardinal_pythonlib>=1.0.26',
     'colorama',  # colour at the command line
     'colorlog',  # colourful logs
     'dataset',  # databases for lazy people (used by demo)
@@ -48,8 +47,9 @@ PURE_PYTHON_REQUIRES = [
     'pyyaml',  # Yet Another Markup Language
     'sqlalchemy',  # Databases
 ]
-C_BASED_REQUIRES = [
-    'PyQt5',  # Qt for Python
+REQUIRES_THAT_RTD_DISLIKES = [
+    'cardinal_pythonlib>=1.0.26',  # numpy doesn't install under RTD
+    'PyQt5',  # Qt for Python; needs C compiler; doesn't install on RTD
 ]
 DEVELOPMENT_ONLY_REQUIRES = [
     # ---------------------------------------------------------------------
@@ -61,9 +61,9 @@ DEVELOPMENT_ONLY_REQUIRES = [
 
 ON_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
 
-REQUIREMENTS = PURE_PYTHON_REQUIRES
+REQUIREMENTS = SIMPLE_REQUIRES
 if not ON_READTHEDOCS:
-    REQUIREMENTS += C_BASED_REQUIRES
+    REQUIREMENTS += REQUIRES_THAT_RTD_DISLIKES
 
 
 # -----------------------------------------------------------------------------
