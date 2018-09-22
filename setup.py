@@ -39,6 +39,7 @@ long_description = r"""
 SIMPLE_REQUIRES = [
     'arrow',  # better datetime
     'attrdict',  # dictionaries with attribute-style access
+    'cardinal_pythonlib>=1.0.26',  # numpy doesn't install under RTD
     'colorama',  # colour at the command line
     'colorlog',  # colourful logs
     'dataset',  # databases for lazy people (used by demo)
@@ -48,7 +49,6 @@ SIMPLE_REQUIRES = [
     'sqlalchemy',  # Databases
 ]
 REQUIRES_THAT_RTD_DISLIKES = [
-    'cardinal_pythonlib>=1.0.26',  # numpy doesn't install under RTD
     'PyQt5',  # Qt for Python; needs C compiler; doesn't install on RTD
 ]
 DEVELOPMENT_ONLY_REQUIRES = [

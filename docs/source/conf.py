@@ -198,6 +198,7 @@ autoclass_content = 'both'
 # -----------------------------------------------------------------------------
 # https://docs.readthedocs.io/en/latest/faq.html
 
+
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name: str):
@@ -206,13 +207,10 @@ class Mock(MagicMock):
 
 MOCK_MODULES = [
     # Things that ReadTheDocs won't install
-    'cardinal_pythonlib',  # wants numpy, which RTD won't install
-    'cardinal_pythonlib.debugging',
-    'cardinal_pythonlib.regexfunc',
-    'cardinal_pythonlib.lists',
-    'cardinal_pythonlib.logs',
-    'cardinal_pythonlib.reprfunc',
-    'cardinal_pythonlib.sort',
+
+    # To get numpy (and thus cardinal_pythonlib), just tick the "allow access
+    # to system libraries" option in RTD Advanced settings; see
+    # https://github.com/rtfd/readthedocs.org/issues/1639
     'PyQt5',  # C-based
     'PyQt5.QtCore',
     'PyQt5.QtGui',
