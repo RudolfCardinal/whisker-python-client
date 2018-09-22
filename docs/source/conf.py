@@ -13,12 +13,16 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import os
+from os.path import abspath, dirname, join, pardir
 import sys
 from unittest.mock import MagicMock
 
 from whisker.version import VERSION
 
-# sys.path.insert(0, os.path.abspath('.'))
+THIS_DIR = abspath(dirname(__file__))  # .../docs/source/
+SOURCE_ROOT_DIR = abspath(join(THIS_DIR, pardir, pardir, "whisker"))  # .../whisker  # noqa
+sys.path.insert(0, SOURCE_ROOT_DIR)
+
 
 # -- Project information -----------------------------------------------------
 
