@@ -42,7 +42,7 @@ SIMPLE_REQUIRES = [
     'colorlog',  # colourful logs
     'dataset',  # databases for lazy people (used by demo)
     'Twisted',  # TCP/IP communications
-    'typing==3.5.2.2',  # part of stdlib in Python 3.5, but not 3.4
+    # 'typing==3.5.2.2',  # part of stdlib in Python 3.5, but not 3.4
     'pyyaml',  # Yet Another Markup Language
     'sqlalchemy',  # Databases
 ]
@@ -56,6 +56,7 @@ DEVELOPMENT_ONLY_REQUIRES = [
     # For development only:
     # ---------------------------------------------------------------------
     'sphinx',  # for documentation
+    'sphinx_rtd_theme',  # for documentation
     'twine',  # for uploading to PyPI
 ]
 

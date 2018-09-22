@@ -29,7 +29,8 @@
 
 class WhiskerCommandFailed(Exception):
     """
-    Raised by :class:`WhiskerApi` if a Whisker immediate-socket command fails.
+    Raised by :class:`whisker.api.WhiskerApi` if a Whisker immediate-socket
+    command fails.
     """
     pass
 
