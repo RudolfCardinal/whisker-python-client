@@ -20,7 +20,7 @@ To install in development mode:
 # http://jtushman.github.io/blog/2013/06/17/sharing-code-across-applications-with-python/  # noqa
 
 from setuptools import setup
-from codecs import open
+import os
 from os import path
 
 from whisker.version import VERSION
@@ -36,7 +36,35 @@ long_description = r"""
     See https://whiskerpythonclient.readthedocs.io/
 """
 
-# *** readthedocs: get this working!
+PURE_PYTHON_REQUIRES = [
+    'arrow',  # better datetime
+    'attrdict',  # dictionaries with attribute-style access
+    'cardinal_pythonlib>=1.0.26',
+    'colorama',  # colour at the command line
+    'colorlog',  # colourful logs
+    'dataset',  # databases for lazy people (used by demo)
+    'Twisted',  # TCP/IP communications
+    'typing==3.5.2.2',  # part of stdlib in Python 3.5, but not 3.4
+    'pyyaml',  # Yet Another Markup Language
+    'sqlalchemy',  # Databases
+]
+C_BASED_REQUIRES = [
+    'PyQt5',  # Qt for Python
+]
+DEVELOPMENT_ONLY_REQUIRES = [
+    # ---------------------------------------------------------------------
+    # For development only:
+    # ---------------------------------------------------------------------
+    'sphinx',  # for documentation
+    'twine',  # for uploading to PyPI
+]
+
+ON_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
+
+REQUIREMENTS = PURE_PYTHON_REQUIRES
+if not ON_READTHEDOCS:
+    REQUIREMENTS += C_BASED_REQUIRES
+
 
 # -----------------------------------------------------------------------------
 # setup args
@@ -92,25 +120,7 @@ setup(
 
     packages=['whisker'],
 
-    install_requires=[
-        'arrow',  # better datetime
-        'attrdict',  # dictionaries with attribute-style access
-        'cardinal_pythonlib>=1.0.26',
-        'colorama',  # colour at the command line
-        'colorlog',  # colourful logs
-        'dataset',  # databases for lazy people (used by demo)
-        'PyQt5',  # Qt for Python
-        'Twisted',  # TCP/IP communications
-        'typing==3.5.2.2',  # part of stdlib in Python 3.5, but not 3.4
-        'pyyaml',  # Yet Another Markup Language
-        'sqlalchemy',  # Databases
-
-        # ---------------------------------------------------------------------
-        # For development only:
-        # ---------------------------------------------------------------------
-        # sphinx  # for documentation
-        # twine  # for uploading to PyPI
-    ],
+    install_requires=REQUIREMENTS,
 
     entry_points={
         'console_scripts': [
