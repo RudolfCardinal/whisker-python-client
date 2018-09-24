@@ -87,6 +87,9 @@ Change history
     ``cardinal_pythonlib``) to see if that fixed the autodoc/RTD problem; no
   - no help from changing Sphinx theme either
   - no help from changing ``sys.path`` from ``conf.py``
+  - see https://github.com/rtfd/readthedocs.org/issues/2139
+  - tried ``/readthedocs.yml`` as per that and
+    https://docs.readthedocs.io/en/latest/yaml-config.html
 
 - renamed ``layer_index`` to ``layer_key`` and changed its hint in
   :class:`whisker.random.ShuffleLayerMethod`.
