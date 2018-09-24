@@ -20,8 +20,8 @@ from unittest.mock import MagicMock
 from whisker.version import VERSION
 
 THIS_DIR = abspath(dirname(__file__))  # .../docs/source/
-SOURCE_ROOT_DIR = abspath(join(THIS_DIR, pardir, pardir, "whisker"))  # .../whisker  # noqa
-sys.path.insert(0, SOURCE_ROOT_DIR)
+SOURCE_ROOT_DIR = abspath(join(THIS_DIR, pardir, pardir))  # .../
+sys.path.insert(0, SOURCE_ROOT_DIR)  # no, breaks some imports!
 
 
 # -- Project information -----------------------------------------------------
@@ -48,11 +48,17 @@ release = VERSION
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
-    'sphinx.ext.todo',
     'sphinx.ext.imgmath',
-    'sphinx.ext.viewcode',
+    # 'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
 ]
+
+intersphinx_mapping = {
+    'cardinal_pythonlib':
+        ('https://exhale.cardinal_pythonlib.io/en/latest/', None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

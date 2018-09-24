@@ -269,6 +269,10 @@ def shuffle_list_chunks(x: List[Any], chunksize: int) -> None:
 
         [5, 6, 7, 8, 1, 2, 3, 4, 9, 10, 11, 12]
          ^^^^^^^^^^  ^^^^^^^^^^  ^^^^^^^^^^^^^
+
+    Uses :func:`cardinal_pythonlib.lists.flatten_list` and
+    :func:`cardinal_pythonlib.lists.sort_list_by_index_list`. (I say that
+    mainly to test Intersphinx, when it is enabled.)
     """
     starts = list(range(0, len(x), chunksize))
     ends = starts[1:] + [len(x)]
@@ -681,14 +685,16 @@ class ShuffleLayerMethod(object):
     """
     def __init__(self,
                  flat: bool = False,
-                 layer_index: int = None,
+                 layer_key: int = None,
                  layer_attr: str = None,
+                 layer_func: Callable[[Any], Any] = None,
                  shuffle_func: SHUFFLE_FUNC_TYPE = None) -> None:
         """
         Args:
             flat: take data as ``x[index]``?
-            layer_index: take data as ``x[index][layer_index]``?
+            layer_key: take data as ``x[index][layer_key]``?
             layer_attr: take data as ``getattr(x[index], layer_attr)``?
+            layer_func: take data as ``layer_func(x[index])``?
             shuffle_func: function (N.B. may be a lambda function with
                 parameters attached) that takes a list of objects and returns
                 a list of INDEXES, suitably shuffled.
@@ -708,25 +714,22 @@ class ShuffleLayerMethod(object):
           :func:`reverse_sort_indexes`.
 
         """
-        if flat:
-            assert layer_index is None, (
-                "Error: layer_index and flat both specified"
-            )
-            assert layer_attr is None, (
-                "Error: layer_attr and flat both specified"
-            )
-        elif layer_index is not None:
-            assert isinstance(layer_index, int)
-            assert layer_index > 0
-            assert not flat, "Error: layer_index and flat both specified"
-            assert layer_attr is None, (
-                "Error: layer_index and layer_attr both specified"
-            )
-        else:
+        assert (
+            flat +
+            (layer_key is not None) +
+            bool(layer_attr)
+        ) == 1, "Specify exactly one way of accessing data from the layer!"
+        if layer_key is not None:
+            assert isinstance(layer_key, int)
+            assert layer_key > 0
+        elif layer_attr:
             assert isinstance(layer_attr, str)
+        elif layer_func:
+            assert callable(layer_func)
         self.flat = flat
-        self.layer_index = layer_index
+        self.layer_key = layer_key
         self.layer_attr = layer_attr
+        self.layer_func = layer_func
         self.shuffle_func = shuffle_func
 
     def __repr__(self) -> str:
@@ -741,9 +744,13 @@ class ShuffleLayerMethod(object):
         elif self.layer_attr:
             attr = self.layer_attr
             return [getattr(item, attr) for item in x]
+        elif self.layer_func:
+            func = self.layer_func
+            return [func(item) for item in x]
         else:
-            index = self.layer_index
-            return [item[index] for item in x]
+            # key, via item[key], meaning item.__getitem__(key)
+            key = self.layer_key
+            return [item[key] for item in x]
 
     def get_unique_values(self, x: List[Any]) -> List[Any]:
         """

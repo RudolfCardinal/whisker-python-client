@@ -21,8 +21,8 @@ A complete simple task
 
 Having done :code:`pip install whisker`, you should be able to do this:
 
-.. include:: demo/demo_config.yaml
-    :code: python
+.. literalinclude:: demo/demo_config.yaml
+    :language: yaml
 
-.. include:: demo/demo_simple_whisker_client.py
-    :code: python
+.. literalinclude:: demo/demo_simple_whisker_client.py
+    :language: python

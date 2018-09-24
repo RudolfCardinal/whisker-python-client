@@ -37,6 +37,7 @@ Python package for Whisker clients.
     changelog.rst
     to_do.rst
     autodoc/_index.rst
+    external_dependencies.rst
 
 
 Indices and tables

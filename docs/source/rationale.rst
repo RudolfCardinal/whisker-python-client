@@ -49,8 +49,8 @@ Perl
 In Perl, I've used only a very basic approach with a manual message loop,
 like this:
 
-.. include:: demo/whisker_client_snippet.pl
-    :code: perl
+.. literalinclude:: demo/whisker_client_snippet.pl
+    :language: perl
 
 Python
 ~~~~~~
@@ -64,8 +64,8 @@ You can use base socket code, and poll the main
 socket for input regularly. Simple. But you can forget about
 simultaneous UI. Like this:
 
-.. include:: ../../whisker/test_rawsockets.py
-    :code: python
+.. literalinclude:::: ../../whisker/test_rawsockets.py
+    :language: python
 
 Non-threaded, event-driven
 ::::::::::::::::::::::::::
@@ -90,8 +90,8 @@ The Twisted library is great for this (https://twistedmatrix.com/). However:
 
 It looks, from the task writer's perspective, like this:
 
-.. include:: ../../whisker/test_twisted.py
-    :code: python
+.. literalinclude:: ../../whisker/test_twisted.py
+    :language: python
 
 Multithreading
 ::::::::::::::
@@ -166,13 +166,13 @@ JSON
 
 An example program:
 
-.. include:: demo/json_config_example.py
-    :code: python
+.. literalinclude:: demo/json_config_example.py
+    :language: python
 
 The JSON looks like:
 
-.. include:: demo/json_config_demo.json
-    :code: json
+.. literalinclude:: demo/json_config_demo.json
+    :language: json
 
 YAML with attrdict
 ~~~~~~~~~~~~~~~~~~
@@ -184,13 +184,13 @@ of security from dodgy config files.
 Using an AttrDict allows a cleaner syntax for reading/writing the Python
 object.
 
-.. include:: demo/yaml_config_example.py
-    :code: python
+.. literalinclude:: demo/yaml_config_example.py
+    :language: python
 
 The YAML looks like this:
 
-.. include:: demo/yaml_config_demo.yaml
-    :code: yaml
+.. literalinclude:: demo/yaml_config_demo.yaml
+    :language: yaml
 
 A quick YAML tutorial
 :::::::::::::::::::::

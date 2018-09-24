@@ -86,3 +86,7 @@ Change history
   - removed ``typing==3.5.2.2`` dependency and restricted to Python 3.5 (as per
     ``cardinal_pythonlib``) to see if that fixed the autodoc/RTD problem; no
   - no help from changing Sphinx theme either
+  - no help from changing ``sys.path`` from ``conf.py``
+
+- renamed ``layer_index`` to ``layer_key`` and changed its hint in
+  :class:`whisker.random.ShuffleLayerMethod`.

@@ -37,7 +37,7 @@ with open(README_FILE, encoding='utf-8') as f:
 SIMPLE_REQUIRES = [
     'arrow',  # better datetime
     'attrdict',  # dictionaries with attribute-style access
-    'cardinal_pythonlib>=1.0.26',  # numpy doesn't install under RTD
+    'cardinal_pythonlib>=1.0.27',  # numpy doesn't install under RTD
     'colorama',  # colour at the command line
     'colorlog',  # colourful logs
     'dataset',  # databases for lazy people (used by demo)
