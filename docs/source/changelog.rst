@@ -1,6 +1,6 @@
 ..  docs/source/changelog.rst
 
-..  Copyright © 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+..  Copyright © 2011-2020 Rudolf Cardinal (rudolf@pobox.com).
     .
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,22 +22,22 @@ Change history
 
 - moved to package format
 
-**2016-02-25: v0.2.0**
+**v0.2.0: 2016-02-25**
 
 - ``colourlog`` renamed ``logsupport``.
 
-**2016-11-25: v0.3.5**
+**v0.3.5: 2016-11-25**
 
 - Python type hints.
 - Write ``exit_on_exception`` exceptions to log, not via :func:`print`.
 - :class:`whisker.qtclient.WhiskerOwner` offers new ``pingack_received``
   signal.
 
-**2016-12-01: v0.3.6**
+**v0.3.6: 2016-12-01**
 
 - Changed from PySide to PyQt5 (fewer bugs).
 
-**2017-03-23: v0.3.6**
+**v0.3.6: 2017-03-23**
 
 - Removed annotations from ``alembic.py``; alembic uses
   ``inspect.getargspec()``, which chokes with ``ValueError: Function has
@@ -45,24 +45,24 @@ Change history
 - Support PyQt 5.8, including removing calls to ``QHeaderView.setClickable``,
   which has gone: https://doc.qt.io/qt-5/qheaderview.html
 
-**2016-06-22: v0.1.10**
+**v0.1.10: 2016-06-22**
 
 - Updates for Starfeeder.
 
-**2016-06-23: v0.1.11**
+**v0.1.11: 2016-06-23**
 
 - Further updates for Starfeeder; supporting structured handling of
   :class:`ClientMessage`.
 
-**2017: v1.0**
+**v1.0: 2017**
 
 - Update for new ``cardinal_pythonlib``.
 
-**2017-09-07: v1.0.3**
+**v1.0.3: 2017-09-07**
 
 - use SQLAlchemy 1.2 ``pool_pre_ping`` feature
 
-**2018-09-18: v1.0.4**
+**v1.0.4: 2018-09-18**
 
 - ``PyQt5`` and ``Twisted`` added as requirements
 - Sphinx docs
@@ -72,7 +72,7 @@ Change history
   ``whisker.exceptions`` (previously duplicated)
 - additional randomization functions
 
-**2018-09-21 to 2018-09-22: v1.1.0**
+**v1.1.0: 2018-09-21 to 2018-09-22**
 
 - updated required version to ``cardinal_pythonlib>=1.0.26`` in view of
   bugfix there
@@ -93,3 +93,7 @@ Change history
 
 - renamed ``layer_index`` to ``layer_key`` and changed its hint in
   :class:`whisker.random.ShuffleLayerMethod`.
+
+**v1.2.0: 2020-02-09**
+
+- Added ``whisker.__version__``.

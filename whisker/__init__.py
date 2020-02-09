@@ -1,10 +1,11 @@
 #!/usr/bin/env/python
-# whisker/__init__.py
 
 """
+whisker/__init__.py
+
 ===============================================================================
 
-    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+    Copyright © 2011-2020 Rudolf Cardinal (rudolf@pobox.com).
 
     This file is part of the Whisker Python client library.
 
@@ -21,11 +22,18 @@
     limitations under the License.
 
 ===============================================================================
+
+The mere existence of this file makes Python treat the directory as a package.
+
 """
 
 import logging
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
 
+# Create whisker.__version__:
+# noinspection PyPep8Naming
+from whisker.version import VERSION as __version__
+
+log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 # http://eric.themoritzfamily.com/learning-python-logging.html
 # http://stackoverflow.com/questions/12296214/python-logging-with-a-library-namespaced-packages  # noqa

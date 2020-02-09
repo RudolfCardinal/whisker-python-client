@@ -4,7 +4,7 @@
 """
 ===============================================================================
 
-    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+    Copyright © 2011-2020 Rudolf Cardinal (rudolf@pobox.com).
 
     This file is part of the Whisker Python client library.
 
@@ -44,7 +44,7 @@ AUTODOC_DIR = os.path.join(THIS_DIR, "source", "autodoc")
 AUTODOC_INDEX = os.path.join(AUTODOC_DIR, "_index.rst")
 
 COPYRIGHT_COMMENT = r"""
-..  Copyright © 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+..  Copyright © 2011-2020 Rudolf Cardinal (rudolf@pobox.com).
     .
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

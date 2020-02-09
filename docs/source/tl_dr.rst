@@ -1,6 +1,6 @@
 ..  docs/source/tl_dr.rst
 
-..  Copyright © 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+..  Copyright © 2011-2020 Rudolf Cardinal (rudolf@pobox.com).
     .
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

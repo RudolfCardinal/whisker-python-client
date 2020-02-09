@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-# whisker/version.py
 
 """
+whisker/version.py
+
 ===============================================================================
 
-    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+    Copyright © 2011-2020 Rudolf Cardinal (rudolf@pobox.com).
 
     This file is part of the Whisker Python client library.
 
@@ -26,5 +27,5 @@
 
 """
 
-VERSION = '1.1.0'
+VERSION = '1.2.0'
 # Use semantic versioning: http://semver.org/

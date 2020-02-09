@@ -4,7 +4,7 @@
 """
 ===============================================================================
 
-    Copyright (C) 2011-2018 Rudolf Cardinal (rudolf@pobox.com).
+    Copyright © 2011-2020 Rudolf Cardinal (rudolf@pobox.com).
 
     This file is part of the Whisker Python client library.
 
