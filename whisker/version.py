@@ -27,5 +27,5 @@ whisker/version.py
 
 """
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 # Use semantic versioning: http://semver.org/

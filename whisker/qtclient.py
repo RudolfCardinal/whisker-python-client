@@ -656,9 +656,9 @@ class WhiskerController(QObject, StatusMixin, WhiskerApi):
         self.connect_timeout_ms = connect_timeout_ms
         self.read_timeout_ms = read_timeout_ms
 
-        self.immport = None  # type: int
-        self.code = None  # type: str
-        self.immsocket = None  # type: QTcpSocket
+        self.immport = None  # type: Optional[int]
+        self.code = None  # type: Optional[str]
+        self.immsocket = None  # type: Optional[QTcpSocket]
         self.residual = ''
 
     # noinspection PyArgumentList
@@ -840,7 +840,7 @@ class WhiskerQtTask(QObject, StatusMixin):
     finished = pyqtSignal()  # emit from stop() function when all done
 
     def __init__(self, parent: QObject = None,
-                 name: str ="whisker_task", **kwargs) -> None:
+                 name: str = "whisker_task", **kwargs) -> None:
         """
         Args:
             parent: optional parent :`QObject`

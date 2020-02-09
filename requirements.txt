@@ -1,0 +1,12 @@
+# This is an AUTOCREATED file, requirements.txt; see setup.py and DO NOT EDIT BY HAND
+
+arrow
+attrdict
+cardinal_pythonlib>=1.0.27
+colorama
+colorlog
+dataset
+Twisted
+pyyaml
+sqlalchemy
+PyQt5

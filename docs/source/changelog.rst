@@ -94,6 +94,8 @@ Change history
 - renamed ``layer_index`` to ``layer_key`` and changed its hint in
   :class:`whisker.random.ShuffleLayerMethod`.
 
-**v1.2.0: 2020-02-09**
+**v1.2.0 to 1.2.1: 2020-02-09**
 
 - Added ``whisker.__version__``.
+- :func:`whisker.convenience.load_config_or_die` has a new ``config_filename``
+  argument.

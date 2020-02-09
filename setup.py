@@ -19,18 +19,30 @@ To install in development mode:
 # http://python-packaging-user-guide.readthedocs.org/en/latest/distributing/
 # http://jtushman.github.io/blog/2013/06/17/sharing-code-across-applications-with-python/  # noqa
 
+import argparse
 from setuptools import setup
 import os
 from os import path
+import sys
+from typing import List
 
 from whisker.version import VERSION
 
+# =============================================================================
+# Constants
+# =============================================================================
+
+# Directories
 THIS_DIR = path.abspath(path.dirname(__file__))
 
-# -----------------------------------------------------------------------------
-# Get the long description
-# -----------------------------------------------------------------------------
+# Files
 README_FILE = path.join(THIS_DIR, 'README.rst')  # read
+PIP_REQ_FILE = os.path.join(THIS_DIR, 'requirements.txt')
+
+# Arguments
+EXTRAS_ARG = 'extras'
+
+# Get the long description from the README file
 with open(README_FILE, encoding='utf-8') as f:
     long_description = f.read()
 
@@ -67,9 +79,38 @@ if not ON_READTHEDOCS:
     REQUIREMENTS += REQUIRES_THAT_RTD_DISLIKES
 
 
-# -----------------------------------------------------------------------------
+# =============================================================================
+# Perform special actions if we're building a package
+# =============================================================================
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--' + EXTRAS_ARG, action='store_true',
+    help=(
+        "USE THIS TO CREATE PACKAGES (e.g. 'python setup.py sdist --{}. "
+        "Copies extra info in.".format(EXTRAS_ARG)
+    )
+)
+our_args, leftover_args = parser.parse_known_args()
+sys.argv[1:] = leftover_args
+
+extra_files = []  # type: List[str]
+
+if getattr(our_args, EXTRAS_ARG):
+    # -------------------------------------------------------------------------
+    # Write requirements.txt
+    # -------------------------------------------------------------------------
+    with open(PIP_REQ_FILE, "w") as req_file:
+        req_file.writelines([
+            "# This is an AUTOCREATED file, requirements.txt; see "
+            "setup.py and DO NOT EDIT BY HAND"])
+        req_file.write("\n\n" + "\n".join(REQUIREMENTS) + "\n")
+
+
+# =============================================================================
 # setup args
-# -----------------------------------------------------------------------------
+# =============================================================================
+
 setup(
     name='whisker',
 

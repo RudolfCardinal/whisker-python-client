@@ -49,18 +49,24 @@ log.addHandler(logging.NullHandler())
 colorama.init()
 
 
-def load_config_or_die(mandatory: Iterable[Union[str, List[Any]]] = None,
+def load_config_or_die(config_filename: str = None,
+                       mandatory: Iterable[Union[str, List[Any]]] = None,
                        defaults: Dict[str, Any] = None,
                        log_config: bool = False) -> AttrDict:
     """
     Offers a GUI file prompt; loads a YAML config from it; or exits.
 
     Args:
-        mandatory: list of mandatory items;
-            if one of these is itself a list, that list is used as a hierarchy
-            of attributes
-        defaults: a dict-like object of defaults
-        log_config: report the config to the Python log?
+        config_filename:
+            Optional filename. If not supplied, a GUI interface will be used
+            to ask the user.
+        mandatory:
+            List of mandatory items; if one of these is itself a list, that
+            list is used as a hierarchy of attributes.
+        defaults:
+            A dict-like object of defaults.
+        log_config:
+            Report the config to the Python log?
 
     Returns:
         an class:`AttrDict` containing the config
@@ -75,7 +81,7 @@ def load_config_or_die(mandatory: Iterable[Union[str, List[Any]]] = None,
     defaults = defaults or {}  # type: Dict[str, Any]
     defaults = AttrDict(defaults)
     Tk().withdraw()  # we don't want a full GUI; remove root window
-    config_filename = filedialog.askopenfilename(
+    config_filename = config_filename or filedialog.askopenfilename(
         title='Open configuration file',
         filetypes=[('YAML files', '.yaml'), ('All files', '*.*')])
     if not config_filename:
