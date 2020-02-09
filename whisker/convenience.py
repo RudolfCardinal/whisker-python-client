@@ -32,7 +32,7 @@ from datetime import datetime
 from tkinter import filedialog, Tk
 import os
 import sys
-from typing import Any, Dict, Iterable, List, Type, Union
+from typing import Any, Dict, Iterable, List, Optional, Type, Union
 
 import arrow
 from attrdict import AttrDict
@@ -47,6 +47,8 @@ from whisker.constants import FILENAME_SAFE_ISOFORMAT
 log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())
 colorama.init()
+
+DEFAULT_PK_FIELD = "id"
 
 
 def load_config_or_die(config_filename: str = None,
@@ -227,7 +229,7 @@ def save_data(tablename: str,
 
 def insert_and_set_id(table: dataset.Table,
                       obj: Dict[str, Any],
-                      idfield: str = 'id') -> Any:  # but typically int
+                      idfield: str = DEFAULT_PK_FIELD) -> Any:  # but typically int  # noqa
     """
     Inserts an object into a :class:`dataset.Table` and ensures that the
     primary key (PK) is written back to the object, in its ``idfield``.
@@ -235,7 +237,45 @@ def insert_and_set_id(table: dataset.Table,
     (The :func:`dataset.Table.insert` command returns the primary key.
     However, it doesn't store that back, and we want users to do that
     consistently.)
+
+    Args:
+        table:
+            the database table in which to insert
+        obj:
+            the dict-like record object to be added to the database
+        idfield:
+            the name of the primary key (PK) to be created within ``obj``,
+            containing the record's PK in the database
+
+    Returns:
+        the primary key (typically integer)
     """
     pk = table.insert(obj)
     obj[idfield] = pk
     return pk
+
+
+def update_record(table: dataset.Table,
+                  obj: Dict[str, Any],
+                  newvalues: Dict[str, Any],
+                  idfield: str = DEFAULT_PK_FIELD) -> Optional[int]:
+    """
+    Updates an existing record, using its primary key.
+
+    Args:
+        table:
+            the database table to update
+        obj:
+            the dict-like record object to be updated
+        newvalues:
+            a dictionary of new values to write to ``obj`` and the database
+        idfield:
+            the name of the primary key (PK, ID) within ``obj``, used for the
+            SQL ``WHERE`` clause to determine which record to update
+
+    Returns:
+        the number of rows updated, or None
+    """
+    keys = [idfield]  # for the WHERE clause
+    obj.update(**newvalues)
+    return table.update(obj, keys)

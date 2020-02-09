@@ -227,39 +227,40 @@ def main() -> None:
     configure_logger_for_colour(logging.getLogger())  # configure root logger
     # print_report_on_all_logs()
 
-    parser = argparse.ArgumentParser("Test Whisker raw socket client")
-    parser.add_argument('--server', default='localhost',
-                        help="Server (default: localhost)")
-    parser.add_argument('--port', default=DEFAULT_PORT, type=int,
-                        help="Port (default: {})".format(DEFAULT_PORT))
+    parser = argparse.ArgumentParser(
+        description="Test Whisker Twisted client",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        '--server', default='localhost',
+        help="Server")
+    parser.add_argument(
+        '--port', default=DEFAULT_PORT, type=int,
+        help="Port")
     parser.add_argument(
         '--display_num', default=DEFAULT_DISPLAY_NUM, type=int,
-        help="Display number to use (default: {})".format(DEFAULT_DISPLAY_NUM))
+        help="Display number to use")
     parser.add_argument(
         '--audio_num', default=DEFAULT_AUDIO_NUM, type=int,
-        help="Audio device number to use (default: {})".format(
-            DEFAULT_AUDIO_NUM))
+        help="Audio device number to use")
     parser.add_argument(
         '--input', default=DEFAULT_INPUT_LINE, type=int,
-        help="Input line number to use (default: {})".format(
-            DEFAULT_INPUT_LINE))
+        help="Input line number to use")
     parser.add_argument(
         '--output', default=DEFAULT_OUTPUT_LINE, type=int,
-        help="Output line number to use (default: {})".format(
-            DEFAULT_OUTPUT_LINE))
+        help="Output line number to use")
     parser.add_argument(
         '--media_dir', default=DEFAULT_MEDIA_DIR, type=str,
-        help="Media directory to use (default: {})".format(
-            DEFAULT_MEDIA_DIR))
+        help="Media directory to use")
     parser.add_argument(
         '--bitmap', default=DEFAULT_BITMAP, type=str,
-        help="Bitmap to use (default: {})".format(DEFAULT_BITMAP))
+        help="Bitmap to use")
     parser.add_argument(
         '--video', default=DEFAULT_VIDEO, type=str,
-        help="Video to use (default: {})".format(DEFAULT_VIDEO))
+        help="Video to use")
     parser.add_argument(
         '--wav', default=DEFAULT_WAV, type=str,
-        help="WAV file to use (default: {})".format(DEFAULT_WAV))
+        help="WAV file to use")
     args = parser.parse_args()
 
     print("Module run explicitly. Running a Whisker test.")

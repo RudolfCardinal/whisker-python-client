@@ -92,11 +92,16 @@ def main() -> None:
     logging.getLogger("whisker").setLevel(logging.DEBUG)
     configure_logger_for_colour(logging.getLogger())  # configure root logger
 
-    parser = argparse.ArgumentParser("Test Whisker raw socket client")
-    parser.add_argument('--server', default='localhost',
-                        help="Server (default: localhost)")
-    parser.add_argument('--port', default=DEFAULT_PORT, type=int,
-                        help="Port (default: {})".format(DEFAULT_PORT))
+    parser = argparse.ArgumentParser(
+        description="Test Whisker raw socket client",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        '--server', default='localhost',
+        help="Server")
+    parser.add_argument(
+        '--port', default=DEFAULT_PORT, type=int,
+        help="Port")
     args = parser.parse_args()
 
     test_whisker(server=args.server, port=args.port)
