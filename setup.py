@@ -135,7 +135,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
@@ -148,7 +148,7 @@ setup(
         'Operating System :: OS Independent',
 
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.10',
 
         'Topic :: System :: Hardware',
         'Topic :: System :: Networking',
